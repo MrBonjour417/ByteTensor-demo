@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -342,7 +342,7 @@ const Layout: React.FC<{
       void navigate('/settings/about');
       // Trigger update modal after a short delay to ensure page is loaded
       setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('aionui-open-update-modal', { detail: { source: 'tray' } }));
+        window.dispatchEvent(new CustomEvent('bytetensor-open-update-modal', { detail: { source: 'tray' } }));
       }, 100);
     };
 
@@ -493,7 +493,7 @@ const Layout: React.FC<{
                     ></path>
                   </svg>
                 </div>
-                <div className='text-16px text-t-primary collapsed-hidden font-semibold'>AionUi</div>
+                <div className='text-16px text-t-primary collapsed-hidden font-semibold'>ByteTensor</div>
                 {isMobile && !collapsed && (
                   <button
                     type='button'

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  *
  * Unit tests for the pure helpers exported from `packages/desktop/src/sentry.ts`:
@@ -160,7 +160,7 @@ describe('captureBackendStartupFailure', () => {
         isPackaged: true,
         runtimeKey: 'win32-x64',
         binaryName: 'aioncore.exe',
-        resourcesPath: 'C:\\Users\\alice\\AppData\\Local\\Programs\\AionUi\\resources',
+        resourcesPath: 'C:\\Users\\alice\\AppData\\Local\\Programs\\ByteTensor\\resources',
         bundledDirExists: false,
         runtimeDirExists: false,
         resourcesDirEntries: [
@@ -177,16 +177,16 @@ describe('captureBackendStartupFailure', () => {
       await captureBackendStartupFailure(error);
 
       expect(scopeSetTag).toHaveBeenCalledWith(
-        'aionui.backend_startup.incomplete_installation_kind',
+        'bytetensor.backend_startup.incomplete_installation_kind',
         'missing_directory_resources'
       );
-      expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.missing_bundled_dir', 'true');
-      expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.missing_runtime_dir', 'true');
-      expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.missing_binary', 'true');
-      expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.missing_hub_dir', 'true');
-      expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.last_update_status', 'quit-and-install');
-      expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.seconds_since_quit_and_install', '46');
-      expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.install_path_kind', 'user_local_programs');
+      expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.missing_bundled_dir', 'true');
+      expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.missing_runtime_dir', 'true');
+      expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.missing_binary', 'true');
+      expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.missing_hub_dir', 'true');
+      expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.last_update_status', 'quit-and-install');
+      expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.seconds_since_quit_and_install', '46');
+      expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.install_path_kind', 'user_local_programs');
       expect(scopeSetContext).toHaveBeenCalledWith(
         'aioncore_startup_classification',
         expect.objectContaining({
@@ -222,11 +222,11 @@ describe('captureBackendStartupFailure', () => {
 
     await captureBackendStartupFailure(error);
 
-    expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.health_polling_delayed', 'true');
-    expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.health_attempts_bucket', '1');
-    expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.health_attempt_deficit_bucket', '76-150');
-    expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.health_timeout_overrun_bucket', 'over_60s');
-    expect(scopeSetTag).toHaveBeenCalledWith('aionui.backend_startup.health_max_attempt_gap_bucket', '0ms');
+    expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.health_polling_delayed', 'true');
+    expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.health_attempts_bucket', '1');
+    expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.health_attempt_deficit_bucket', '76-150');
+    expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.health_timeout_overrun_bucket', 'over_60s');
+    expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.health_max_attempt_gap_bucket', '0ms');
   });
 });
 
@@ -284,7 +284,7 @@ describe('initSentry beforeSend', () => {
 
     const event = {
       tags: {
-        'aionui.failure': 'backend_startup',
+        'bytetensor.failure': 'backend_startup',
       },
       exception: {
         values: [

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -109,7 +109,7 @@ describe('normalizeDbMessage', () => {
     expect(normalized.content.error).toEqual({
       message: 'This workspace path is no longer supported for execution',
       code: 'WORKSPACE_PATH_CONTAINS_WHITESPACE_RUNTIME_UNSUPPORTED',
-      ownership: 'aionui',
+      ownership: 'bytetensor',
       detail:
         '/Users/zhoukai/Documents/Archive . Rename the affected directory, then update this conversation or task to use a path without whitespace in any directory name.',
       workspacePath: '/Users/zhoukai/Documents/Archive ',

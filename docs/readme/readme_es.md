@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../../resources/aionui-banner-1.png" alt="AionUi - Cowork with AI Agents" width="100%">
+  <img src="../../resources/bytetensor-banner-1.png" alt="ByteTensor - Cowork with AI Agents" width="100%">
 </p>
 
 <p align="center">
@@ -34,7 +34,7 @@
 </p>
 
 <p align="center">
-  <strong>💬 Comunidad:</strong> <a href="https://discord.gg/2QAwJn7Egx" target="_blank">Discord (English)</a> | <a href="../../resources/wx-10.png" target="_blank">微信 (中文群)</a> | <a href="https://twitter.com/AionUI" target="_blank">Twitter</a>
+  <strong>💬 Comunidad:</strong> <a href="https://discord.gg/2QAwJn7Egx" target="_blank">Discord (English)</a> | <a href="../../resources/wx-10.png" target="_blank">微信 (中文群)</a> | <a href="https://twitter.com/ByteTensor" target="_blank">Twitter</a>
 </p>
 
 ---
@@ -44,7 +44,7 @@
 <p align="center">
 
 [✨ Cowork en acción](#-cowork-en-acción) ·
-[🤔 ¿Por qué elegir AionUi?](#-por-qué-elegir-aionui-sobre-claude-cowork) ·
+[🤔 ¿Por qué elegir ByteTensor?](#-por-qué-elegir-bytetensor-sobre-claude-cowork) ·
 [🚀 Inicio rápido](#-inicio-rápido) ·
 [💬 Comunidad](#-comunidad-y-soporte)
 
@@ -54,9 +54,9 @@
 
 ## Cowork — AI Agents que trabajan contigo
 
-**AionUi es más que un cliente de chat.** Es una plataforma Cowork donde los AI Agents trabajan contigo en tu computadora — leyendo archivos, escribiendo código, navegando por la web y automatizando tareas. Puedes ver todo lo que hace el Agent y siempre tienes el control.
+**ByteTensor es más que un cliente de chat.** Es una plataforma Cowork donde los AI Agents trabajan contigo en tu computadora — leyendo archivos, escribiendo código, navegando por la web y automatizando tareas. Puedes ver todo lo que hace el Agent y siempre tienes el control.
 
-|                                             | Clientes de chat AI tradicionales | **AionUi (Cowork)**                                                                                                                |
+|                                             | Clientes de chat AI tradicionales | **ByteTensor (Cowork)**                                                                                                            |
 | :------------------------------------------ | :-------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
 | AI puede operar en tus archivos             | Limitado o No                     | **Sí — Agent integrado con acceso completo a archivos**                                                                            |
 | AI puede ejecutar tareas de múltiples pasos | Limitado                          | **Sí — autónomo con tu aprobación**                                                                                                |
@@ -66,14 +66,14 @@
 | Precio                                      | Gratis / Pago                     | **Gratis y de código abierto**                                                                                                     |
 
 <p align="center">
-  <img src="../../resources/offica-ai BANNER-function.png" alt="AionUi Cowork Platform" width="800">
+  <img src="../../resources/offica-ai BANNER-function.png" alt="ByteTensor Cowork Platform" width="800">
 </p>
 
 ---
 
 ## Agent integrado — Instalar y usar, configuración cero
 
-AionUi viene con un motor de Agent AI completo. A diferencia de las herramientas que requieren instalar CLI Agents por separado, **AionUi funciona en el momento en que lo instalas**.
+ByteTensor viene con un motor de Agent AI completo. A diferencia de las herramientas que requieren instalar CLI Agents por separado, **ByteTensor funciona en el momento en que lo instalas**.
 
 - **No hay herramientas CLI que instalar** — el motor Agent está integrado
 - **Sin configuración compleja** — pega cualquier clave API para empezar
@@ -88,9 +88,9 @@ AionUi viene con un motor de Agent AI completo. A diferencia de las herramientas
 
 ## Modo Multi-Agent — ¿Ya tienes CLI Agents? Tráelos
 
-Si ya usas Claude Code, Codex, Hermes Agent u OpenClaw, AionUi los detecta automáticamente y te permite hacer Cowork con todos ellos — junto con el Agent integrado.
+Si ya usas Claude Code, Codex, Hermes Agent u OpenClaw, ByteTensor los detecta automáticamente y te permite hacer Cowork con todos ellos — junto con el Agent integrado.
 
-**Agents compatibles:** Agent integrado (configuración cero) • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • Aion CLI (aionrs, el servicio backend en Rust distribuido con AionUi) • Snow CLI • Hermes Agent • Cursor Agent y más
+**Agents compatibles:** Agent integrado (configuración cero) • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • Aion CLI (aionrs, el servicio backend en Rust distribuido con ByteTensor) • Snow CLI • Hermes Agent • Cursor Agent y más
 
 <p align="center">
   <img src="../../resources/multi-agent支持openclaw.gif" alt="Multi-Agent Cowork" width="800">
@@ -107,10 +107,10 @@ Si ya usas Claude Code, Codex, Hermes Agent u OpenClaw, AionUi los detecta autom
 Ejecuta múltiples AI Agents como un equipo organizado: un agente **Leader** recibe tus instrucciones, las divide en subtareas y las delega a agentes **Teammate** a través de un Team MCP Server integrado. Los Teammates se ejecutan en paralelo, comparten resultados a través de un buzón asíncrono y escriben en un tablero de tareas compartido.
 
 <p align="center">
-  <img src="../../resources/AionUi_team.gif" alt="Team Mode overview" width="800">
+  <img src="../../resources/ByteTensor_team.gif" alt="Team Mode overview" width="800">
 </p>
 
-- **Ejecución paralela multi-agent** — Leader divide las tareas en subtareas y las delega a agentes Teammate que se ejecutan en paralelo; cada Teammate usa su propio modelo a través de ACP (Agent Communication Protocol, la capa de coordinación multi-agent de AionUi), Gemini o Aionrs
+- **Ejecución paralela multi-agent** — Leader divide las tareas en subtareas y las delega a agentes Teammate que se ejecutan en paralelo; cada Teammate usa su propio modelo a través de ACP (Agent Communication Protocol, la capa de coordinación multi-agent de ByteTensor), Gemini o Aionrs
 - **Orquestación del Leader** — Leader asigna, rastrea y agrega resultados; backends compatibles: Claude Code, Codex, Hermes Agent, Gemini, Snow CLI y Aion CLI
 - **Espacio de trabajo aislado por equipo** — todos los Agents comparten la misma carpeta; cada uno tiene su propio diálogo de permisos con badge en la barra lateral para aprobaciones pendientes
 
@@ -131,7 +131,7 @@ Ejecuta múltiples AI Agents como un equipo organizado: un agente **Leader** rec
 
 ## Cualquier clave API, poder completo del Cowork Agent
 
-Otras apps de AI te dan una caja de chat con tu clave API. **AionUi te da un Cowork Agent completo.**
+Otras apps de AI te dan una caja de chat con tu clave API. **ByteTensor te da un Cowork Agent completo.**
 
 | Tu clave API               | Lo que obtienes                   |
 | :------------------------- | :-------------------------------- |
@@ -141,7 +141,7 @@ Otras apps de AI te dan una caja de chat con tu clave API. **AionUi te da un Cow
 | Ollama / LM Studio (local) | Cowork Agent de modelo local      |
 | NewAPI Gateway             | Acceso unificado a 20+ modelos    |
 
-Las mismas capacidades del Agent — lectura/escritura de archivos, búsqueda web, generación de imágenes, uso de herramientas — independientemente del modelo que lo impulse. AionUi admite **30+ plataformas AI** incluyendo servicios en la nube y despliegues locales.
+Las mismas capacidades del Agent — lectura/escritura de archivos, búsqueda web, generación de imágenes, uso de herramientas — independientemente del modelo que lo impulse. ByteTensor admite **30+ plataformas AI** incluyendo servicios en la nube y despliegues locales.
 
 <p align="center">
   <img src="../../resources/llm_newapi.png" alt="Multi-Model Support" width="800">
@@ -160,7 +160,7 @@ Las mismas capacidades del Agent — lectura/escritura de archivos, búsqueda we
 - **Plataformas internacionales** — DeepSeek, MiniMax, Novita, OpenRouter, SiliconFlow, xAI, Ark (Volcengine), Poe
 - **Modelos locales** — Ollama, LM Studio (a través de plataforma personalizada con endpoint API local)
 
-AionUi también admite el servicio de puerta de enlace [NewAPI](https://github.com/QuantumNous/new-api) — un centro unificado de modelos AI que agrega y distribuye varios LLMs. Cambia flexiblemente entre diferentes modelos en la misma interfaz para satisfacer diversos requisitos de tareas.
+ByteTensor también admite el servicio de puerta de enlace [NewAPI](https://github.com/QuantumNous/new-api) — un centro unificado de modelos AI que agrega y distribuye varios LLMs. Cambia flexiblemente entre diferentes modelos en la misma interfaz para satisfacer diversos requisitos de tareas.
 
 </details>
 
@@ -171,7 +171,7 @@ AionUi también admite el servicio de puerta de enlace [NewAPI](https://github.c
 _Sistema de asistentes extensible con 21 asistentes profesionales integrados y un sistema de habilidades de tres niveles. Crea y gestiona tus propios asistentes y habilidades._
 
 - **Crear asistentes personalizados** — Define tus propios asistentes con reglas y capacidades personalizadas
-- **Habilidades de tres niveles** — Habilidades integradas (incluidas con AionUi), habilidades personalizadas (las tuyas) y habilidades de Extension (aportadas por extensiones de terceros); habilita/deshabilita por conversación con el indicador de habilidades
+- **Habilidades de tres niveles** — Habilidades integradas (incluidas con ByteTensor), habilidades personalizadas (las tuyas) y habilidades de Extension (aportadas por extensiones de terceros); habilita/deshabilita por conversación con el indicador de habilidades
 - **Control por conversación** — Un indicador de habilidades en el encabezado del chat muestra las habilidades activas para la conversación actual; busca y excluye habilidades según sea necesario
 
 <p align="center">
@@ -183,7 +183,7 @@ _Sistema de asistentes extensible con 21 asistentes profesionales integrados y u
 
 <br>
 
-AionUi incluye **21 asistentes profesionales** con capacidades predefinidas, extensibles a través de habilidades personalizadas:
+ByteTensor incluye **21 asistentes profesionales** con capacidades predefinidas, extensibles a través de habilidades personalizadas:
 
 - **🤝 Cowork** — Ejecución autónoma de tareas (operaciones de archivos, procesamiento de documentos, planificación de flujos de trabajo)
 - **📊 PPT Creator / Morph PPT / Morph PPT 3D** — Genera y anima presentaciones PPTX con transiciones Morph
@@ -205,7 +205,7 @@ AionUi incluye **21 asistentes profesionales** con capacidades predefinidas, ext
 - **🔧 Configuración OpenClaw** — Asistente de configuración e instalación para integración OpenClaw
 - **📖 Rol de historia** — Rol de historia inmersivo con tarjetas de personajes e información del mundo (compatible con SillyTavern)
 
-**Habilidades personalizadas**: Crea habilidades en el directorio `skills/`, habilita/deshabilita habilidades para asistentes para extender las capacidades AI. Las habilidades provienen de tres fuentes: integradas (incluidas con AionUi), personalizadas (las tuyas) y Extension (aportadas a través del SDK de Extension). Las habilidades integradas incluyen `pptx`, `docx`, `pdf`, `xlsx`, `mermaid` y más.
+**Habilidades personalizadas**: Crea habilidades en el directorio `skills/`, habilita/deshabilita habilidades para asistentes para extender las capacidades AI. Las habilidades provienen de tres fuentes: integradas (incluidas con ByteTensor), personalizadas (las tuyas) y Extension (aportadas a través del SDK de Extension). Las habilidades integradas incluyen `pptx`, `docx`, `pdf`, `xlsx`, `mermaid` y más.
 
 > 💡 Cada asistente está definido por un archivo markdown. Consulta el directorio `assistant/` para ver ejemplos.
 
@@ -215,7 +215,7 @@ AionUi incluye **21 asistentes profesionales** con capacidades predefinidas, ext
 
 ## Cowork desde cualquier lugar
 
-_Tu asistente AI 24/7 — accede a AionUi desde cualquier dispositivo, en cualquier lugar._
+_Tu asistente AI 24/7 — accede a ByteTensor desde cualquier dispositivo, en cualquier lugar._
 
 - **Modo WebUI** — accede a través del navegador desde teléfono, tableta o cualquier computadora. Admite LAN, red cruzada y despliegue en servidor. Inicio de sesión con código QR o contraseña.
 
@@ -226,7 +226,7 @@ _Tu asistente AI 24/7 — accede a AionUi desde cualquier dispositivo, en cualqu
   - **WeChat** — Integración con cuenta personal de WeChat
   - **WeCom (企业微信), Slack, Discord** y más plataformas próximamente
 
-> **Configuración:** AionUi Settings → WebUI Settings → Channel, configura el Bot Token.
+> **Configuración:** ByteTensor Settings → WebUI Settings → Channel, configura el Bot Token.
 
 <p align="center">
   <img src="../../resources/webui-remote.gif" alt="WebUI remote access demo" width="800">
@@ -272,7 +272,7 @@ _Configúralo una vez, el AI Agent se ejecuta automáticamente según el horario
 - **Vinculado a conversación** — Cada tarea programada está vinculada a una conversación, manteniendo el contexto y el historial
 - **Ejecución automática** — Las tareas se ejecutan automáticamente en los horarios programados, enviando mensajes a la conversación
 - **Gestión fácil** — Crea, modifica, habilita/deshabilita, elimina y visualiza tareas programadas en cualquier momento
-- **Evitar suspensión** — AionUi previene automáticamente la suspensión del sistema mientras las tareas están activas y detecta activaciones perdidas tras el despertar
+- **Evitar suspensión** — ByteTensor previene automáticamente la suspensión del sistema mientras las tareas están activas y detecta activaciones perdidas tras el despertar
 - **Configuración avanzada** — cada tarea puede tener su propio modelo, directorio de espacio de trabajo y configuración de esfuerzo de razonamiento
 
 **Ejemplos del mundo real:**
@@ -321,7 +321,7 @@ _10+ formatos: PDF, Word, Excel, PPT, código, Markdown, imágenes, HTML, Diff �
 _Renombrado por lotes, organización automática, clasificación inteligente, fusión de archivos — el Cowork Agent lo maneja por ti._
 
 <p align="center">
-  <img src="../../resources/aionui sort file 2.gif" alt="Smart File Management" width="800">
+  <img src="../../resources/bytetensor sort file 2.gif" alt="Smart File Management" width="800">
 </p>
 
 <details>
@@ -450,16 +450,16 @@ _Abre múltiples conversaciones, las tareas no se mezclan, memoria independiente
 
 ---
 
-## 🤔 ¿Por qué elegir AionUi sobre Claude Cowork?
+## 🤔 ¿Por qué elegir ByteTensor sobre Claude Cowork?
 
 <details>
 <summary><strong>Haz clic para ver la comparación detallada</strong></summary>
 
 <br>
 
-AionUi es un **Escritorio Multi-AI Agent gratuito y de código abierto**. En comparación con Claude Cowork que solo se ejecuta en macOS y está bloqueado a Claude, AionUi es su versión mejorada de modelo completo y multiplataforma.
+ByteTensor es un **Escritorio Multi-AI Agent gratuito y de código abierto**. En comparación con Claude Cowork que solo se ejecuta en macOS y está bloqueado a Claude, ByteTensor es su versión mejorada de modelo completo y multiplataforma.
 
-| Dimensión          | Claude Cowork     | AionUi                                                 |
+| Dimensión          | Claude Cowork     | ByteTensor                                             |
 | :----------------- | :---------------- | :----------------------------------------------------- |
 | SO                 | Solo macOS        | macOS / Windows / Linux                                |
 | Soporte de modelos | Solo Claude       | Gemini, Claude, DeepSeek, OpenAI, Ollama, ...          |
@@ -482,17 +482,17 @@ Soporte de escenarios de oficina AI profundos:
 
 <details>
 <summary><strong>P: ¿Necesito instalar primero Gemini CLI o Claude Code?</strong></summary>
-R: <strong>No.</strong> AionUi tiene un AI Agent integrado que funciona inmediatamente después de la instalación. Solo ingresa cualquier clave API para empezar. Si también tienes herramientas CLI como Claude Code o Gemini CLI instaladas, AionUi las detectará e integrará automáticamente para aún más capacidades.
+R: <strong>No.</strong> ByteTensor tiene un AI Agent integrado que funciona inmediatamente después de la instalación. Solo ingresa cualquier clave API para empezar. Si también tienes herramientas CLI como Claude Code o Gemini CLI instaladas, ByteTensor las detectará e integrará automáticamente para aún más capacidades.
 </details>
 
 <details>
-<summary><strong>P: ¿Qué puedo hacer con AionUi?</strong></summary>
-R: AionUi es tu <strong>espacio de trabajo Cowork privado</strong>. El Agent integrado puede organizar carpetas por lotes, procesar datos de Excel, generar documentos, buscar en la web y generar imágenes. Con el Modo Multi-Agent, también puedes aprovechar Claude Code, Codex y otros Agents CLI poderosos a través de la misma interfaz.
+<summary><strong>P: ¿Qué puedo hacer con ByteTensor?</strong></summary>
+R: ByteTensor es tu <strong>espacio de trabajo Cowork privado</strong>. El Agent integrado puede organizar carpetas por lotes, procesar datos de Excel, generar documentos, buscar en la web y generar imágenes. Con el Modo Multi-Agent, también puedes aprovechar Claude Code, Codex y otros Agents CLI poderosos a través de la misma interfaz.
 </details>
 
 <details>
 <summary><strong>P: ¿Es gratis?</strong></summary>
-R: AionUi es completamente gratuito y de código abierto. Solo pagas por el uso de la API del proveedor que elijas, y puedes usar claves API de cualquier proveedor que prefieras.
+R: ByteTensor es completamente gratuito y de código abierto. Solo pagas por el uso de la API del proveedor que elijas, y puedes usar claves API de cualquier proveedor que prefieras.
 </details>
 
 <details>
@@ -502,7 +502,7 @@ R: Todos los datos se almacenan localmente en una base de datos SQLite. No se su
 
 ---
 
-## Ver cómo la gente usa AionUi
+## Ver cómo la gente usa ByteTensor
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=vWxE6VO9TKo" target="_blank">
@@ -536,7 +536,7 @@ R: Todos los datos se almacenan localmente en una base de datos SQLite. No se su
 - [Hacer que la gente común use Claude Code como una APP](https://mp.weixin.qq.com/s/TsMojSbkUUFvsd-HQCazZg) — Gato perezoso ama pescar
 - [5500 Stars: Cómo el código abierto rompe el foso de herramientas AI de Anthropic](https://mp.weixin.qq.com/s/saEk49cYV6MqBgw19Lw6Gw) — Momento de silicio AI
 
-> **¿Hiciste un video sobre AionUi?** [Avísanos en X](https://x.com/AionUi) y lo destacaremos aquí!
+> **¿Hiciste un video sobre ByteTensor?** [Avísanos en X](https://x.com/ByteTensor) y lo destacaremos aquí!
 
 ---
 
@@ -562,12 +562,12 @@ Haz clic en el botón de arriba para ir a la página de Releases y descargar el 
 
 ```bash
 # Alternatively, macOS via Homebrew
-brew install aionui
+brew install bytetensor
 ```
 
 ### Comenzar en 3 pasos
 
-1. **Instalar** AionUi
+1. **Instalar** ByteTensor
 2. **Ingresa** cualquier clave API para empezar
 3. **Comenzar a hacer Cowork** — el AI Agent integrado está listo para usar
 
@@ -607,7 +607,7 @@ brew install aionui
 **¡Tus ideas importan!** Valoramos cada sugerencia y comentario.
 
 <p align="center">
-  <a href="https://x.com/AionUi" target="_blank">
+  <a href="https://x.com/ByteTensor" target="_blank">
     <img src="../../resources/contactus-x.png" alt="Contact Us on X" width="600">
   </a>
 </p>
@@ -657,8 +657,8 @@ Este proyecto está licenciado bajo [Apache-2.0](../../LICENSE).
 ## Historial de estrellas
 
 <p align="center">
-  <a href="https://www.star-history.com/#iOfficeAI/aionui&Date" target="_blank">
-    <img src="https://api.star-history.com/svg?repos=iOfficeAI/aionui&type=Date" alt="Star History" width="600">
+  <a href="https://www.star-history.com/#iOfficeAI/bytetensor&Date" target="_blank">
+    <img src="https://api.star-history.com/svg?repos=iOfficeAI/bytetensor&type=Date" alt="Star History" width="600">
   </a>
 </p>
 

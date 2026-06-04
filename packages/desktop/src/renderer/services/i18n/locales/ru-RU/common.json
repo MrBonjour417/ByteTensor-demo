@@ -58,10 +58,10 @@
   "forward": "Вперёд",
   "more": "Ещё",
   "refresh": "Обновить",
-  "tray.showWindow": "Показать AionUi",
+  "tray.showWindow": "Показать ByteTensor",
   "tray.newChat": "Новый чат",
   "tray.closeToTray": "Свернуть в трей",
-  "tray.about": "О программе AionUi",
+  "tray.about": "О программе ByteTensor",
   "tray.restart": "Перезапустить",
   "tray.quit": "Выход",
   "tray.runningTasks": "Запущенные задачи",
@@ -72,12 +72,12 @@
   "backendStartup": {
     "incompatibleRuntime": {
       "title": "Эта система не поддерживается встроенным backend",
-      "description": "AionUi открылся, но локальный backend AionCore не может работать в этой версии Linux. Обновитесь до поддерживаемого дистрибутива Linux и перезапустите AionUi.",
+      "description": "ByteTensor открылся, но локальный backend AionCore не может работать в этой версии Linux. Обновитесь до поддерживаемого дистрибутива Linux и перезапустите ByteTensor.",
       "requiredVersions": "Требуемые символы среды выполнения: {{versions}}"
     },
     "incompleteInstallation": {
-      "title": "Установка AionUi неполная",
-      "description": "В этой установке отсутствуют обязательные локальные ресурсы, поэтому AionCore не может запуститься. Загрузите и переустановите последнюю версию AionUi. Если проблема повторится после переустановки, проверьте, не поместило ли защитное или антивирусное ПО AionCore в карантин.",
+      "title": "Установка ByteTensor неполная",
+      "description": "В этой установке отсутствуют обязательные локальные ресурсы, поэтому AionCore не может запуститься. Загрузите и переустановите последнюю версию ByteTensor. Если проблема повторится после переустановки, проверьте, не поместило ли защитное или антивирусное ПО AionCore в карантин.",
       "downloadLatest": "Скачать последнюю версию",
       "sendDiagnostics": "Отправить диагностику"
     }

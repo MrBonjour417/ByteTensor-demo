@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -53,7 +53,7 @@ const AboutModalContent: React.FC = () => {
   const checkUpdate = () => {
     // 使用 window 自定义事件在渲染进程内部通信（buildEmitter 只支持主进程->渲染进程）
     // Use window custom event for renderer-side communication (buildEmitter only works main->renderer)
-    window.dispatchEvent(new CustomEvent('aionui-open-update-modal', { detail: { source: 'about' } }));
+    window.dispatchEvent(new CustomEvent('bytetensor-open-update-modal', { detail: { source: 'about' } }));
   };
 
   const linkItems: LinkItem[] = [
@@ -97,7 +97,7 @@ const AboutModalContent: React.FC = () => {
           {/* App Info Section */}
           <div className='flex flex-col items-center pb-24px'>
             <Typography.Title heading={3} className='text-24px font-bold text-t-primary mb-8px'>
-              AionUi
+              ByteTensor
             </Typography.Title>
             <Typography.Text className='text-14px text-t-secondary mb-12px text-center'>
               {t('settings.appDescription')}

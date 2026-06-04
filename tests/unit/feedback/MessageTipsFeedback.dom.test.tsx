@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  *
  * Verifies MessageTips only renders the FeedbackButton on error tips and
@@ -63,7 +63,7 @@ import MessageTips from '@/renderer/pages/conversation/Messages/components/Messa
 import type { AgentStreamErrorInfo, IMessageTips } from '@/common/chat/chatLib';
 
 const requiredAgentErrorCodes = [
-  'AIONUI_CONVERSATION_BUSY',
+  'BYTETENSOR_CONVERSATION_BUSY',
   'USER_AGENT_HANDSHAKE_FAILED',
   'USER_AGENT_HANDSHAKE_TIMEOUT',
   'USER_AGENT_ACP_INIT_FAILED',
@@ -311,7 +311,7 @@ describe('agent error locale copy', () => {
     }
   });
 
-  it('does not label app-side errors as direct AionUi ownership', () => {
+  it('does not label app-side errors as direct ByteTensor ownership', () => {
     const localeDir = path.join(process.cwd(), 'packages/desktop/src/renderer/services/i18n/locales');
     const localeNames = ['zh-CN', 'en-US', 'ja-JP', 'zh-TW', 'ko-KR', 'tr-TR', 'ru-RU', 'uk-UA'];
 
@@ -319,13 +319,13 @@ describe('agent error locale copy', () => {
       const locale = JSON.parse(readFileSync(path.join(localeDir, localeName, 'conversation.json'), 'utf8'));
       const agentError = locale.agentError;
 
-      expect(agentError.ownership.aionui, localeName).not.toMatch(/AionUi/);
+      expect(agentError.ownership.bytetensor, localeName).not.toMatch(/ByteTensor/);
 
       for (const [code, copy] of Object.entries<Record<string, string>>(agentError.codes)) {
-        if (!code.startsWith('AIONUI_')) continue;
+        if (!code.startsWith('BYTETENSOR_')) continue;
 
-        expect(copy.title, `${localeName} ${code} title`).not.toMatch(/AionUi/);
-        expect(copy.body, `${localeName} ${code} body`).not.toMatch(/AionUi/);
+        expect(copy.title, `${localeName} ${code} title`).not.toMatch(/ByteTensor/);
+        expect(copy.body, `${localeName} ${code} body`).not.toMatch(/ByteTensor/);
       }
     }
   });

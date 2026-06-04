@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -28,9 +28,9 @@ const t = (key: string, options?: { defaultValue?: string; workspacePath?: strin
     'conversation.createError.pathVariants.WORKSPACE_PATH_CONTAINS_WHITESPACE_UNSUPPORTED':
       'Selected workspace path "{{workspacePath}}" cannot contain whitespace in any directory name.',
     'conversation.agentError.codes.WORKSPACE_PATH_CONTAINS_WHITESPACE_RUNTIME_UNSUPPORTED.body':
-      'AionUi no longer supports sending messages in conversations or tasks that use workspace paths with spaces or other whitespace characters. Create a new conversation or task with a workspace path that contains no whitespace.',
+      'ByteTensor no longer supports sending messages in conversations or tasks that use workspace paths with spaces or other whitespace characters. Create a new conversation or task with a workspace path that contains no whitespace.',
     'conversation.agentError.codes.WORKSPACE_PATH_CONTAINS_WHITESPACE_RUNTIME_UNSUPPORTED.bodyWithPath':
-      'The existing workspace path "{{workspacePath}}" contains spaces or other whitespace characters. AionUi no longer supports sending messages in conversations or tasks that use this path. Create a new conversation or task with a workspace path that contains no whitespace.',
+      'The existing workspace path "{{workspacePath}}" contains spaces or other whitespace characters. ByteTensor no longer supports sending messages in conversations or tasks that use this path. Create a new conversation or task with a workspace path that contains no whitespace.',
   };
 
   if (
@@ -104,7 +104,7 @@ describe('conversationCreateError', () => {
       'WORKSPACE_PATH_CONTAINS_WHITESPACE_RUNTIME_UNSUPPORTED'
     );
     expect(getConversationRuntimeWorkspaceErrorMessage(error, t)).toBe(
-      'The existing workspace path "/tmp/Archive " contains spaces or other whitespace characters. AionUi no longer supports sending messages in conversations or tasks that use this path. Create a new conversation or task with a workspace path that contains no whitespace.'
+      'The existing workspace path "/tmp/Archive " contains spaces or other whitespace characters. ByteTensor no longer supports sending messages in conversations or tasks that use this path. Create a new conversation or task with a workspace path that contains no whitespace.'
     );
   });
 

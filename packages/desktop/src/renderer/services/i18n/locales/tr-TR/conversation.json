@@ -12,10 +12,10 @@
     "clearWorkspace": "Projeyi kaldır",
     "openFolder": "Klasör Aç",
     "none": "Hiçbiri",
-    "quickActionsTitle": "AionUi neler yapabilir?",
+    "quickActionsTitle": "ByteTensor neler yapabilir?",
     "quickActionFeedback": "Sorun Bildir",
     "quickActionStar": "Bizi beğendiniz mi? Yıldız verin!",
-    "skillsMarket": "AionUi Skills Market",
+    "skillsMarket": "ByteTensor Skills Market",
     "skillsMarketDesc": "Topluluk Skills'lerini ihtiyaç duyduğunuzda arayın ve etkinleştirin. Bir kez yapılandırın, tüm Agent'larda kullanılabilir.",
     "skillsMarketDetails": "Ayrıntılar >>"
   },
@@ -107,29 +107,29 @@
       "send_feedback": "Ekibin inceleyebilmesi için günlüklerle birlikte geri bildirim gönderin."
     },
     "ownership": {
-      "aionui": "Uygulama",
+      "bytetensor": "Uygulama",
       "user_agent": "Ajan",
       "user_llm_provider": "Model sağlayıcı",
       "unknown_upstream": "Üst hizmet"
     },
     "codes": {
-      "AIONUI_STREAM_BROKEN": {
+      "BYTETENSOR_STREAM_BROKEN": {
         "title": "Yanıt akışı kesildi",
         "body": "Uygulama mesajınızı aldı ancak yanıt akışı beklenmedik şekilde sona erdi. Yeniden deneyin; tekrarlanırsa geri bildirim gönderin."
       },
-      "AIONUI_STATE_INCONSISTENT": {
+      "BYTETENSOR_STATE_INCONSISTENT": {
         "title": "Konuşma durumu eşitlenmemiş",
         "body": "Konuşma durumu eşitlenmemiş. Yeniden denemeden önce bu sohbeti yeniden başlatın veya uygulamayı yenileyin."
       },
-      "AIONUI_PERMISSION_ERROR": {
+      "BYTETENSOR_PERMISSION_ERROR": {
         "title": "İstenen kaynağa erişilemedi",
         "body": "Yerel izin veya dosya sistemi denetimi başarısız oldu. Proje yolunu ve uygulama izinlerini kontrol edip yeniden deneyin."
       },
-      "AIONUI_INTERNAL_ERROR": {
+      "BYTETENSOR_INTERNAL_ERROR": {
         "title": "İstek uygulamada başarısız oldu",
         "body": "Uygulama isteği işlerken hata oluştu. Bir kez yeniden deneyin; tekrarlanırsa geri bildirim gönderin."
       },
-      "AIONUI_CONVERSATION_BUSY": {
+      "BYTETENSOR_CONVERSATION_BUSY": {
         "title": "Konuşma meşgul",
         "body": "Başka bir yanıt hâlâ çalışıyor. Yeni mesaj göndermeden önce bitmesini bekleyin."
       },
@@ -251,8 +251,8 @@
       },
       "WORKSPACE_PATH_CONTAINS_WHITESPACE_RUNTIME_UNSUPPORTED": {
         "title": "Bu çalışma alanı yolu artık yürütme için desteklenmiyor",
-        "body": "Bu mevcut konuşma veya görev, dizin adlarında boşluk ya da başka boşluk karakterleri içeren bir çalışma alanı yolu kullanıyor. AionUi artık bu tür yollarda mesaj göndermeyi desteklemiyor. Boşluk içermeyen bir çalışma alanı yolu ile yeni bir konuşma veya görev oluşturun.",
-        "bodyWithPath": "Mevcut çalışma alanı yolu \"{{workspacePath}}\" boşluk ya da başka boşluk karakterleri içeriyor. AionUi artık bu yolu kullanan konuşma veya görevlerde mesaj göndermeyi desteklemiyor. Boşluk içermeyen bir çalışma alanı yolu ile yeni bir konuşma veya görev oluşturun."
+        "body": "Bu mevcut konuşma veya görev, dizin adlarında boşluk ya da başka boşluk karakterleri içeren bir çalışma alanı yolu kullanıyor. ByteTensor artık bu tür yollarda mesaj göndermeyi desteklemiyor. Boşluk içermeyen bir çalışma alanı yolu ile yeni bir konuşma veya görev oluşturun.",
+        "bodyWithPath": "Mevcut çalışma alanı yolu \"{{workspacePath}}\" boşluk ya da başka boşluk karakterleri içeriyor. ByteTensor artık bu yolu kullanan konuşma veya görevlerde mesaj göndermeyi desteklemiyor. Boşluk içermeyen bir çalışma alanı yolu ile yeni bir konuşma veya görev oluşturun."
       },
       "UNKNOWN_UPSTREAM_ERROR": {
         "title": "Üst ajan veya sağlayıcı başarısız oldu",

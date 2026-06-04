@@ -12,10 +12,10 @@
     "clearWorkspace": "Remove project",
     "openFolder": "Open Folder",
     "none": "None",
-    "quickActionsTitle": "What can AionUi do?",
+    "quickActionsTitle": "What can ByteTensor do?",
     "quickActionFeedback": "Report Issue",
     "quickActionStar": "Like us? Give us a star!",
-    "skillsMarket": "AionUi Skills Market",
+    "skillsMarket": "ByteTensor Skills Market",
     "skillsMarketDesc": "Search and activate community Skills on demand. Configure once, available for all agents.",
     "skillsMarketDetails": "View More >>"
   },
@@ -119,29 +119,29 @@
       "send_feedback": "Send feedback with logs so the team can investigate."
     },
     "ownership": {
-      "aionui": "App",
+      "bytetensor": "App",
       "user_agent": "Agent",
       "user_llm_provider": "Model provider",
       "unknown_upstream": "Upstream"
     },
     "codes": {
-      "AIONUI_STREAM_BROKEN": {
+      "BYTETENSOR_STREAM_BROKEN": {
         "title": "Response stream was interrupted",
         "body": "The app accepted your message but the response stream ended unexpectedly. Please retry; if it happens again, send feedback."
       },
-      "AIONUI_STATE_INCONSISTENT": {
+      "BYTETENSOR_STATE_INCONSISTENT": {
         "title": "Conversation state is out of sync",
         "body": "The conversation state is out of sync. Restart this chat or reload the app before retrying."
       },
-      "AIONUI_PERMISSION_ERROR": {
+      "BYTETENSOR_PERMISSION_ERROR": {
         "title": "Could not access the requested resource",
         "body": "A local permission or filesystem check failed. Check the project path and app permissions, then retry."
       },
-      "AIONUI_INTERNAL_ERROR": {
+      "BYTETENSOR_INTERNAL_ERROR": {
         "title": "Request failed in the app",
         "body": "The request failed while the app was processing it. Please retry once; if it repeats, send feedback."
       },
-      "AIONUI_CONVERSATION_BUSY": {
+      "BYTETENSOR_CONVERSATION_BUSY": {
         "title": "Conversation is busy",
         "body": "Another response is still running. Wait for it to finish before sending a new message."
       },
@@ -263,8 +263,8 @@
       },
       "WORKSPACE_PATH_CONTAINS_WHITESPACE_RUNTIME_UNSUPPORTED": {
         "title": "This workspace path is no longer supported for execution",
-        "body": "This existing conversation or task uses a workspace path whose directory names contain spaces or other whitespace characters. AionUi no longer supports sending messages on paths like this. Create a new conversation or task with a workspace path that contains no whitespace.",
-        "bodyWithPath": "The existing workspace path \"{{workspacePath}}\" contains spaces or other whitespace characters. AionUi no longer supports sending messages in conversations or tasks that use this path. Create a new conversation or task with a workspace path that contains no whitespace."
+        "body": "This existing conversation or task uses a workspace path whose directory names contain spaces or other whitespace characters. ByteTensor no longer supports sending messages on paths like this. Create a new conversation or task with a workspace path that contains no whitespace.",
+        "bodyWithPath": "The existing workspace path \"{{workspacePath}}\" contains spaces or other whitespace characters. ByteTensor no longer supports sending messages in conversations or tasks that use this path. Create a new conversation or task with a workspace path that contains no whitespace."
       },
       "UNKNOWN_UPSTREAM_ERROR": {
         "title": "The upstream agent or provider failed",

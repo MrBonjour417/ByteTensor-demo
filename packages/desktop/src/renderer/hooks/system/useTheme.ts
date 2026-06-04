@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 export type Theme = 'light' | 'dark';
 
 const DEFAULT_THEME: Theme = 'light';
-const THEME_CACHE_KEY = '__aionui_theme';
+const THEME_CACHE_KEY = '__bytetensor_theme';
 
 const applyThemeToDom = (value: Theme) => {
   document.documentElement.setAttribute('data-theme', value);

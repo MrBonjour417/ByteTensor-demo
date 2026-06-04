@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -78,20 +78,20 @@ const makeGitHubReleaseResponse = () => [
     draft: false,
     assets: [
       {
-        name: 'AionUi-1.9.22-mac-arm64.dmg',
+        name: 'ByteTensor-1.9.22-mac-arm64.dmg',
         browser_download_url:
           'https://github.com/iOfficeAI/AionUi/releases/download/v1.9.22/AionUi-1.9.22-mac-arm64.dmg',
         size: 123,
         content_type: 'application/x-apple-diskimage',
       },
       {
-        name: 'AionUi-1.9.22-win-x64.exe',
+        name: 'ByteTensor-1.9.22-win-x64.exe',
         browser_download_url: 'https://github.com/iOfficeAI/AionUi/releases/download/v1.9.22/AionUi-1.9.22-win-x64.exe',
         size: 456,
         content_type: 'application/vnd.microsoft.portable-executable',
       },
       {
-        name: 'AionUi-1.9.22-linux-amd64.deb',
+        name: 'ByteTensor-1.9.22-linux-amd64.deb',
         browser_download_url:
           'https://github.com/iOfficeAI/AionUi/releases/download/v1.9.22/AionUi-1.9.22-linux-amd64.deb',
         size: 789,
@@ -133,15 +133,15 @@ describe('updateBridge CDN URL rewriting', () => {
       const assets = result.data?.latest?.assets ?? [];
       expect(assets.length).toBe(3);
 
-      const macAsset = assets.find((a: { name: string }) => a.name === 'AionUi-1.9.22-mac-arm64.dmg');
+      const macAsset = assets.find((a: { name: string }) => a.name === 'ByteTensor-1.9.22-mac-arm64.dmg');
       expect(macAsset).toBeDefined();
-      expect(macAsset?.url).toBe('https://static.aionui.com/releases/1.9.22/AionUi-1.9.22-mac-arm64.dmg');
+      expect(macAsset?.url).toBe('https://static.aionui.com/releases/1.9.22/ByteTensor-1.9.22-mac-arm64.dmg');
       expect(macAsset?.fallbackUrl).toBe(
         'https://github.com/iOfficeAI/AionUi/releases/download/v1.9.22/AionUi-1.9.22-mac-arm64.dmg'
       );
 
-      const linuxAsset = assets.find((a: { name: string }) => a.name === 'AionUi-1.9.22-linux-amd64.deb');
-      expect(linuxAsset?.url).toBe('https://static.aionui.com/releases/1.9.22/AionUi-1.9.22-linux-amd64.deb');
+      const linuxAsset = assets.find((a: { name: string }) => a.name === 'ByteTensor-1.9.22-linux-amd64.deb');
+      expect(linuxAsset?.url).toBe('https://static.aionui.com/releases/1.9.22/ByteTensor-1.9.22-linux-amd64.deb');
     } finally {
       vi.unstubAllGlobals();
     }
@@ -195,7 +195,7 @@ describe('updateBridge allowlist includes CDN host', () => {
 
       const result = await handler({
         url: 'https://static.aionui.com/releases/1.9.22/AionUi-1.9.22-mac-arm64.dmg',
-        file_name: 'AionUi-1.9.22-mac-arm64.dmg',
+        file_name: 'ByteTensor-1.9.22-mac-arm64.dmg',
       });
 
       expect(result.success).toBe(true);

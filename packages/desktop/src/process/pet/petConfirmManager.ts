@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -346,7 +346,7 @@ function registerIpcHandlers(): void {
         });
       }
 
-      // Forward response to backend via HTTP (aionui-conversation route)
+      // Forward response to backend via HTTP (bytetensor-conversation route)
       ipcBridge.conversation.confirmation.confirm
         .invoke({
           conversation_id: data.conversation_id,

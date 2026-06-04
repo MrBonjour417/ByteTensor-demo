@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  *
  * Node-environment tests for feedbackBridge's IPC handlers.
@@ -35,7 +35,7 @@ vi.mock('electron', () => ({
     },
   },
   app: {
-    getPath: vi.fn(() => '/tmp/aionui-test-logs-nonexistent'),
+    getPath: vi.fn(() => '/tmp/bytetensor-test-logs-nonexistent'),
     getVersion: vi.fn(() => '0.0.0'),
   },
   BrowserWindow: {
@@ -131,7 +131,7 @@ describe('feedbackBridge — capture-screenshot', () => {
 
 describe('feedback logs', () => {
   it('collects the same recent three log days used by user feedback reports', () => {
-    const logsDir = mkdtempSync(path.join(tmpdir(), 'aionui-feedback-logs-'));
+    const logsDir = mkdtempSync(path.join(tmpdir(), 'bytetensor-feedback-logs-'));
     try {
       writeFileSync(path.join(logsDir, '2026-05-25.log'), 'today frontend\n');
       writeFileSync(path.join(logsDir, '2026-05-25.aioncore.log'), 'today backend\n');

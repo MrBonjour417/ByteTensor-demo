@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -21,7 +21,7 @@ export const buildSendFailureError = (error: unknown, message: string): AgentStr
     return {
       message,
       code: workspacePathErrorCode,
-      ownership: 'aionui',
+      ownership: 'bytetensor',
       detail: message,
       ...(workspacePath ? { workspacePath } : {}),
       retryable: false,
@@ -43,8 +43,8 @@ export const buildSendFailureError = (error: unknown, message: string): AgentStr
   if (isConversationBusyError(error)) {
     return {
       message,
-      code: 'AIONUI_CONVERSATION_BUSY',
-      ownership: 'aionui',
+      code: 'BYTETENSOR_CONVERSATION_BUSY',
+      ownership: 'bytetensor',
       detail: message,
       retryable: false,
       feedback_recommended: false,
@@ -54,8 +54,8 @@ export const buildSendFailureError = (error: unknown, message: string): AgentStr
 
   return {
     message,
-    code: 'AIONUI_INTERNAL_ERROR',
-    ownership: 'aionui',
+    code: 'BYTETENSOR_INTERNAL_ERROR',
+    ownership: 'bytetensor',
     detail: message,
     retryable: true,
     feedback_recommended: true,

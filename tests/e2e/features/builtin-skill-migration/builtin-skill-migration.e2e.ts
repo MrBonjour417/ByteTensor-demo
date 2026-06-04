@@ -39,7 +39,7 @@ const SIBLING_BACKEND_PORT = 25903;
  * corpus. These come from the SKILL.md frontmatter, not the directory name
  * (e.g. `auto-inject/office-cli/SKILL.md` emits `name: officecli`).
  */
-const AUTO_INJECT_EXPECTED_NAMES = ['aionui-skills', 'cron', 'officecli', 'skill-creator'] as const;
+const AUTO_INJECT_EXPECTED_NAMES = ['bytetensor-skills', 'cron', 'officecli', 'skill-creator'] as const;
 
 /**
  * Directory-name tokens used by the per-conversation materialize flow —
@@ -47,7 +47,7 @@ const AUTO_INJECT_EXPECTED_NAMES = ['aionui-skills', 'cron', 'officecli', 'skill
  * the parent folder name, not the frontmatter name. The top-level flatten
  * of `auto-inject/cron/SKILL.md` lands at `{dir}/cron/SKILL.md`.
  */
-const AUTO_INJECT_DIR_NAMES = ['aionui-skills', 'cron', 'office-cli', 'skill-creator'] as const;
+const AUTO_INJECT_DIR_NAMES = ['bytetensor-skills', 'cron', 'office-cli', 'skill-creator'] as const;
 
 /** An opt-in skill that lives at the top level of the embedded corpus. */
 const OPT_IN_PROBE_NAME = 'mermaid';
@@ -76,13 +76,14 @@ interface MaterializeResponse {
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 function resolveBackendBinary(): string {
-  const candidates = [process.env.AIONUI_BACKEND_BINARY, path.join(os.homedir(), '.cargo', 'bin', 'aioncore')].filter(
-    (x): x is string => typeof x === 'string' && x.length > 0
-  );
+  const candidates = [
+    process.env.BYTETENSOR_BACKEND_BINARY,
+    path.join(os.homedir(), '.cargo', 'bin', 'aioncore'),
+  ].filter((x): x is string => typeof x === 'string' && x.length > 0);
   for (const c of candidates) {
     if (fs.existsSync(c)) return c;
   }
-  throw new Error('aioncore binary not found. Set AIONUI_BACKEND_BINARY or install to ~/.cargo/bin/aioncore.');
+  throw new Error('aioncore binary not found. Set BYTETENSOR_BACKEND_BINARY or install to ~/.cargo/bin/aioncore.');
 }
 
 // ── Suite ───────────────────────────────────────────────────────────────────
@@ -262,7 +263,7 @@ test.describe('Built-in Skill Migration (T3)', () => {
     // SkillsHubSettings.tsx uses when the user clicks "Export".
     const probe = builtins[0];
     const skillPath = probe.location.replace(/[\\/]SKILL\.md$/, '');
-    const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aionui-e2e-s7-export-'));
+    const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bytetensor-e2e-s7-export-'));
     try {
       await httpPost(page, '/api/skills/export-symlink', {
         skill_path: skillPath,
@@ -344,11 +345,11 @@ test.describe('Built-in Skill Migration (T3)', () => {
       const logFd = fs.openSync(logPath, 'a');
       const parentEnv = { ...process.env };
       // Scrub any env vars that would leak main-Electron backend state.
-      delete parentEnv.AIONUI_EXTENSIONS_PATH;
-      delete parentEnv.AIONUI_EXTENSION_STATES_FILE;
-      delete parentEnv.AIONUI_E2E_TEST;
-      delete parentEnv.AIONUI_CDP_PORT;
-      delete parentEnv.AIONUI_BUILTIN_SKILLS_PATH;
+      delete parentEnv.BYTETENSOR_EXTENSIONS_PATH;
+      delete parentEnv.BYTETENSOR_EXTENSION_STATES_FILE;
+      delete parentEnv.BYTETENSOR_E2E_TEST;
+      delete parentEnv.BYTETENSOR_CDP_PORT;
+      delete parentEnv.BYTETENSOR_BUILTIN_SKILLS_PATH;
       backend = spawn(bin, ['--local', '--port', String(SIBLING_BACKEND_PORT), '--data-dir', dataDir], {
         stdio: ['ignore', logFd, logFd],
         env: { ...parentEnv, RUST_LOG: 'warn' },
@@ -362,7 +363,7 @@ test.describe('Built-in Skill Migration (T3)', () => {
     }
 
     test.beforeEach(() => {
-      dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aionui-e2e-builtin-skill-'));
+      dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bytetensor-e2e-builtin-skill-'));
     });
 
     test.afterEach(async () => {
@@ -440,7 +441,7 @@ test.describe('Built-in Skill Migration (T3)', () => {
       //
       // Then, on the host side, we check the most likely cache locations
       // for a leftover `builtin-skills/` directory under the canonical
-      // `~/.aionui-config` tree. Failing that we at least assert the
+      // `~/.bytetensor-config` tree. Failing that we at least assert the
       // helper is non-destructive when no legacy dir exists — we do so
       // by seeding one under the sibling backend's data-dir and observing
       // that it is ignored (the *backend* does not own this cleanup; it
@@ -472,15 +473,15 @@ test.describe('Built-in Skill Migration (T3)', () => {
       // The authoritative assertion is Vitest on
       // `cleanupLegacyBuiltinSkillsDir` plus T4 packaging smoke.
       const candidates = [
-        path.join(os.homedir(), '.aionui-config', 'builtin-skills'),
-        path.join(os.homedir(), '.aionui-config-dev', 'builtin-skills'),
+        path.join(os.homedir(), '.bytetensor-config', 'builtin-skills'),
+        path.join(os.homedir(), '.bytetensor-config-dev', 'builtin-skills'),
       ];
       const survivors = candidates.filter((p) => fs.existsSync(p));
       test.info().annotations.push({
         type: 'note',
         description:
           survivors.length === 0
-            ? 'no legacy builtin-skills cache dirs detected under ~/.aionui-config*'
+            ? 'no legacy builtin-skills cache dirs detected under ~/.bytetensor-config*'
             : `legacy dirs still present (async cleanup pending): ${survivors.join(', ')}`,
       });
     });

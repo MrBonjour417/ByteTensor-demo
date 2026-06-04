@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 AionUi (aionui.com)
+ * Copyright 2025 ByteTensor (aionui.com)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -254,7 +254,7 @@ const ChatConversation: React.FC<{
         // removed. The message history is still served by the shared messages
         // table, so AcpChat renders it fine. The composer is left enabled —
         // any send attempt will get a BadRequest from the factory branch in
-        // aionui-common/src/enums.rs → factory.rs, surfacing a clear error
+        // bytetensor-common/src/enums.rs → factory.rs, surfacing a clear error
         // to the user.
         return (
           <AcpChat

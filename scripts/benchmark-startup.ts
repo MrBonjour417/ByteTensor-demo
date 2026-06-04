@@ -2,8 +2,8 @@
  * Electron Cold Startup Benchmark
  *
  * Launches the Electron app N times and measures per-phase startup timings by
- * parsing the electron-log file for [AionUi:ready] / [AionUi:init] /
- * [AionUi:process] marks, plus `ready-to-show` / `did-finish-load` /
+ * parsing the electron-log file for [ByteTensor:ready] / [ByteTensor:init] /
+ * [ByteTensor:process] marks, plus `ready-to-show` / `did-finish-load` /
  * time-to-interactive (chat input visible).
  *
  * Optional `--with-memory` mode samples RSS / heap in the main and renderer
@@ -111,14 +111,14 @@ type StartupTiming = {
   wallDomContentLoadedMs: number;
   wallTimeToInteractiveMs: number;
   wallTotalMs: number;
-  // Parsed from [AionUi:ready] marks
+  // Parsed from [ByteTensor:ready] marks
   readyInitializeProcessMs: number;
   readyInitializeZoomFactorMs: number;
   readyCreateWindowMs: number;
   readyInitializeAcpDetectorMs: number;
-  // Parsed from [AionUi:init] marks
+  // Parsed from [ByteTensor:init] marks
   initTotalMs: number;
-  // Parsed from [AionUi:process] marks
+  // Parsed from [ByteTensor:process] marks
   processInitStorageMs: number;
   processExtensionRegistryMs: number;
   processChannelManagerMs: number;
@@ -142,14 +142,14 @@ function getLogFilePath(): string {
   const candidates: string[] = [];
   if (process.platform === 'darwin') {
     candidates.push(
-      path.join(os.homedir(), 'Library', 'Logs', 'AionUi-Dev', `${today}.log`),
-      path.join(os.homedir(), 'Library', 'Logs', 'AionUi', `${today}.log`)
+      path.join(os.homedir(), 'Library', 'Logs', 'ByteTensor-Dev', `${today}.log`),
+      path.join(os.homedir(), 'Library', 'Logs', 'ByteTensor', `${today}.log`)
     );
   } else if (process.platform === 'win32') {
     const appData = process.env.APPDATA ?? path.join(os.homedir(), 'AppData', 'Roaming');
-    candidates.push(path.join(appData, 'AionUi', 'logs', `${today}.log`));
+    candidates.push(path.join(appData, 'ByteTensor', 'logs', `${today}.log`));
   } else {
-    candidates.push(path.join(os.homedir(), '.config', 'AionUi', 'logs', `${today}.log`));
+    candidates.push(path.join(os.homedir(), '.config', 'ByteTensor', 'logs', `${today}.log`));
   }
   return candidates.find((p) => fs.existsSync(p)) ?? candidates[0];
 }
@@ -178,10 +178,10 @@ function readNewLogLines(logPath: string, offset: number): string[] {
 
 // ── Log parsing ─────────────────────────────────────────────────────────────
 
-// Matches: [AionUi:ready] <label> +<ms>ms
-// Matches: [AionUi:init]  <label> +<ms>ms
-// Matches: [AionUi:process] <label> +<ms>ms
-const MARK_REGEX = /\[AionUi:(ready|init|process)\]\s+([^+]+?)\s+\+(\d+)ms/;
+// Matches: [ByteTensor:ready] <label> +<ms>ms
+// Matches: [ByteTensor:init]  <label> +<ms>ms
+// Matches: [ByteTensor:process] <label> +<ms>ms
+const MARK_REGEX = /\[ByteTensor:(ready|init|process)\]\s+([^+]+?)\s+\+(\d+)ms/;
 
 type ParsedMarks = {
   ready: Map<string, number>;
@@ -210,9 +210,9 @@ function parseStartupLog(lines: string[]): ParsedMarks {
       continue;
     }
 
-    if (line.includes('[AionUi] Renderer did-finish-load')) marks.logs.rendererDidFinishLoad = true;
-    else if (line.includes('[AionUi] Window ready-to-show')) marks.logs.windowReadyToShow = true;
-    else if (line.includes('[AionUi] Showing main window')) marks.logs.showingMainWindow = true;
+    if (line.includes('[ByteTensor] Renderer did-finish-load')) marks.logs.rendererDidFinishLoad = true;
+    else if (line.includes('[ByteTensor] Window ready-to-show')) marks.logs.windowReadyToShow = true;
+    else if (line.includes('[ByteTensor] Showing main window')) marks.logs.showingMainWindow = true;
   }
 
   return marks;
@@ -256,10 +256,10 @@ async function launchApp(timeoutMs: number, withMemory: boolean): Promise<Electr
     cwd: projectRoot,
     env: {
       ...process.env,
-      AIONUI_DISABLE_AUTO_UPDATE: '1',
-      AIONUI_E2E_TEST: '1',
-      AIONUI_DISABLE_DEVTOOLS: '1',
-      AIONUI_CDP_PORT: '0',
+      BYTETENSOR_DISABLE_AUTO_UPDATE: '1',
+      BYTETENSOR_E2E_TEST: '1',
+      BYTETENSOR_DISABLE_DEVTOOLS: '1',
+      BYTETENSOR_CDP_PORT: '0',
       NODE_ENV: 'production',
     },
     timeout: timeoutMs,

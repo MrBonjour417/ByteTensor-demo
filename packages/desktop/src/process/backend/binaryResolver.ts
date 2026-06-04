@@ -3,10 +3,12 @@
  *
  * Search order:
  *  1. Bundled with app (production)
- *  2. System PATH
+ *  2. Checked-out resources directory (development)
+ *  3. System PATH
  */
 
 import { existsSync, readdirSync } from 'node:fs';
+import { cwd } from 'node:process';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -94,7 +96,7 @@ function bundledPath(
   binaryName: string,
   diagnostics: BackendBinaryResolveDiagnostics
 ): string | null {
-  const resourcesPath = (process as NodeJS.Process & { resourcesPath?: string }).resourcesPath;
+  const resourcesPath = resolveResourcesPath();
   if (!resourcesPath) return null;
   diagnostics.resourcesPath = resourcesPath;
 
@@ -109,6 +111,15 @@ function bundledPath(
 
   if (existsSync(candidate)) return candidate;
   return null;
+}
+
+function resolveResourcesPath(): string | undefined {
+  const packagedResourcesPath = (process as NodeJS.Process & { resourcesPath?: string }).resourcesPath;
+  if (packagedResourcesPath && existsSync(join(packagedResourcesPath, 'bundled-aioncore')))
+    return packagedResourcesPath;
+  const devResourcesPath = join(cwd(), 'resources');
+  if (existsSync(join(devResourcesPath, 'bundled-aioncore'))) return devResourcesPath;
+  return packagedResourcesPath;
 }
 
 /**

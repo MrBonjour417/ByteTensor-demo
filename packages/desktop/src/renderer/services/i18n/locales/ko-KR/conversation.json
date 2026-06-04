@@ -12,10 +12,10 @@
     "clearWorkspace": "프로젝트 제거",
     "openFolder": "폴더 열기",
     "none": "없음",
-    "quickActionsTitle": "AionUi로 무엇을 할 수 있나요?",
+    "quickActionsTitle": "ByteTensor로 무엇을 할 수 있나요?",
     "quickActionFeedback": "문제 보고",
     "quickActionStar": "마음에 드시나요? 별을 주세요!",
-    "skillsMarket": "AionUi Skills Market",
+    "skillsMarket": "ByteTensor Skills Market",
     "skillsMarketDesc": "커뮤니티 Skills를 필요에 따라 검색하고 활성화. 한 번 설정하면 모든 Agent에서 사용 가능.",
     "skillsMarketDetails": "자세히 >>"
   },
@@ -119,29 +119,29 @@
       "send_feedback": "팀이 조사할 수 있도록 로그와 함께 피드백을 보내세요."
     },
     "ownership": {
-      "aionui": "앱",
+      "bytetensor": "앱",
       "user_agent": "에이전트",
       "user_llm_provider": "모델 제공자",
       "unknown_upstream": "상위 서비스"
     },
     "codes": {
-      "AIONUI_STREAM_BROKEN": {
+      "BYTETENSOR_STREAM_BROKEN": {
         "title": "응답 스트림이 중단되었습니다",
         "body": "앱이 메시지를 받았지만 응답 스트림이 예기치 않게 종료되었습니다. 다시 시도하세요. 반복되면 피드백을 보내세요."
       },
-      "AIONUI_STATE_INCONSISTENT": {
+      "BYTETENSOR_STATE_INCONSISTENT": {
         "title": "대화 상태가 동기화되지 않았습니다",
         "body": "대화 상태가 동기화되지 않았습니다. 이 채팅을 다시 시작하거나 앱을 새로고침한 뒤 재시도하세요."
       },
-      "AIONUI_PERMISSION_ERROR": {
+      "BYTETENSOR_PERMISSION_ERROR": {
         "title": "요청한 리소스에 접근할 수 없습니다",
         "body": "로컬 권한 또는 파일 시스템 확인에 실패했습니다. 프로젝트 경로와 앱 권한을 확인한 뒤 재시도하세요."
       },
-      "AIONUI_INTERNAL_ERROR": {
+      "BYTETENSOR_INTERNAL_ERROR": {
         "title": "앱에서 요청 처리에 실패했습니다",
         "body": "앱이 요청을 처리하는 동안 실패했습니다. 한 번 다시 시도하고, 반복되면 피드백을 보내세요."
       },
-      "AIONUI_CONVERSATION_BUSY": {
+      "BYTETENSOR_CONVERSATION_BUSY": {
         "title": "대화가 처리 중입니다",
         "body": "다른 응답이 아직 실행 중입니다. 완료된 뒤 새 메시지를 보내세요."
       },
@@ -263,8 +263,8 @@
       },
       "WORKSPACE_PATH_CONTAINS_WHITESPACE_RUNTIME_UNSUPPORTED": {
         "title": "이 작업공간 경로는 더 이상 실행에 지원되지 않습니다",
-        "body": "이 기존 대화 또는 작업에서 사용하는 작업공간 경로의 디렉터리 이름에 공백 또는 기타 공백 문자가 포함되어 있습니다. AionUi는 이런 경로에서 더 이상 메시지 전송을 지원하지 않습니다. 공백이 없는 작업공간 경로로 새 대화 또는 작업을 다시 만드세요.",
-        "bodyWithPath": "기존 작업공간 경로 \"{{workspacePath}}\" 에는 공백 또는 기타 공백 문자가 포함되어 있습니다. AionUi는 이 경로를 사용하는 대화나 작업에서 더 이상 메시지 전송을 지원하지 않습니다. 공백이 없는 작업공간 경로로 새 대화 또는 작업을 다시 만드세요."
+        "body": "이 기존 대화 또는 작업에서 사용하는 작업공간 경로의 디렉터리 이름에 공백 또는 기타 공백 문자가 포함되어 있습니다. ByteTensor는 이런 경로에서 더 이상 메시지 전송을 지원하지 않습니다. 공백이 없는 작업공간 경로로 새 대화 또는 작업을 다시 만드세요.",
+        "bodyWithPath": "기존 작업공간 경로 \"{{workspacePath}}\" 에는 공백 또는 기타 공백 문자가 포함되어 있습니다. ByteTensor는 이 경로를 사용하는 대화나 작업에서 더 이상 메시지 전송을 지원하지 않습니다. 공백이 없는 작업공간 경로로 새 대화 또는 작업을 다시 만드세요."
       },
       "UNKNOWN_UPSTREAM_ERROR": {
         "title": "상위 에이전트 또는 제공자에서 오류가 발생했습니다",

@@ -1,12 +1,12 @@
-appId: com.aionui.app
-productName: AionUi
-executableName: AionUi
-copyright: Copyright © 2024 AionUi
+appId: com.bytetensor.app
+productName: ByteTensor
+executableName: ByteTensor
+copyright: Copyright © 2024 ByteTensor
 
 protocols:
-  - name: AionUi Protocol
+  - name: ByteTensor Protocol
     schemes:
-      - aionui
+      - bytetensor
 
 asar:
   smartUnpack: true
@@ -172,17 +172,17 @@ linux:
   icon: resources/app.png
   artifactName: ${productName}-${version}-${os}-${arch}.${ext}
   category: Utility
-  maintainer: aionui
-  vendor: aionui
+  maintainer: bytetensor
+  vendor: bytetensor
   synopsis: ${description}
   description: ${description}
   desktop:
     entry:
-      Name: AionUi
+      Name: ByteTensor
       Comment: ${description}
-      Icon: aionui
+      Icon: bytetensor
       Categories: Office;Utility;
-      MimeType: x-scheme-handler/aionui;
+      MimeType: x-scheme-handler/bytetensor;
 
 npmRebuild: false
 buildDependenciesFromSource: false

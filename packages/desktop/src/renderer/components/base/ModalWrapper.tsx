@@ -18,12 +18,12 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
   ...props
 }) => {
   return (
-    <Modal {...props} title={null} closable={false} onCancel={onCancel} className={`aionui-modal ${className}`}>
+    <Modal {...props} title={null} closable={false} onCancel={onCancel} className={`bytetensor-modal ${className}`}>
       <div>
         {showCustomClose && title && (
-          <div className='aionui-modal-header'>
-            <h3 className='aionui-modal-title'>{title}</h3>
-            <button onClick={onCancel} className='aionui-modal-close-btn'>
+          <div className='bytetensor-modal-header'>
+            <h3 className='bytetensor-modal-title'>{title}</h3>
+            <button onClick={onCancel} className='bytetensor-modal-close-btn'>
               <Close size={20} fill='#86909c' />
             </button>
           </div>
