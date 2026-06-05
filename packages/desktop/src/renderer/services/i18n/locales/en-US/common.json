@@ -73,12 +73,12 @@
   "backendStartup": {
     "incompatibleRuntime": {
       "title": "This system is not supported by the bundled backend",
-      "description": "ByteTensor opened, but the local AionCore backend cannot run on this Linux version. Please upgrade to a supported Linux distribution and restart ByteTensor.",
+      "description": "ByteTensor opened, but the local ByteTensor Core backend cannot run on this Linux version. Please upgrade to a supported Linux distribution and restart ByteTensor.",
       "requiredVersions": "Required runtime symbols: {{versions}}"
     },
     "incompleteInstallation": {
       "title": "ByteTensor installation is incomplete",
-      "description": "This installation is missing required local resources, so AionCore cannot start. Please download and reinstall the latest ByteTensor. If the issue returns after reinstalling, check whether security or antivirus software quarantined AionCore.",
+      "description": "This installation is missing required local resources, so ByteTensor Core cannot start. Please download and reinstall the latest ByteTensor. If the issue returns after reinstalling, check whether security or antivirus software quarantined ByteTensor Core.",
       "downloadLatest": "Download latest",
       "sendDiagnostics": "Send diagnostics"
     }

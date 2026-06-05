@@ -73,12 +73,12 @@
   "backendStartup": {
     "incompatibleRuntime": {
       "title": "このシステムは同梱バックエンドに対応していません",
-      "description": "ByteTensor は開きましたが、ローカルの AionCore バックエンドはこの Linux バージョンでは実行できません。対応している Linux ディストリビューションにアップグレードしてから ByteTensor を再起動してください。",
+      "description": "ByteTensor は開きましたが、ローカルの ByteTensor Core バックエンドはこの Linux バージョンでは実行できません。対応している Linux ディストリビューションにアップグレードしてから ByteTensor を再起動してください。",
       "requiredVersions": "必要なランタイムシンボル: {{versions}}"
     },
     "incompleteInstallation": {
       "title": "ByteTensor のインストールが不完全です",
-      "description": "このインストールには必要なローカルリソースが不足しているため、AionCore を起動できません。最新の ByteTensor をダウンロードして再インストールしてください。再インストール後も問題が再発する場合は、セキュリティソフトまたはウイルス対策ソフトが AionCore を隔離していないか確認してください。",
+      "description": "このインストールには必要なローカルリソースが不足しているため、ByteTensor Core を起動できません。最新の ByteTensor をダウンロードして再インストールしてください。再インストール後も問題が再発する場合は、セキュリティソフトまたはウイルス対策ソフトが ByteTensor Core を隔離していないか確認してください。",
       "downloadLatest": "最新版をダウンロード",
       "sendDiagnostics": "診断レポートを送信"
     }
