@@ -1,9 +1,9 @@
 # ByteTensor CLI (`aionrs`) E2E 测试需求
 
 **版本**: v1.1（修订版）
-**作者**: chat-aionrs-analyst
+**作者**: `chat-aionrs-analyst`
 **日期**: 2026-04-22
-**状态**: 已完成 Gate 1 + v1.1 修订（纠正 aionrs 模型来源）
+**状态**: 已完成 Gate 1 + v1.1 修订（纠正 ByteTensor CLI 模型来源，内部标识 `aionrs`）
 
 ---
 
@@ -11,25 +11,25 @@
 
 ### 1.1 端到端流程
 
-用户从 **guid 首页** 选择 ByteTensor CLI（内部标识 `aionrs`）agent，配置上下文（文件/文件夹/模型/权限），发送消息，进入 **aionrs 对话页**，接收流式回复，并可在对话中切换模型/权限。
+用户从 **guid 首页** 选择 ByteTensor CLI（内部标识 `aionrs`）agent，配置上下文（文件/文件夹/模型/权限），发送消息，进入 **ByteTensor CLI 对话页**（内部路径/标识为 `aionrs`），接收流式回复，并可在对话中切换模型/权限。
 
 **关键路径**（源码追溯）：
 
 1. **guid 首页** (`src/renderer/pages/guid/GuidPage.tsx:83-100`)
-   - 用户点击 `AgentPillBar` 中 aionrs pill（`data-agent-backend="aionrs"`）
+   - 用户点击 `AgentPillBar` 中 ByteTensor CLI pill（内部 backend 标识 `aionrs`，`data-agent-backend="aionrs"`）
    - 可选：通过 `GuidModelSelector` 选择模型（ACP 模型列表）
    - 可选：通过 `AgentModeSelector` 选择权限模式
    - 可选：上传文件 / 关联文件夹（guid 页暂不支持，对话页支持）
    - 输入消息，点击发送 → 创建对话并导航到 `/conversation/aionrs/<id>`
 
-2. **aionrs 对话页** (`src/renderer/pages/conversation/platforms/aionrs/AionrsChat.tsx:27-54`)
+2. **ByteTensor CLI 对话页**（内部路径/标识为 `aionrs`） (`src/renderer/pages/conversation/platforms/aionrs/AionrsChat.tsx:27-54`)
    - 显示 `MessageList`（历史消息）
    - `AionrsSendBox` 提供文件上传、文件夹关联、模型选择、权限选择
    - 发送消息后，前端通过 `ipcBridge.conversation.sendMessage.invoke()` 调用进程端
 
 3. **进程端** (`src/process/task/AionrsManager.ts:78-781`)
    - 创建 `AionrsAgent` 实例（`src/process/agent/aionrs/index.ts:54-450`）
-   - 启动 aionrs binary（stdin/stdout JSON Lines 协议）
+   - 启动 ByteTensor CLI binary（内部标识 `aionrs`，stdin/stdout JSON Lines 协议）
    - 处理流式事件（`stream_start`, `text_delta`, `thinking`, `tool_request`, `stream_end` 等）
    - 权限确认逻辑（`auto_edit` / `yolo` 自动批准部分工具）
 
@@ -49,7 +49,7 @@
 | **文件夹关联** | 2 档 | 无关联 / 关联                          | `AionrsSendBox.tsx:331-337` atPath 状态 + event listener |
 | **文件上传**   | 2 档 | 无上传 / 上传                          | `AionrsSendBox.tsx:103-125` file input handler           |
 | **模型**       | 2 档 | 从 ACP 模型列表挑 2 个（推荐配置见下） | `GuidModelSelector.tsx` + `useGuidModelSelection.ts`     |
-| **权限模式**   | 3 档 | default / auto_edit / yolo             | `agentModes.ts:65-69` aionrs 分支                        |
+| **权限模式**   | 3 档 | default / auto_edit / yolo             | `agentModes.ts:65-69` `aionrs` 分支                      |
 | **对话中切换** | 必测 | 切换模型 + 切换权限                    | `AionrsModelSelector.tsx` + `AgentModeSelector`          |
 
 ### 2.2 维度详细说明
@@ -107,7 +107,7 @@
 
 **模型来源**（用户配置的 provider 列表）:
 
-**重要纠正**: aionrs **不使用 ACP 模型列表**，而是使用用户在 Settings → Model 里配置的通用 provider 列表。
+**重要纠正**: ByteTensor CLI（内部标识 `aionrs`）**不使用 ACP 模型列表**，而是使用用户在 Settings → Model 里配置的通用 provider 列表。
 
 **源码追溯**:
 
@@ -125,7 +125,7 @@
 **与 ACP agent 的区别**:
 
 - **ACP agent**（Claude Code / Qwen Code / iFlow）: 模型从 `ipcBridge.acpConversation.getModelInfo` 探测（agent 进程启动后反馈）
-- **aionrs**: 模型从 `ipcBridge.mode.getModelConfig` 读取（用户配置文件，排除 `gemini-with-google-auth`）
+- **ByteTensor CLI**（内部标识 `aionrs`）: 模型从 `ipcBridge.mode.getModelConfig` 读取（用户配置文件，排除 `gemini-with-google-auth`）
 
 **档位定义**（runtime 动态决定，不可 hardcode）:
 
@@ -152,7 +152,7 @@
 
 **已知约束**:
 
-- aionrs **不支持 Google Auth**（`useAionrsModelSelection.ts:36-40` 过滤）
+- ByteTensor CLI（内部标识 `aionrs`）**不支持 Google Auth**（`useAionrsModelSelection.ts:36-40` 过滤）
 - 模型切换行为: E2E 只验证 DB 字段更新，不验证 binary 重启（见 §8 议题 1 决策）
 
 ---
@@ -348,7 +348,7 @@ test(
 ├── test-file.txt          # 文件上传测试文件
 ├── test-folder/           # 文件夹关联测试目录
 │   └── sample.md
-└── .aionrs/               # aionrs session 文件（binary 自动创建）
+└── .aionrs/               # ByteTensor CLI session 文件（内部目录，binary 自动创建）
 ```
 
 **命名规范**:
@@ -370,7 +370,7 @@ afterEach(async ({ page }) => {
   const tmpDir = /* 当前用例的临时目录 */;
 
   try {
-    // 1. 停止 aionrs binary 进程
+    // 1. 停止 ByteTensor CLI binary 进程
     await invokeBridge(page, 'conversation.stop', { conversation_id: conversationId });
 
     // 2. 清理 DB（级联删除 messages）
@@ -378,7 +378,7 @@ afterEach(async ({ page }) => {
       sql: "DELETE FROM conversations WHERE name LIKE 'E2E-aionrs-%'"
     });
 
-    // 3. 清理 FS（临时目录 + aionrs session 文件）
+    // 3. 清理 FS（临时目录 + ByteTensor CLI session 文件）
     await invokeBridge(page, 'fs.rm', { path: tmpDir, recursive: true });
 
     // 4. 清理 UI state（ESC×5 关闭所有弹窗/模态框）
@@ -414,7 +414,7 @@ afterEach(async ({ page }) => {
 | **DB conversations**  | `DELETE WHERE name LIKE 'E2E-aionrs-%'` | `SELECT COUNT(*)` 期望 0      |
 | **DB messages**       | 级联删除（`ON DELETE CASCADE`）         | 自动清理                      |
 | **FS 临时目录**       | `rm -rf /tmp/e2e-chat-aionrs-*`         | `fs.existsSync()` 期望 false  |
-| **FS aionrs session** | 包含在临时目录内                        | 同上                          |
+| **FS ByteTensor CLI session** | 包含内部 `.aionrs` session 目录          | 同上                          |
 | **UI state**          | ESC×5 + 导航到安全页面（如 `/guid`）    | 截图验证                      |
 | **sessionStorage**    | `clear()`                               | `sessionStorage.length === 0` |
 
@@ -707,7 +707,7 @@ test('should complete aionrs conversation with no attachments', async ({ page })
 
 ### 7.2 并发对话
 
-**场景**: 同时打开 2 个 aionrs 对话，轮流发送消息
+**场景**: 同时打开 2 个 ByteTensor CLI 对话（内部类型 `aionrs`），轮流发送消息
 
 **预期**: 每个对话独立维护 binary 进程 + session（`AionrsManager` 实例独立）
 
@@ -747,7 +747,7 @@ test('should complete aionrs conversation with no attachments', async ({ page })
 
 ### 议题 0: E2E 环境 provider 配置前置条件（新增）
 
-**背景**: aionrs 使用用户配置的 provider 列表（非 ACP 探测），E2E 需依赖测试环境的 provider 配置
+**背景**: ByteTensor CLI（内部标识 `aionrs`）使用用户配置的 provider 列表（非 ACP 探测），E2E 需依赖测试环境的 provider 配置
 
 **前置条件**:
 
@@ -895,8 +895,8 @@ test.beforeAll(async ({ page }) => {
 
 ### v1.1 (2026-04-22)
 
-**修订人**: chat-aionrs-analyst
-**触发原因**: 用户指出调研错误 — aionrs 模型来源非 ACP 探测
+**修订人**: `chat-aionrs-analyst`
+**触发原因**: 用户指出调研错误 — ByteTensor CLI 模型来源非 ACP 探测（内部标识 `aionrs`）
 
 **修订内容**:
 
@@ -926,7 +926,7 @@ test.beforeAll(async ({ page }) => {
 
 | 文件                                                                          | 行号   | 关键功能                                                            |
 | ----------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------- |
-| `src/renderer/pages/guid/GuidPage.tsx`                                        | 83-100 | providerAgentKey 状态（aionrs/gemini）                              |
+| `src/renderer/pages/guid/GuidPage.tsx`                                        | 83-100 | providerAgentKey 状态（`aionrs`/`gemini`）                            |
 | `src/renderer/pages/guid/components/AgentPillBar.tsx`                         | 79-82  | agent pill 渲染 + data-testid                                       |
 | `src/renderer/pages/guid/components/GuidActionRow.tsx`                        | 67-330 | 文件附件 + 模式选择器 + 发送按钮                                    |
 | `src/renderer/pages/guid/components/GuidModelSelector.tsx`                    | 35-100 | 模型选择器（guid 页）                                               |
@@ -936,7 +936,7 @@ test.beforeAll(async ({ page }) => {
 | `src/renderer/pages/conversation/platforms/aionrs/AionrsModelSelector.tsx`    | 19-135 | 模型选择器（对话页）                                                |
 | `src/renderer/pages/conversation/platforms/aionrs/useAionrsModelSelection.ts` | 24-73  | 模型选择 hook（过滤 google auth）                                   |
 | `src/renderer/pages/conversation/platforms/aionrs/useAionrsMessage.ts`        | 20-321 | 流式消息处理 + 工具状态                                             |
-| `src/renderer/utils/model/agentModes.ts`                                      | 65-69  | aionrs 权限模式枚举                                                 |
+| `src/renderer/utils/model/agentModes.ts`                                      | 65-69  | `aionrs` 权限模式枚举                                               |
 | `src/process/task/AionrsManager.ts`                                           | 78-781 | 进程管理 + 权限审批 + DB 持久化                                     |
 | `src/process/agent/aionrs/index.ts`                                           | 54-450 | binary 启动 + stdin/stdout 协议                                     |
 | `src/process/agent/aionrs/binaryResolver.ts`                                  | —      | binary 路径解析逻辑                                                 |
