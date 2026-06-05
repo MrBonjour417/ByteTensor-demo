@@ -101,12 +101,38 @@ export type AgentMetadata = {
   handshake?: AgentHandshake;
 };
 
+function normalizeAgentDisplayName(agent: AgentMetadata): AgentMetadata {
+  if (agent.agent_type !== 'aionrs' || agent.agent_source !== 'internal') {
+    return agent;
+  }
+
+  if (agent.name === 'ByteTensor CLI') {
+    return agent;
+  }
+
+  return {
+    ...agent,
+    name: 'ByteTensor CLI',
+    name_i18n: {
+      ...(agent.name_i18n ?? {}),
+      'en-US': 'ByteTensor CLI',
+      'zh-CN': 'ByteTensor CLI',
+      'zh-TW': 'ByteTensor CLI',
+      'ja-JP': 'ByteTensor CLI',
+      'ko-KR': 'ByteTensor CLI',
+      'tr-TR': 'ByteTensor CLI',
+      'ru-RU': 'ByteTensor CLI',
+      'uk-UA': 'ByteTensor CLI',
+    },
+  };
+}
+
 /** Shared fetcher for DETECTED_AGENTS_SWR_KEY — single source of truth. */
 export async function fetchDetectedAgents(): Promise<AgentMetadata[]> {
   try {
     const agents = await ipcBridge.acpConversation.getAvailableAgents.invoke();
     if (Array.isArray(agents)) {
-      return agents as AgentMetadata[];
+      return (agents as AgentMetadata[]).map(normalizeAgentDisplayName);
     }
   } catch {
     // fallback to empty
@@ -134,3 +160,4 @@ export function getSupportedMcpTransports(agent: AgentMetadata): string[] | unde
   if (flags.sse === true) transports.push('sse');
   return transports;
 }
+
