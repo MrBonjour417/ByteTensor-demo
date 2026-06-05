@@ -15,22 +15,22 @@ import React from 'react';
  */
 type NativeSelectProps = Omit<SelectProps, 'size'>;
 type NativeSelectSize = NonNullable<SelectProps['size']>;
-type AionSelectSize = NativeSelectSize | 'middle';
+type ByteTensorSelectSize = NativeSelectSize | 'middle';
 
-export interface AionSelectProps extends NativeSelectProps {
+export interface ByteTensorSelectProps extends NativeSelectProps {
   /** 额外的类名 / Additional class name */
   className?: string;
   /** 统一尺寸，新增 middle（32px）/ Unified size with additional "middle" (32px) */
-  size?: AionSelectSize;
+  size?: ByteTensorSelectSize;
 }
 
 /**
  * 基础样式类名
- * 注意：主题相关样式（背景色、边框色）在 arco-override.css 的 .aion-select 类中定义
- * Note: Theme-related styles (background, border colors) are defined in .aion-select class in arco-override.css
+ * 注意：主题相关样式（背景色、边框色）在 arco-override.css 的 .bytetensor-select 类中定义
+ * Note: Theme-related styles (background, border colors) are defined in .bytetensor-select class in arco-override.css
  */
 const BASE_CLASS = classNames(
-  'aion-select',
+  'bytetensor-select',
   '[&_.arco-select-view]:rounded-[4px]',
   '[&_.arco-select-view]:border',
   '[&_.arco-select-view]:border-solid',
@@ -75,42 +75,42 @@ const defaultGetPopupContainer = (): HTMLElement => {
  * @example
  * ```tsx
  * // 基本用法 / Basic usage
- * <AionSelect placeholder="请选择" style={{ width: 200 }}>
- *   <AionSelect.Option value="1">选项1</AionSelect.Option>
- *   <AionSelect.Option value="2">选项2</AionSelect.Option>
- * </AionSelect>
+ * <ByteTensorSelect placeholder="请选择" style={{ width: 200 }}>
+ *   <ByteTensorSelect.Option value="1">选项1</ByteTensorSelect.Option>
+ *   <ByteTensorSelect.Option value="2">选项2</ByteTensorSelect.Option>
+ * </ByteTensorSelect>
  *
  * // 多选 / Multiple selection
- * <AionSelect mode="multiple" placeholder="请选择多个">
- *   <AionSelect.Option value="1">选项1</AionSelect.Option>
- *   <AionSelect.Option value="2">选项2</AionSelect.Option>
- * </AionSelect>
+ * <ByteTensorSelect mode="multiple" placeholder="请选择多个">
+ *   <ByteTensorSelect.Option value="1">选项1</ByteTensorSelect.Option>
+ *   <ByteTensorSelect.Option value="2">选项2</ByteTensorSelect.Option>
+ * </ByteTensorSelect>
  *
  * // 分组 / Grouped options
- * <AionSelect placeholder="请选择">
- *   <AionSelect.OptGroup label="分组1">
- *     <AionSelect.Option value="1">选项1</AionSelect.Option>
- *   </AionSelect.OptGroup>
- *   <AionSelect.OptGroup label="分组2">
- *     <AionSelect.Option value="2">选项2</AionSelect.Option>
- *   </AionSelect.OptGroup>
- * </AionSelect>
+ * <ByteTensorSelect placeholder="请选择">
+ *   <ByteTensorSelect.OptGroup label="分组1">
+ *     <ByteTensorSelect.Option value="1">选项1</ByteTensorSelect.Option>
+ *   </ByteTensorSelect.OptGroup>
+ *   <ByteTensorSelect.OptGroup label="分组2">
+ *     <ByteTensorSelect.Option value="2">选项2</ByteTensorSelect.Option>
+ *   </ByteTensorSelect.OptGroup>
+ * </ByteTensorSelect>
  * ```
  *
- * @see arco-override.css for theme-related styles (.aion-select)
+ * @see arco-override.css for theme-related styles (.bytetensor-select)
  */
-const mapSizeToNative = (size?: AionSelectSize): NativeSelectSize | undefined => {
+const mapSizeToNative = (size?: ByteTensorSelectSize): NativeSelectSize | undefined => {
   if (!size) return undefined;
   if (size === 'middle') return 'default';
   return size;
 };
 
-type AionSelectComponent = React.ForwardRefExoticComponent<AionSelectProps & React.RefAttributes<SelectHandle>> & {
+type ByteTensorSelectComponent = React.ForwardRefExoticComponent<ByteTensorSelectProps & React.RefAttributes<SelectHandle>> & {
   Option: typeof Select.Option;
   OptGroup: typeof Select.OptGroup;
 };
 
-const InternalSelect = React.forwardRef<SelectHandle, AionSelectProps>(
+const InternalSelect = React.forwardRef<SelectHandle, ByteTensorSelectProps>(
   ({ className, getPopupContainer, size = 'middle', ...rest }, ref) => {
     const normalizedSize = mapSizeToNative(size);
     return (
@@ -125,12 +125,12 @@ const InternalSelect = React.forwardRef<SelectHandle, AionSelectProps>(
   }
 );
 
-const AionSelect = InternalSelect as AionSelectComponent;
+const ByteTensorSelect = InternalSelect as ByteTensorSelectComponent;
 
-AionSelect.displayName = 'AionSelect';
+ByteTensorSelect.displayName = 'ByteTensorSelect';
 
 // 导出子组件 / Export sub-components
-AionSelect.Option = Select.Option;
-AionSelect.OptGroup = Select.OptGroup;
+ByteTensorSelect.Option = Select.Option;
+ByteTensorSelect.OptGroup = Select.OptGroup;
 
-export default AionSelect;
+export default ByteTensorSelect;

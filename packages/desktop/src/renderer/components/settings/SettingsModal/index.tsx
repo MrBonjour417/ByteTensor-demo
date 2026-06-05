@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import AionModal from '@/renderer/components/base/AionModal';
-import AionScrollArea from '@/renderer/components/base/AionScrollArea';
+import ByteTensorModal from '@/renderer/components/base/ByteTensorModal';
+import ByteTensorScrollArea from '@/renderer/components/base/ByteTensorScrollArea';
 import { iconColors } from '@/renderer/styles/colors';
 import { isElectronDesktop, resolveExtensionAssetUrl } from '@/renderer/utils/platform';
 import { type IExtensionSettingsTab } from '@/common/adapter/ipcBridge';
@@ -101,7 +101,7 @@ interface SubModalProps {
  */
 export const SubModal: React.FC<SubModalProps> = ({ visible, onCancel, title, children }) => {
   return (
-    <AionModal
+    <ByteTensorModal
       visible={visible}
       onCancel={onCancel}
       footer={null}
@@ -109,8 +109,8 @@ export const SubModal: React.FC<SubModalProps> = ({ visible, onCancel, title, ch
       size='medium'
       title={title}
     >
-      <AionScrollArea className='h-full px-20px pb-16px text-14px text-t-primary'>{children}</AionScrollArea>
-    </AionModal>
+      <ByteTensorScrollArea className='h-full px-20px pb-16px text-14px text-t-primary'>{children}</ByteTensorScrollArea>
+    </ByteTensorModal>
   );
 };
 
@@ -360,7 +360,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onCancel, defaul
 
   // 桌面端菜单（侧边栏）/ Desktop menu (sidebar)
   const desktopMenu = (
-    <AionScrollArea className='flex-shrink-0 b-color-border-2 scrollbar-hide' style={{ width: `${SIDEBAR_WIDTH}px` }}>
+    <ByteTensorScrollArea className='flex-shrink-0 b-color-border-2 scrollbar-hide' style={{ width: `${SIDEBAR_WIDTH}px` }}>
       <div className='flex flex-col gap-2px'>
         {menuItems.map((item) => (
           <div
@@ -379,12 +379,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onCancel, defaul
           </div>
         ))}
       </div>
-    </AionScrollArea>
+    </ByteTensorScrollArea>
   );
 
   return (
     <SettingsViewModeProvider value='modal'>
-      <AionModal
+      <ByteTensorModal
         visible={visible}
         onCancel={onCancel}
         footer={null}
@@ -407,14 +407,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onCancel, defaul
         >
           {isMobile ? mobileMenu : desktopMenu}
 
-          <AionScrollArea
+          <ByteTensorScrollArea
             className={classNames('flex-1 min-h-0', isMobile ? 'overflow-y-auto' : 'flex flex-col pl-24px gap-16px')}
           >
             {renderBuiltinContent()}
             {renderExtensionTabs()}
-          </AionScrollArea>
+          </ByteTensorScrollArea>
         </div>
-      </AionModal>
+      </ByteTensorModal>
     </SettingsViewModeProvider>
   );
 };

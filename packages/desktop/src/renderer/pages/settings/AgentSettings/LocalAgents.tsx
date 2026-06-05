@@ -6,7 +6,7 @@
 
 import { ipcBridge } from '@/common';
 import type { AgentMetadata } from '@/renderer/utils/model/agentTypes';
-import AionModal from '@/renderer/components/base/AionModal';
+import ByteTensorModal from '@/renderer/components/base/ByteTensorModal';
 import { useAgents } from '@/renderer/hooks/agent/useAgents';
 import { Button, Typography } from '@arco-design/web-react';
 import { Home, Plus } from '@icon-park/react';
@@ -178,7 +178,7 @@ const LocalAgents: React.FC = () => {
         </div>
       )}
 
-      <AionModal
+      <ByteTensorModal
         visible={editorVisible}
         onCancel={() => {
           setEditorVisible(false);
@@ -215,7 +215,7 @@ const LocalAgents: React.FC = () => {
             }}
           />
         )}
-      </AionModal>
+      </ByteTensorModal>
 
       <div className='flex flex-col gap-4px px-0'>
         {customAgents?.map((agent) => (

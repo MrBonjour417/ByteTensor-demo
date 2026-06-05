@@ -10,7 +10,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LocalAgents from '@/renderer/pages/settings/AgentSettings/LocalAgents';
 import RemoteAgents from '@/renderer/pages/settings/AgentSettings/RemoteAgents';
-import AionScrollArea from '@/renderer/components/base/AionScrollArea';
+import ByteTensorScrollArea from '@/renderer/components/base/ByteTensorScrollArea';
 import { useSettingsViewMode } from '../settingsViewContext';
 
 const AgentModalContent: React.FC = () => {
@@ -44,15 +44,15 @@ const AgentModalContent: React.FC = () => {
         className='flex flex-col flex-1 min-h-0 [&>.arco-tabs-content]:pt-0'
       >
         <Tabs.TabPane key='local' title={t('settings.agentManagement.localAgents')}>
-          <AionScrollArea className='flex-1 min-h-0 pb-16px scrollbar-hide' disableOverflow={isPageMode}>
+          <ByteTensorScrollArea className='flex-1 min-h-0 pb-16px scrollbar-hide' disableOverflow={isPageMode}>
             <LocalAgents />
-          </AionScrollArea>
+          </ByteTensorScrollArea>
         </Tabs.TabPane>
         {process.env.NODE_ENV === 'development' && (
           <Tabs.TabPane key='remote' title={t('settings.agentManagement.remoteAgents')}>
-            <AionScrollArea className='flex-1 min-h-0 pb-16px scrollbar-hide' disableOverflow={isPageMode}>
+            <ByteTensorScrollArea className='flex-1 min-h-0 pb-16px scrollbar-hide' disableOverflow={isPageMode}>
               <RemoteAgents />
-            </AionScrollArea>
+            </ByteTensorScrollArea>
           </Tabs.TabPane>
         )}
       </Tabs>

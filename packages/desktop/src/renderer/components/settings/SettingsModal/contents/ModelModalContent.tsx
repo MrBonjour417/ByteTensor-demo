@@ -14,7 +14,7 @@ import AddModelModal from '@/renderer/pages/settings/components/AddModelModal';
 import AddPlatformModal from '@/renderer/pages/settings/components/AddPlatformModal';
 import { isNewApiPlatform, NEW_API_PROTOCOL_OPTIONS } from '@/renderer/utils/model/modelPlatforms';
 import EditModeModal from '@/renderer/pages/settings/components/EditModeModal';
-import AionScrollArea from '@/renderer/components/base/AionScrollArea';
+import ByteTensorScrollArea from '@/renderer/components/base/ByteTensorScrollArea';
 import { useProvidersQuery } from '@/renderer/hooks/agent/useModelProviderList';
 import { useSettingsViewMode } from '../settingsViewContext';
 import { consumePendingDeepLink } from '@/renderer/hooks/system/useDeepLink';
@@ -368,7 +368,7 @@ const ModelModalContent: React.FC = () => {
       </div>
 
       {/* Content Area */}
-      <AionScrollArea className='flex-1 min-h-0' disableOverflow={isPageMode}>
+      <ByteTensorScrollArea className='flex-1 min-h-0' disableOverflow={isPageMode}>
         {!data || data.length === 0 ? (
           <div className='flex flex-col items-center justify-center py-40px'>
             <Info theme='outline' size='48' className='text-t-secondary mb-16px' />
@@ -604,7 +604,7 @@ const ModelModalContent: React.FC = () => {
             })}
           </div>
         )}
-      </AionScrollArea>
+      </ByteTensorScrollArea>
     </div>
   );
 };

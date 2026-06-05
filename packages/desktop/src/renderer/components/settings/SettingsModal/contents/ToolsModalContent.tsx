@@ -17,8 +17,8 @@ import { Help, Down, Plus } from '@icon-park/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useConfigModelListWithImage from '@/renderer/hooks/agent/useConfigModelListWithImage';
-import AionScrollArea from '@/renderer/components/base/AionScrollArea';
-import AionSelect from '@/renderer/components/base/AionSelect';
+import ByteTensorScrollArea from '@/renderer/components/base/ByteTensorScrollArea';
+import ByteTensorSelect from '@/renderer/components/base/ByteTensorSelect';
 import AddMcpServerModal from '@/renderer/pages/settings/components/AddMcpServerModal';
 import McpServerItem from '@/renderer/pages/settings/ToolsSettings/McpServerItem';
 import { useMcpServers, useMcpConnection, useMcpModal, useMcpServerCRUD, useMcpOAuth } from '@/renderer/hooks/mcp';
@@ -145,10 +145,10 @@ const SpeechToTextSettingsSection: React.FC<{
 
           <Form layout='horizontal' labelAlign='left' className='space-y-12px'>
             <Form.Item label={t('settings.speechToTextProvider')}>
-              <AionSelect value={config.provider} onChange={handleProviderChange}>
-                <AionSelect.Option value='openai'>{t('settings.speechToTextProviderOpenAI')}</AionSelect.Option>
-                <AionSelect.Option value='deepgram'>{t('settings.speechToTextProviderDeepgram')}</AionSelect.Option>
-              </AionSelect>
+              <ByteTensorSelect value={config.provider} onChange={handleProviderChange}>
+                <ByteTensorSelect.Option value='openai'>{t('settings.speechToTextProviderOpenAI')}</ByteTensorSelect.Option>
+                <ByteTensorSelect.Option value='deepgram'>{t('settings.speechToTextProviderDeepgram')}</ByteTensorSelect.Option>
+              </ByteTensorSelect>
             </Form.Item>
 
             {config.provider === 'openai' ? (
@@ -418,7 +418,7 @@ const ModalMcpManagementSection: React.FC<{
             {t('settings.mcpNoServersFound')}
           </div>
         ) : (
-          <AionScrollArea
+          <ByteTensorScrollArea
             className={classNames('max-h-360px', isPageMode && 'max-h-none')}
             disableOverflow={isPageMode}
           >
@@ -452,7 +452,7 @@ const ModalMcpManagementSection: React.FC<{
                 />
               ))}
             </div>
-          </AionScrollArea>
+          </ByteTensorScrollArea>
         )}
       </div>
 
@@ -721,12 +721,12 @@ const ToolsModalContent: React.FC = () => {
       {mcpMessageContext}
 
       {/* Content Area */}
-      <AionScrollArea className='flex-1 min-h-0 pb-16px' disableOverflow={isPageMode}>
+      <ByteTensorScrollArea className='flex-1 min-h-0 pb-16px' disableOverflow={isPageMode}>
         <div className='space-y-16px'>
           {/* MCP 工具配置 */}
           <div className='px-[12px] md:px-[32px] py-[24px] bg-2 rd-12px md:rd-16px flex flex-col min-h-0 border border-border-2'>
             <div className='flex-1 min-h-0'>
-              <AionScrollArea
+              <ByteTensorScrollArea
                 className={classNames('h-full', isPageMode && 'overflow-visible')}
                 disableOverflow={isPageMode}
               >
@@ -738,7 +738,7 @@ const ToolsModalContent: React.FC = () => {
                   saveMcpServers={saveMcpServers}
                   isPageMode={isPageMode}
                 />
-              </AionScrollArea>
+              </ByteTensorScrollArea>
             </div>
           </div>
           {/* 图像生成 */}
@@ -776,7 +776,7 @@ const ToolsModalContent: React.FC = () => {
                 }
               >
                 {imageGenerationModelList.length > 0 ? (
-                  <AionSelect
+                  <ByteTensorSelect
                     value={
                       imageGenerationModel?.id && imageGenerationModel?.use_model
                         ? `${imageGenerationModel.id}|${imageGenerationModel.use_model}`
@@ -794,15 +794,15 @@ const ToolsModalContent: React.FC = () => {
                     }}
                   >
                     {imageGenerationModelList.map(({ models, ...platform }) => (
-                      <AionSelect.OptGroup label={platform.name} key={platform.id}>
+                      <ByteTensorSelect.OptGroup label={platform.name} key={platform.id}>
                         {models.map((modelName) => (
-                          <AionSelect.Option key={platform.id + modelName} value={platform.id + '|' + modelName}>
+                          <ByteTensorSelect.Option key={platform.id + modelName} value={platform.id + '|' + modelName}>
                             {modelName}
-                          </AionSelect.Option>
+                          </ByteTensorSelect.Option>
                         ))}
-                      </AionSelect.OptGroup>
+                      </ByteTensorSelect.OptGroup>
                     ))}
-                  </AionSelect>
+                  </ByteTensorSelect>
                 ) : (
                   <div className='text-t-secondary flex items-center'>
                     {t('settings.noAvailable')}
@@ -839,7 +839,7 @@ const ToolsModalContent: React.FC = () => {
           </div>
           <SpeechToTextSettingsSection config={speechToTextConfig} onChange={updateSpeechToTextConfig} />
         </div>
-      </AionScrollArea>
+      </ByteTensorScrollArea>
     </div>
   );
 };

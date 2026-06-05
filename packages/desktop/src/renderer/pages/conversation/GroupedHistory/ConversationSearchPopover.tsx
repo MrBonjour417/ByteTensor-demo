@@ -6,7 +6,7 @@
 
 import { ipcBridge } from '@/common';
 import type { IMessageSearchItem } from '@/common/types/team/database';
-import AionModal from '@/renderer/components/base/AionModal';
+import ByteTensorModal from '@/renderer/components/base/ByteTensorModal';
 import { usePresetAssistantInfo } from '@/renderer/hooks/agent/usePresetAssistantInfo';
 import { getAgentLogo } from '@/renderer/utils/model/agentLogo';
 import { blockMobileInputFocus, blurActiveElement } from '@/renderer/utils/ui/focus';
@@ -477,7 +477,7 @@ const ConversationSearchPopover: React.FC<ConversationSearchPopoverProps> = ({
         </button>
       )}
 
-      <AionModal
+      <ByteTensorModal
         visible={visible}
         onCancel={handleClose}
         footer={null}
@@ -552,7 +552,7 @@ const ConversationSearchPopover: React.FC<ConversationSearchPopoverProps> = ({
 
           <div className='flex-1 min-h-0'>{resultContent}</div>
         </div>
-      </AionModal>
+      </ByteTensorModal>
     </>
   );
 };
