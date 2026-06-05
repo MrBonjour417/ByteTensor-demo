@@ -22,7 +22,7 @@ describe('build-with-builder', () => {
       args: ['auto', '--mac', '--x64'],
       expectedArch: 'x64',
     },
-  ])('prepares bundled AionCore for $expectedArch with args $args', ({ args, expectedArch }) => {
+  ])('prepares bundled ByteTensor Core for $expectedArch with args $args', ({ args, expectedArch }) => {
     const tempDir = mkdtempSync(join(tmpdir(), 'bytetensor-build-test-'));
     const hookPath = join(tempDir, 'hook.cjs');
     const callsPath = join(tempDir, 'prepare-calls.json');

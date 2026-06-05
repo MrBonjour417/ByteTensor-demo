@@ -1,4 +1,4 @@
-# Aion CLI (aionrs) E2E 测试 - 讨论记录
+# ByteTensor CLI (`aionrs`) E2E 测试 - 讨论记录
 
 **项目**: ByteTensor E2E Coverage
 **子组**: chat-aionrs

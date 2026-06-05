@@ -1,4 +1,4 @@
-# Aion CLI (aionrs) E2E 测试需求
+# ByteTensor CLI (`aionrs`) E2E 测试需求
 
 **版本**: v1.1（修订版）
 **作者**: chat-aionrs-analyst
@@ -11,7 +11,7 @@
 
 ### 1.1 端到端流程
 
-用户从 **guid 首页** 选择 aionrs agent，配置上下文（文件/文件夹/模型/权限），发送消息，进入 **aionrs 对话页**，接收流式回复，并可在对话中切换模型/权限。
+用户从 **guid 首页** 选择 ByteTensor CLI（内部标识 `aionrs`）agent，配置上下文（文件/文件夹/模型/权限），发送消息，进入 **aionrs 对话页**，接收流式回复，并可在对话中切换模型/权限。
 
 **关键路径**（源码追溯）：
 

@@ -109,7 +109,7 @@ async function selectPreferredCronDialogAgent(
 async function selectCronDialogAgentByPattern(
   page: import('@playwright/test').Page,
   dialog: import('@playwright/test').Locator,
-  preferredPatterns = [/Gemini/i, /Claude/i, /Codex/i, /Aion/i]
+  preferredPatterns = [/Gemini/i, /Claude/i, /Codex/i, /ByteTensor/i]
 ): Promise<string | null> {
   const agentFormItem = dialog.locator('.arco-form-item').filter({ has: page.locator('#agent') });
   const agentSelect = agentFormItem.locator('.arco-select').first();
@@ -769,7 +769,7 @@ test.describe('Conversation Full Cycle', () => {
     await agentSelect.click();
 
     // CLI agents appear in OptGroup "CLI Agents"; pick the first one
-    const cliOptions = page.locator('.arco-select-option').filter({ hasText: /Claude|Codex|Gemini|Aion/ });
+    const cliOptions = page.locator('.arco-select-option').filter({ hasText: /Claude|Codex|Gemini|ByteTensor/ });
     if ((await cliOptions.count()) === 0) {
       await page.keyboard.press('Escape');
       await page.keyboard.press('Escape');

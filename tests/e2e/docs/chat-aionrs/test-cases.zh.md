@@ -1,4 +1,4 @@
-# Aion CLI (aionrs) E2E 测试用例
+# ByteTensor CLI (`aionrs`) E2E 测试用例
 
 **版本**: Gate 2 初稿
 **作者**: chat-aionrs-designer
@@ -17,7 +17,7 @@
 
 ### 1.2 全局前置条件
 
-**所有 aionrs 测试用例的前置条件**:
+**所有 ByteTensor CLI（内部标识 `aionrs`）测试用例的前置条件**:
 
 1. **aionrs binary 可用**：通过 `ipcBridge.fs.findAionrsBinary.invoke()` 验证，否则 skip 全部测试
 2. **用户配置的模型列表至少 1 个可用 provider**：
