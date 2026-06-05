@@ -160,4 +160,3 @@ export function getSupportedMcpTransports(agent: AgentMetadata): string[] | unde
   if (flags.sse === true) transports.push('sse');
   return transports;
 }
-
