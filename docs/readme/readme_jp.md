@@ -103,7 +103,7 @@ _ByteTensor には専用の Morph PPT アシスタントが内蔵されていま
 
 すでに Claude Code、Codex、Hermes Agent、または OpenClaw を使用している場合、ByteTensor は自動的に検出し、それらすべてと Cowork できます——内蔵 Agent と一緒に。
 
-**サポートされている Agent：** 内蔵 Agent（ゼロ設定） • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • Aion CLI（aionrs、ByteTensor に同梱される Rust バックエンドサービス） • Snow CLI • Hermes Agent • Cursor Agent など
+**サポートされている Agent：** 内蔵 Agent（ゼロ設定） • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • ByteTensor CLI（ByteTensor に同梱される Rust バックエンドサービス） • Snow CLI • Hermes Agent • Cursor Agent など
 
 <p align="center">
   <img src="../../resources/multi-agent支持openclaw.gif" alt="Multi-Agent Cowork" width="800">
@@ -123,8 +123,8 @@ _ByteTensor には専用の Morph PPT アシスタントが内蔵されていま
   <img src="../../resources/ByteTensor_team.gif" alt="Team Mode overview" width="800">
 </p>
 
-- **並列マルチエージェント実行** — Leader がタスクをサブタスクに分解して並行実行する Teammate Agent に委任；各 Teammate は ACP（Agent Communication Protocol、ByteTensor のマルチエージェント調整層）、Gemini、または Aionrs を通じて独自のモデルを使用
-- **Leader によるオーケストレーション** — Leader が割り当て、追跡、集約；対応バックエンドは Claude Code、Codex、Hermes Agent、Gemini、Snow CLI、Aion CLI
+- **並列マルチエージェント実行** — Leader がタスクをサブタスクに分解して並行実行する Teammate Agent に委任；各 Teammate は ACP（Agent Communication Protocol、ByteTensor のマルチエージェント調整層）、Gemini、または ByteTensor CLI を通じて独自のモデルを使用
+- **Leader によるオーケストレーション** — Leader が割り当て、追跡、集約；対応バックエンドは Claude Code、Codex、Hermes Agent、Gemini、Snow CLI、ByteTensor CLI
 - **チーム隔離ワークスペース** — すべての Agent が同じフォルダを共有；各エージェントに独自の権限確認ダイアログがあり、サイドバーバッジで承認待ちを表示
 
 <details>
@@ -133,7 +133,7 @@ _ByteTensor には専用の Morph PPT アシスタントが内蔵されていま
 <br>
 
 - **共有ワークスペース** — すべての Agent が同じフォルダを読み書き；ファイルパネルは常に表示
-- **対応バックエンド** — Claude Code、Codex、Gemini、Snow CLI、Aion CLI（aionrs）；`mcpCapabilities.stdio` を持つ他の ACP バックエンドも自動対応
+- **対応バックエンド** — Claude Code、Codex、Gemini、Snow CLI、ByteTensor CLI；`mcpCapabilities.stdio` を持つ他の ACP バックエンドも自動対応
 - **動的スケーリング** — チーム実行中に Teammate の追加・削除が可能；応答しない Agent は自動的に失敗状態に昇格しワンクリックで削除
 - **細粒度の権限** — 各 Agent に独自の権限確認ダイアログ；サイドバーバッジで承認待ちを表示
 - **ファイル共有** — Leader が Teammate にファイル添付を渡せる
@@ -519,15 +519,15 @@ A: すべてのデータはローカルの SQLite データベースに保存さ
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=vWxE6VO9TKo" target="_blank">
-    <img src="https://img.youtube.com/vi/vWxE6VO9TKo/maxresdefault.jpg" alt="Hermes + Aion UI is Insane (FREE)!" width="400">
+    <img src="https://img.youtube.com/vi/vWxE6VO9TKo/maxresdefault.jpg" alt="Hermes + ByteTensor is Insane (FREE)!" width="400">
   </a>
   &nbsp;&nbsp;
   <a href="https://www.youtube.com/watch?v=RgSLdOhICZw" target="_blank">
-    <img src="https://img.youtube.com/vi/RgSLdOhICZw/maxresdefault.jpg" alt="OpenClaw + Aion UI is Insane (FREE!)" width="400">
+    <img src="https://img.youtube.com/vi/RgSLdOhICZw/maxresdefault.jpg" alt="OpenClaw + ByteTensor is Insane (FREE!)" width="400">
   </a>
 </p>
 <p align="center">
-  <em>Julian Goldie SEO — Hermes + Aion UI is Insane (FREE!) · 27K views</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Julian Goldie SEO — OpenClaw + Aion UI is Insane (FREE!) · 11K views</em>
+  <em>Julian Goldie SEO — Hermes + ByteTensor is Insane (FREE!) · 27K views</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Julian Goldie SEO — OpenClaw + ByteTensor is Insane (FREE!) · 11K views</em>
 </p>
 
 <p align="center">

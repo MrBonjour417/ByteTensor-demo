@@ -143,7 +143,7 @@ ByteTensor поставляется с полноценным движком И�
 
 Если вы уже используете Claude Code, Codex, Hermes Agent или OpenClaw, ByteTensor автоматически обнаружит их и позволит работать со всеми ними вместе со встроенным агентом.
 
-**Поддерживаемые агенты:** Встроенный агент (без настройки) • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • Aion CLI (aionrs, Rust-бэкенд-сервис, поставляемый с ByteTensor) • Snow CLI • Hermes Agent • Cursor Agent и другие
+**Поддерживаемые агенты:** Встроенный агент (без настройки) • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • ByteTensor CLI (Rust-бэкенд-сервис, поставляемый с ByteTensor) • Snow CLI • Hermes Agent • Cursor Agent и другие
 
 <p align="center">
   <img src="./resources/multi-agent支持openclaw.gif" alt="Multi-Agent Cowork" width="800">
@@ -163,8 +163,8 @@ ByteTensor поставляется с полноценным движком И�
   <img src="./resources/ByteTensor_team.gif" alt="Team Mode overview" width="800">
 </p>
 
-- **Параллельное выполнение нескольких агентов** — Leader разбивает задачи на подзадачи и делегирует параллельно работающим Teammate-агентам; каждый Teammate использует свою модель через ACP (Agent Communication Protocol, слой координации мультиагентности ByteTensor), Gemini или Aionrs
-- **Оркестрация Leader** — Leader назначает, отслеживает и агрегирует результаты; поддерживаемые бэкенды: Claude Code, Codex, Hermes Agent, Gemini, Snow CLI, Aion CLI
+- **Параллельное выполнение нескольких агентов** — Leader разбивает задачи на подзадачи и делегирует параллельно работающим Teammate-агентам; каждый Teammate использует свою модель через ACP (Agent Communication Protocol, слой координации мультиагентности ByteTensor), Gemini или ByteTensor CLI
+- **Оркестрация Leader** — Leader назначает, отслеживает и агрегирует результаты; поддерживаемые бэкенды: Claude Code, Codex, Hermes Agent, Gemini, Snow CLI, ByteTensor CLI
 - **Изолированное рабочее пространство команды** — все агенты совместно используют одну папку; у каждого есть свой диалог подтверждения разрешений с бейджем на боковой панели для ожидающих подтверждений
 
 <details>
@@ -173,7 +173,7 @@ ByteTensor поставляется с полноценным движком И�
 <br>
 
 - **Общее рабочее пространство** — все агенты читают/записывают одну папку; файловая панель остаётся видимой на протяжении всего процесса
-- **Поддерживаемые бэкенды** — Claude Code, Codex, Gemini, Snow CLI, Aion CLI (aionrs); другие ACP-бэкенды с `mcpCapabilities.stdio` поддерживаются автоматически
+- **Поддерживаемые бэкенды** — Claude Code, Codex, Gemini, Snow CLI, ByteTensor CLI; другие ACP-бэкенды с `mcpCapabilities.stdio` поддерживаются автоматически
 - **Динамическое масштабирование** — добавляйте или удаляйте Teammate-агентов во время работы команды; молчащие агенты автоматически переходят в статус failed с возможностью удаления в один клик
 - **Детальные разрешения** — у каждого агента есть собственный диалог подтверждения разрешений; бейдж на боковой панели показывает ожидающие подтверждения
 - **Обмен файлами** — Leader может передавать вложения файлов Teammate-агентам
@@ -559,15 +559,15 @@ ByteTensor — это **бесплатный мультиагентный раб
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=vWxE6VO9TKo" target="_blank">
-    <img src="https://img.youtube.com/vi/vWxE6VO9TKo/maxresdefault.jpg" alt="Hermes + Aion UI is Insane (FREE)!" width="400">
+    <img src="https://img.youtube.com/vi/vWxE6VO9TKo/maxresdefault.jpg" alt="Hermes + ByteTensor is Insane (FREE)!" width="400">
   </a>
   &nbsp;&nbsp;
   <a href="https://www.youtube.com/watch?v=RgSLdOhICZw" target="_blank">
-    <img src="https://img.youtube.com/vi/RgSLdOhICZw/maxresdefault.jpg" alt="OpenClaw + Aion UI is Insane (FREE!)" width="400">
+    <img src="https://img.youtube.com/vi/RgSLdOhICZw/maxresdefault.jpg" alt="OpenClaw + ByteTensor is Insane (FREE!)" width="400">
   </a>
 </p>
 <p align="center">
-  <em>Julian Goldie SEO — Hermes + Aion UI is Insane (FREE!) · 27K views</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Julian Goldie SEO — OpenClaw + Aion UI is Insane (FREE!) · 11K views</em>
+  <em>Julian Goldie SEO — Hermes + ByteTensor is Insane (FREE!) · 27K views</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Julian Goldie SEO — OpenClaw + ByteTensor is Insane (FREE!) · 11K views</em>
 </p>
 
 <p align="center">

@@ -142,7 +142,7 @@ ByteTensor постачається з повноцінним рушієм AI-а
 
 Якщо ви вже використовуєте Claude Code, Codex, Hermes Agent або OpenClaw, ByteTensor автоматично виявить їх і дозволить працювати з усіма ними разом із вбудованим агентом.
 
-**Підтримувані агенти:** Вбудований агент • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • Aion CLI (aionrs, Rust-бекенд-сервіс, що постачається з ByteTensor) • Snow CLI • Hermes Agent • Cursor Agent та інші
+**Підтримувані агенти:** Вбудований агент • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • ByteTensor CLI (Rust-бекенд-сервіс, що постачається з ByteTensor) • Snow CLI • Hermes Agent • Cursor Agent та інші
 
 <p align="center">
   <img src="../../resources/multi-agent支持openclaw.gif" alt="Мульти-агентний режим" width="800">
@@ -162,8 +162,8 @@ ByteTensor постачається з повноцінним рушієм AI-а
   <img src="../../resources/ByteTensor_team.gif" alt="Team Mode overview" width="800">
 </p>
 
-- **Паралельне виконання кількох агентів** — Leader ділить завдання на підзадачі і делегує паралельно працюючим Teammate-агентам; кожен Teammate використовує свою модель через ACP (Agent Communication Protocol, шар координації мульти-агентності ByteTensor), Gemini або Aionrs
-- **Оркестрація Leader** — Leader призначає, відстежує та агрегує результати; підтримувані бекенди: Claude Code, Codex, Hermes Agent, Gemini, Snow CLI, Aion CLI
+- **Паралельне виконання кількох агентів** — Leader ділить завдання на підзадачі і делегує паралельно працюючим Teammate-агентам; кожен Teammate використовує свою модель через ACP (Agent Communication Protocol, шар координації мульти-агентності ByteTensor), Gemini або ByteTensor CLI
+- **Оркестрація Leader** — Leader призначає, відстежує та агрегує результати; підтримувані бекенди: Claude Code, Codex, Hermes Agent, Gemini, Snow CLI, ByteTensor CLI
 - **Ізольований робочий простір команди** — всі агенти спільно використовують одну папку; кожен має свій діалог підтвердження дозволів із значком на бічній панелі для очікуваних підтверджень
 
 <details>
@@ -172,7 +172,7 @@ ByteTensor постачається з повноцінним рушієм AI-а
 <br>
 
 - **Спільний робочий простір** — всі агенти читають/записують одну папку; файлова панель залишається видимою протягом усього процесу
-- **Підтримувані бекенди** — Claude Code, Codex, Gemini, Snow CLI, Aion CLI (aionrs); інші ACP-бекенди з `mcpCapabilities.stdio` підтримуються автоматично
+- **Підтримувані бекенди** — Claude Code, Codex, Gemini, Snow CLI, ByteTensor CLI; інші ACP-бекенди з `mcpCapabilities.stdio` підтримуються автоматично
 - **Динамічне масштабування** — додавайте або видаляйте Teammate-агентів під час роботи команди; мовчазні агенти автоматично переходять у статус failed із можливістю видалення в один клік
 - **Детальні дозволи** — кожен агент має свій діалог підтвердження дозволів; значок на бічній панелі показує очікувані підтвердження
 - **Обмін файлами** — Leader може передавати вкладення файлів Teammate-агентам

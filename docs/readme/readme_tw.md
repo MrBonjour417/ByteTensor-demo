@@ -143,7 +143,7 @@ ByteTensor 自帶完整的 AI Agent 引擎。不像其他工具需要您手動�
 
 如果您已經在用 Claude Code、Codex 或 Qwen Code，ByteTensor 會自動發現它們，讓您同時和這些 Agent 一起 Cowork——當然，還有內建 Agent。
 
-**支援的 Agent：** 內建 Agent（零配置） • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • Aion CLI（aionrs，隨附於 ByteTensor 的 Rust 後端服務） • Snow CLI • Hermes Agent • Cursor Agent 等
+**支援的 Agent：** 內建 Agent（零配置） • Claude Code • Codex • Qwen Code • Goose AI • OpenClaw • Augment Code • CodeBuddy • Kimi CLI • OpenCode • Factory Droid • GitHub Copilot • Qoder CLI • Mistral Vibe • Nanobot • ByteTensor CLI（隨附於 ByteTensor 的 Rust 後端服務） • Snow CLI • Hermes Agent • Cursor Agent 等
 
 <p align="center">
   <img src="../../resources/multi-agent支持openclaw.gif" alt="Multi-Agent Cowork" width="800">
@@ -163,8 +163,8 @@ ByteTensor 自帶完整的 AI Agent 引擎。不像其他工具需要您手動�
   <img src="../../resources/ByteTensor_team.gif" alt="Team Mode overview" width="800">
 </p>
 
-- **多 Agent 並行執行** — Leader 將任務分解為子任務並委派給並行運行的 Teammate Agent；每個 Teammate 透過 ACP（Agent Communication Protocol，ByteTensor 的多 Agent 協調層）、Gemini 或 Aionrs 使用獨立模型
-- **Leader 統籌編排** — Leader 分配、追蹤並彙總結果；支援的後端包括 Claude Code、Codex、Hermes Agent、Gemini、Snow CLI 和 Aion CLI
+- **多 Agent 並行執行** — Leader 將任務分解為子任務並委派給並行運行的 Teammate Agent；每個 Teammate 透過 ACP（Agent Communication Protocol，ByteTensor 的多 Agent 協調層）、Gemini 或 ByteTensor CLI 使用獨立模型
+- **Leader 統籌編排** — Leader 分配、追蹤並彙總結果；支援的後端包括 Claude Code、Codex、Hermes Agent、Gemini、Snow CLI 和 ByteTensor CLI
 - **團隊隔離工作空間** — 所有 Agent 共享同一資料夾；每個 Agent 有獨立的權限確認彈窗，側邊欄角標顯示待確認項
 
 <details>
@@ -173,7 +173,7 @@ ByteTensor 自帶完整的 AI Agent 引擎。不像其他工具需要您手動�
 <br>
 
 - **共享工作空間** — 所有 Agent 讀寫同一資料夾；檔案面板全程可見
-- **支援的後端** — Claude Code、Codex、Gemini、Snow CLI、Aion CLI（aionrs）；其他具備 `mcpCapabilities.stdio` 的 ACP 後端自動支援
+- **支援的後端** — Claude Code、Codex、Gemini、Snow CLI、ByteTensor CLI；其他具備 `mcpCapabilities.stdio` 的 ACP 後端自動支援
 - **動態伸縮** — 可在團隊運行時新增或移除 Teammate；靜默 Agent 自動升級為失敗狀態，支援一鍵移除
 - **細粒度權限** — 每個 Agent 有獨立的權限確認彈窗；側邊欄角標顯示待確認項
 - **檔案共享** — Leader 可向 Teammate 傳遞檔案附件
@@ -191,7 +191,7 @@ ByteTensor 自帶完整的 AI Agent 引擎。不像其他工具需要您手動�
 | Gemini API 金鑰            | Gemini 驅動的 Cowork Agent                   |
 | OpenAI API 金鑰            | GPT 驅動的 Cowork Agent                      |
 | Anthropic API 金鑰         | Claude 驅動的 Cowork Agent                   |
-| AWS Bedrock 憑證           | 透過 Aion CLI（aionrs）的 Bedrock 驅動 Agent |
+| AWS Bedrock 憑證           | 透過 ByteTensor CLI 的 Bedrock 驅動 Agent   |
 | Ollama / LM Studio（本地） | 本地模型 Cowork Agent                        |
 | NewAPI 閘道                | 統一存取 20+ 模型                            |
 
@@ -560,15 +560,15 @@ ByteTensor 是一個**免費開源的 Multi-AI Agent 桌面應用**。相比只�
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=vWxE6VO9TKo" target="_blank">
-    <img src="https://img.youtube.com/vi/vWxE6VO9TKo/maxresdefault.jpg" alt="Hermes + Aion UI is Insane (FREE)!" width="400">
+    <img src="https://img.youtube.com/vi/vWxE6VO9TKo/maxresdefault.jpg" alt="Hermes + ByteTensor is Insane (FREE)!" width="400">
   </a>
   &nbsp;&nbsp;
   <a href="https://www.youtube.com/watch?v=RgSLdOhICZw" target="_blank">
-    <img src="https://img.youtube.com/vi/RgSLdOhICZw/maxresdefault.jpg" alt="OpenClaw + Aion UI is Insane (FREE!)" width="400">
+    <img src="https://img.youtube.com/vi/RgSLdOhICZw/maxresdefault.jpg" alt="OpenClaw + ByteTensor is Insane (FREE!)" width="400">
   </a>
 </p>
 <p align="center">
-  <em>Julian Goldie SEO — Hermes + Aion UI is Insane (FREE!) · 27K views</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Julian Goldie SEO — OpenClaw + Aion UI is Insane (FREE!) · 11K views</em>
+  <em>Julian Goldie SEO — Hermes + ByteTensor is Insane (FREE!) · 27K views</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Julian Goldie SEO — OpenClaw + ByteTensor is Insane (FREE!) · 11K views</em>
 </p>
 
 <p align="center">
