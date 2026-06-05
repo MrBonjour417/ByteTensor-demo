@@ -6,6 +6,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { uuid, parseError, resolveLocaleKey } from '@/common/utils/utils';
+import { buildAgentConversationParams, getConversationTypeForBackend } from '@/common/utils/buildAgentConversationParams';
+import type { TProviderWithModel } from '@/common/config/storage';
 
 describe('utils', () => {
   describe('uuid', () => {
@@ -165,5 +167,40 @@ describe('utils', () => {
     it('handles empty string', () => {
       expect(resolveLocaleKey('')).toBe('en-US');
     });
+  });
+});
+
+describe('buildAgentConversationParams', () => {
+  const agentModel = { provider: 'test-provider', model: 'test-model' } as TProviderWithModel;
+
+  it('routes OMP as ACP and preserves backend key and agent id', () => {
+    const params = buildAgentConversationParams({
+      backend: 'omp',
+      name: 'OMP',
+      agent_id: '6f6d7001',
+      workspace: '/tmp/workspace',
+      model: agentModel,
+    });
+
+    expect(params).toEqual({
+      type: 'acp',
+      model: agentModel,
+      name: 'OMP',
+      extra: {
+        workspace: '/tmp/workspace',
+        custom_workspace: true,
+        backend: 'omp',
+        agent_name: 'OMP',
+        agent_id: '6f6d7001',
+      },
+    });
+    expect(getConversationTypeForBackend('omp')).toBe('acp');
+  });
+
+  it('keeps non-ACP internal engines on their conversation types', () => {
+    expect(getConversationTypeForBackend('aionrs')).toBe('aionrs');
+    expect(getConversationTypeForBackend('openclaw-gateway')).toBe('openclaw-gateway');
+    expect(getConversationTypeForBackend('nanobot')).toBe('nanobot');
+    expect(getConversationTypeForBackend('remote')).toBe('remote');
   });
 });

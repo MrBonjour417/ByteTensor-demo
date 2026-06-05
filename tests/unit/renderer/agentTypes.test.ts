@@ -16,6 +16,7 @@ vi.mock('@/common', () => ({
 
 import { ipcBridge } from '@/common';
 import { fetchDetectedAgents } from '@/renderer/utils/model/agentTypes';
+import { getAgentKey } from '@/renderer/pages/guid/hooks/agentSelectionUtils';
 
 const invokeGetAvailableAgents = vi.mocked(ipcBridge.acpConversation.getAvailableAgents.invoke);
 
@@ -71,5 +72,29 @@ describe('fetchDetectedAgents', () => {
     invokeGetAvailableAgents.mockResolvedValue({ id: 'not-an-array' });
 
     await expect(fetchDetectedAgents()).resolves.toEqual([]);
+  });
+});
+
+describe('getAgentKey', () => {
+  it("uses the backend key for the built-in OMP ACP row", () => {
+    expect(
+      getAgentKey({
+        id: '6f6d7001',
+        agent_type: 'acp',
+        agent_source: 'builtin',
+        backend: 'omp',
+      }),
+    ).toBe('omp');
+  });
+
+  it('uses the row id for custom ACP rows even when the backend is OMP', () => {
+    expect(
+      getAgentKey({
+        id: 'custom-omp-wrapper',
+        agent_type: 'acp',
+        agent_source: 'custom',
+        backend: 'omp',
+      }),
+    ).toBe('custom-omp-wrapper');
   });
 });
