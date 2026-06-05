@@ -76,14 +76,14 @@ describe('fetchDetectedAgents', () => {
 });
 
 describe('getAgentKey', () => {
-  it("uses the backend key for the built-in OMP ACP row", () => {
+  it('uses the backend key for the built-in OMP ACP row', () => {
     expect(
       getAgentKey({
         id: '6f6d7001',
         agent_type: 'acp',
         agent_source: 'builtin',
         backend: 'omp',
-      }),
+      })
     ).toBe('omp');
   });
 
@@ -94,7 +94,7 @@ describe('getAgentKey', () => {
         agent_type: 'acp',
         agent_source: 'custom',
         backend: 'omp',
-      }),
+      })
     ).toBe('custom-omp-wrapper');
   });
 });

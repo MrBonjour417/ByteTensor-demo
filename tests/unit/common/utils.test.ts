@@ -6,7 +6,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { uuid, parseError, resolveLocaleKey } from '@/common/utils/utils';
-import { buildAgentConversationParams, getConversationTypeForBackend } from '@/common/utils/buildAgentConversationParams';
+import {
+  buildAgentConversationParams,
+  getConversationTypeForBackend,
+} from '@/common/utils/buildAgentConversationParams';
 import type { TProviderWithModel } from '@/common/config/storage';
 
 describe('utils', () => {
