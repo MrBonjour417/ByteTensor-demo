@@ -105,7 +105,9 @@ const mapSizeToNative = (size?: ByteTensorSelectSize): NativeSelectSize | undefi
   return size;
 };
 
-type ByteTensorSelectComponent = React.ForwardRefExoticComponent<ByteTensorSelectProps & React.RefAttributes<SelectHandle>> & {
+type ByteTensorSelectComponent = React.ForwardRefExoticComponent<
+  ByteTensorSelectProps & React.RefAttributes<SelectHandle>
+> & {
   Option: typeof Select.Option;
   OptGroup: typeof Select.OptGroup;
 };

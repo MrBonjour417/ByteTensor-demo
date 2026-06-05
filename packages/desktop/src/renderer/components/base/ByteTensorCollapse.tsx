@@ -130,9 +130,11 @@ const ByteTensorCollapseComponent: React.FC<ByteTensorCollapseProps> & { Item: t
 
   // 提取并过滤有效的子面板项 / Extract and filter valid child panel items
   const items = useMemo(() => {
-    return React.Children.toArray(children).filter((child): child is React.ReactElement<ByteTensorCollapseItemProps> => {
-      return React.isValidElement(child) && child.type === ByteTensorCollapseItem;
-    });
+    return React.Children.toArray(children).filter(
+      (child): child is React.ReactElement<ByteTensorCollapseItemProps> => {
+        return React.isValidElement(child) && child.type === ByteTensorCollapseItem;
+      }
+    );
   }, [children]);
 
   /**

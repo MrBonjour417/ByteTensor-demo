@@ -186,14 +186,14 @@ ByteTensor 自帶完整的 AI Agent 引擎。不像其他工具需要您手動�
 
 其他 AI 應用可能只給您個聊天視窗，**但 ByteTensor 給您的是完整的 Cowork Agent**。
 
-| 您的 API 金鑰              | 您獲得的功能                                 |
-| :------------------------- | :------------------------------------------- |
-| Gemini API 金鑰            | Gemini 驅動的 Cowork Agent                   |
-| OpenAI API 金鑰            | GPT 驅動的 Cowork Agent                      |
-| Anthropic API 金鑰         | Claude 驅動的 Cowork Agent                   |
-| AWS Bedrock 憑證           | 透過 ByteTensor CLI 的 Bedrock 驅動 Agent   |
-| Ollama / LM Studio（本地） | 本地模型 Cowork Agent                        |
-| NewAPI 閘道                | 統一存取 20+ 模型                            |
+| 您的 API 金鑰              | 您獲得的功能                              |
+| :------------------------- | :---------------------------------------- |
+| Gemini API 金鑰            | Gemini 驅動的 Cowork Agent                |
+| OpenAI API 金鑰            | GPT 驅動的 Cowork Agent                   |
+| Anthropic API 金鑰         | Claude 驅動的 Cowork Agent                |
+| AWS Bedrock 憑證           | 透過 ByteTensor CLI 的 Bedrock 驅動 Agent |
+| Ollama / LM Studio（本地） | 本地模型 Cowork Agent                     |
+| NewAPI 閘道                | 統一存取 20+ 模型                         |
 
 不管用哪個模型，Agent 的能力都一樣強大——檔案讀寫、網路搜尋、圖像生成、工具調用，一個不少。ByteTensor 支援 **30+ 個 AI 平台**，雲端本地都能用。
 

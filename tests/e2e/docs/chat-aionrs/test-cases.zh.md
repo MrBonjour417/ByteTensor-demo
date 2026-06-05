@@ -1064,19 +1064,19 @@ SELECT status FROM conversations WHERE id = ?;
 
 ## 附录 A: 关键源码参考
 
-| 文件                                                                          | 关键行号 | 说明                                              |
-| ----------------------------------------------------------------------------- | -------- | ------------------------------------------------- |
-| `src/renderer/pages/guid/GuidPage.tsx`                                        | 465-469  | guid 页模型选择器可见性（`isGeminiMode`）         |
-| `src/renderer/pages/guid/components/AgentPillBar.tsx`                         | 58-122   | agent pill 点击事件                               |
-| `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 331-337  | `atPath` 状态（关联文件夹数组）                   |
-| `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 103-125  | 文件上传 handler                                  |
-| `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 206-212  | 发送消息（传递 `files` 参数）                     |
-| `src/renderer/pages/conversation/platforms/aionrs/useAionrsModelSelection.ts` | 36-40    | 过滤 Google Auth 模型                             |
+| 文件                                                                          | 关键行号 | 说明                                                                                 |
+| ----------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `src/renderer/pages/guid/GuidPage.tsx`                                        | 465-469  | guid 页模型选择器可见性（`isGeminiMode`）                                            |
+| `src/renderer/pages/guid/components/AgentPillBar.tsx`                         | 58-122   | agent pill 点击事件                                                                  |
+| `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 331-337  | `atPath` 状态（关联文件夹数组）                                                      |
+| `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 103-125  | 文件上传 handler                                                                     |
+| `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 206-212  | 发送消息（传递 `files` 参数）                                                        |
+| `src/renderer/pages/conversation/platforms/aionrs/useAionrsModelSelection.ts` | 36-40    | 过滤 Google Auth 模型                                                                |
 | `src/renderer/utils/model/agentModes.ts`                                      | 65-69    | ByteTensor CLI 权限枚举（内部 agent type：`aionrs`；`default`, `auto_edit`, `yolo`） |
-| `src/process/task/AionrsManager.ts`                                           | 250-259  | 权限模式自动批准逻辑                              |
-| `src/process/task/AionrsManager.ts`                                           | 727-737  | `setMode()` 持久化                                |
-| `src/process/task/AionrsManager.ts`                                           | 452-489  | missing finish fallback（15s 超时）               |
-| `aioncore bytetensor.db`                                                      | —        | conversations + messages 由 backend 独占持久化    |
+| `src/process/task/AionrsManager.ts`                                           | 250-259  | 权限模式自动批准逻辑                                                                 |
+| `src/process/task/AionrsManager.ts`                                           | 727-737  | `setMode()` 持久化                                                                   |
+| `src/process/task/AionrsManager.ts`                                           | 452-489  | missing finish fallback（15s 超时）                                                  |
+| `aioncore bytetensor.db`                                                      | —        | conversations + messages 由 backend 独占持久化                                       |
 
 ---
 

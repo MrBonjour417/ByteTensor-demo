@@ -409,14 +409,14 @@ afterEach(async ({ page }) => {
 
 #### 清理范围
 
-| 资源类型              | 清理规则                                | 验证方式                      |
-| --------------------- | --------------------------------------- | ----------------------------- |
-| **DB conversations**  | `DELETE WHERE name LIKE 'E2E-aionrs-%'` | `SELECT COUNT(*)` 期望 0      |
-| **DB messages**       | 级联删除（`ON DELETE CASCADE`）         | 自动清理                      |
-| **FS 临时目录**       | `rm -rf /tmp/e2e-chat-aionrs-*`         | `fs.existsSync()` 期望 false  |
-| **FS ByteTensor CLI session** | 包含内部 `.aionrs` session 目录          | 同上                          |
-| **UI state**          | ESC×5 + 导航到安全页面（如 `/guid`）    | 截图验证                      |
-| **sessionStorage**    | `clear()`                               | `sessionStorage.length === 0` |
+| 资源类型                      | 清理规则                                | 验证方式                      |
+| ----------------------------- | --------------------------------------- | ----------------------------- |
+| **DB conversations**          | `DELETE WHERE name LIKE 'E2E-aionrs-%'` | `SELECT COUNT(*)` 期望 0      |
+| **DB messages**               | 级联删除（`ON DELETE CASCADE`）         | 自动清理                      |
+| **FS 临时目录**               | `rm -rf /tmp/e2e-chat-aionrs-*`         | `fs.existsSync()` 期望 false  |
+| **FS ByteTensor CLI session** | 包含内部 `.aionrs` session 目录         | 同上                          |
+| **UI state**                  | ESC×5 + 导航到安全页面（如 `/guid`）    | 截图验证                      |
+| **sessionStorage**            | `clear()`                               | `sessionStorage.length === 0` |
 
 #### 对话命名规范（必须遵守）
 
@@ -926,7 +926,7 @@ test.beforeAll(async ({ page }) => {
 
 | 文件                                                                          | 行号   | 关键功能                                                            |
 | ----------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------- |
-| `src/renderer/pages/guid/GuidPage.tsx`                                        | 83-100 | providerAgentKey 状态（`aionrs`/`gemini`）                            |
+| `src/renderer/pages/guid/GuidPage.tsx`                                        | 83-100 | providerAgentKey 状态（`aionrs`/`gemini`）                          |
 | `src/renderer/pages/guid/components/AgentPillBar.tsx`                         | 79-82  | agent pill 渲染 + data-testid                                       |
 | `src/renderer/pages/guid/components/GuidActionRow.tsx`                        | 67-330 | 文件附件 + 模式选择器 + 发送按钮                                    |
 | `src/renderer/pages/guid/components/GuidModelSelector.tsx`                    | 35-100 | 模型选择器（guid 页）                                               |

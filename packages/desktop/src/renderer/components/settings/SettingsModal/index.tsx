@@ -109,7 +109,9 @@ export const SubModal: React.FC<SubModalProps> = ({ visible, onCancel, title, ch
       size='medium'
       title={title}
     >
-      <ByteTensorScrollArea className='h-full px-20px pb-16px text-14px text-t-primary'>{children}</ByteTensorScrollArea>
+      <ByteTensorScrollArea className='h-full px-20px pb-16px text-14px text-t-primary'>
+        {children}
+      </ByteTensorScrollArea>
     </ByteTensorModal>
   );
 };
@@ -360,7 +362,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onCancel, defaul
 
   // 桌面端菜单（侧边栏）/ Desktop menu (sidebar)
   const desktopMenu = (
-    <ByteTensorScrollArea className='flex-shrink-0 b-color-border-2 scrollbar-hide' style={{ width: `${SIDEBAR_WIDTH}px` }}>
+    <ByteTensorScrollArea
+      className='flex-shrink-0 b-color-border-2 scrollbar-hide'
+      style={{ width: `${SIDEBAR_WIDTH}px` }}
+    >
       <div className='flex flex-col gap-2px'>
         {menuItems.map((item) => (
           <div

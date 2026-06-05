@@ -146,8 +146,12 @@ const SpeechToTextSettingsSection: React.FC<{
           <Form layout='horizontal' labelAlign='left' className='space-y-12px'>
             <Form.Item label={t('settings.speechToTextProvider')}>
               <ByteTensorSelect value={config.provider} onChange={handleProviderChange}>
-                <ByteTensorSelect.Option value='openai'>{t('settings.speechToTextProviderOpenAI')}</ByteTensorSelect.Option>
-                <ByteTensorSelect.Option value='deepgram'>{t('settings.speechToTextProviderDeepgram')}</ByteTensorSelect.Option>
+                <ByteTensorSelect.Option value='openai'>
+                  {t('settings.speechToTextProviderOpenAI')}
+                </ByteTensorSelect.Option>
+                <ByteTensorSelect.Option value='deepgram'>
+                  {t('settings.speechToTextProviderDeepgram')}
+                </ByteTensorSelect.Option>
               </ByteTensorSelect>
             </Form.Item>
 
