@@ -832,14 +832,14 @@ WHERE conversation_id = ? AND position = 'left' AND type = 'text';
 
 1. 设置环境变量：`process.env.AION_CLI_PATH = '/dev/null'`
 2. 运行测试套件（或单个用例）
-3. 验证测试被 skip（状态：skipped，原因：`aionrs binary not found`）
+3. 验证测试被 skip（状态：skipped，原因：`ByteTensor CLI binary not found`）
 
 **DB 断言点**: N/A（测试未执行，不产生 DB 记录）
 
 **预期行为**:
 
 - 测试框架输出包含 `test.skip()` 标记
-- 控制台输出 skip 原因：`aionrs binary not found, skipping E2E tests`
+- 控制台输出 skip 原因：`ByteTensor CLI binary not found, skipping E2E tests`
 - CI 报告显示测试为 skipped（非 failed）
 
 **清理义务**: N/A（无 DB 记录产生）
@@ -863,7 +863,7 @@ export async function checkAionrsBinary(): Promise<boolean> {
 test.beforeAll(async () => {
   const hasBinary = await checkAionrsBinary();
   if (!hasBinary) {
-    test.skip('aionrs binary not found, skipping E2E tests');
+    test.skip('ByteTensor CLI binary not found, skipping E2E tests');
   }
 });
 ```
