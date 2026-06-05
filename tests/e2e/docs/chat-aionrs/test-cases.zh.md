@@ -1,4 +1,4 @@
-# ByteTensor CLI (`aionrs`) E2E 测试用例
+# ByteTensor CLI（内部标识：`aionrs`）E2E 测试用例
 
 **版本**: Gate 2 初稿
 **作者**: chat-aionrs-designer
@@ -17,14 +17,14 @@
 
 ### 1.2 全局前置条件
 
-**所有 ByteTensor CLI（内部标识 `aionrs`）测试用例的前置条件**:
+**所有 ByteTensor CLI（内部标识：`aionrs`）测试用例的前置条件**:
 
-1. **aionrs binary 可用**：通过 `ipcBridge.fs.findAionrsBinary.invoke()` 验证，否则 skip 全部测试
+1. **ByteTensor CLI binary（内部标识：`aionrs`）可用**：通过 `ipcBridge.fs.findAionrsBinary.invoke()` 验证，否则 skip 全部测试
 2. **用户配置的模型列表至少 1 个可用 provider**：
    - 调用 `ipcBridge.mode.getModelConfig.invoke()` 获取用户配置的 provider 列表
    - 过滤：排除 Google Auth provider（`platform` 包含 `gemini-with-google-auth`）
    - 验证：至少 1 个 provider 包含 apiKey 且有可用 model
-   - 若无可用 provider：skip 全部 aionrs 测试，原因："No non-Google-Auth provider with apiKey configured"
+   - 若无可用 provider：skip 全部 ByteTensor CLI 测试，原因：`No non-Google-Auth provider with apiKey configured`
 
 3. **测试数据准备**：临时工作目录 `/tmp/e2e-aionrs-<timestamp>/`
 
@@ -93,9 +93,9 @@ export async function getAionrsTestModels(page: Page): Promise<{
 **操作步骤**:
 
 1. 打开应用，导航至 guid 页（`/#/guid`）
-2. 选择 aionrs agent（点击 `[data-agent-backend="aionrs"]`）
+2. 选择 ByteTensor CLI agent（点击 `[data-agent-backend="aionrs"]`）
 3. 确认权限选择器显示 `default`（`AgentModeSelector` 默认值）
-4. 输入测试消息："Hello, aionrs! Please list files in current directory."
+4. 输入测试消息："Hello, ByteTensor CLI! Please list files in current directory."
 5. 点击发送按钮
 6. 等待跳转至对话页（URL 匹配 `/conversation/aionrs/*`）
 7. 等待 AI 回复流式完成（轮询 DB `messages.status='finish'`，超时 60s）
@@ -113,7 +113,7 @@ WHERE name LIKE 'E2E-aionrs-%' AND id = ?;
 SELECT id, type, position, content, status
 FROM messages
 WHERE conversation_id = ? AND position = 'right';
--- 期望: type='text', position='right', json_extract(content, '$.content') 包含 "Hello, aionrs!"
+-- 期望: type='text', position='right', json_extract(content, '$.content') 包含 "Hello, ByteTensor CLI!"
 
 -- 3. 验证 AI 回复
 SELECT id, type, position, status, created_at
@@ -162,7 +162,7 @@ SELECT COUNT(*) FROM messages WHERE conversation_id = ?;
    mkdir -p /tmp/e2e-aionrs-<timestamp>/test-folder/
    echo "sample content" > /tmp/e2e-aionrs-<timestamp>/test-folder/sample.txt
    ```
-2. 打开 guid 页，选择 aionrs agent
+2. 打开 guid 页，选择 ByteTensor CLI agent
 3. 从文件树选择 `test-folder/`（触发 `emitter.emit('aionrs.selected.file', [{ path, name, isFile: false }])`）
 4. 确认 guid 页显示文件夹 Tag（`data-testid="folder-tag-0"`）
 5. 输入消息："What files are in the attached folder?"
@@ -207,7 +207,7 @@ SELECT status FROM messages WHERE conversation_id = ? AND position = 'left' AND 
 **前置条件**:
 
 - 同 §1.2 全局前置条件
-- 测试文件存在：`/tmp/e2e-test-file.txt`（内容："Test file content for aionrs E2E"）
+- 测试文件存在：`/tmp/e2e-test-file.txt`（内容："Test file content for ByteTensor CLI E2E"）
 
 **维度组合**:
 | 维度 | 值 |
@@ -222,9 +222,9 @@ SELECT status FROM messages WHERE conversation_id = ? AND position = 'left' AND 
 
 1. 创建测试文件：
    ```bash
-   echo "Test file content for aionrs E2E" > /tmp/e2e-test-file.txt
+   echo "Test file content for ByteTensor CLI E2E" > /tmp/e2e-test-file.txt
    ```
-2. 打开 guid 页，选择 aionrs agent
+2. 打开 guid 页，选择 ByteTensor CLI agent
 3. 上传文件：
    - WebUI: 使用 `<input type="file">` 选择 `/tmp/e2e-test-file.txt`
    - Desktop: 调用 `ipcBridge.dialog.showOpen()` 选择文件
@@ -286,7 +286,7 @@ SELECT status FROM messages WHERE conversation_id = ? AND position = 'left';
 
 **操作步骤**:
 
-1. 打开 guid 页，选择 aionrs agent
+1. 打开 guid 页，选择 ByteTensor CLI agent
 2. 打开模型选择器（`GuidModelSelector`，仅当 `isGeminiMode=true` 可见，源码：`GuidPage.tsx:465-469`）
    - 若不可见，skip 此用例（标注原因："guid page model selector not enabled"）
 3. 选择 `modelB`（不 hardcode 具体模型 ID）
@@ -344,7 +344,7 @@ SELECT COUNT(*) FROM messages WHERE conversation_id = ? AND position = 'left';
 
 **操作步骤**:
 
-1. 打开 guid 页，选择 aionrs agent
+1. 打开 guid 页，选择 ByteTensor CLI agent
 2. 打开权限选择器（`AgentModeSelector`，`data-testid="agent-mode-selector-aionrs"`）
 3. 选择 `yolo` 模式（label: "YOLO"）
 4. 输入消息："Please create a file named test.txt with content 'E2E test'."
@@ -404,7 +404,7 @@ WHERE conversation_id = ? AND type = 'tool_group';
 
 **操作步骤**:
 
-1. 打开 guid 页，选择 aionrs agent
+1. 打开 guid 页，选择 ByteTensor CLI agent
 2. 选择 `auto_edit` 模式（label: "Auto-Accept Edits"）
 3. 输入消息："Please read the file ./README.md and summarize it."（触发 info 工具）
 4. 等待工具执行完成（无确认弹窗）
@@ -649,7 +649,7 @@ LIMIT 1;
    echo "content A" > /tmp/e2e-aionrs-<timestamp>/folder-a/file-a.txt
    echo "content B" > /tmp/e2e-test-file-b.txt
    ```
-2. 打开 guid 页，选择 aionrs agent
+2. 打开 guid 页，选择 ByteTensor CLI agent
 3. 选择第二个模型 + auto_edit 权限
 4. 关联文件夹 `folder-a/`
 5. 上传文件 `e2e-test-file-b.txt`
@@ -721,7 +721,7 @@ WHERE conversation_id = ? AND position = 'left' AND type = 'text';
    echo "File 2 content" > /tmp/e2e-file-2.txt
    echo "File 3 content" > /tmp/e2e-file-3.txt
    ```
-2. 打开 guid 页，选择 aionrs agent
+2. 打开 guid 页，选择 ByteTensor CLI agent
 3. 批量上传 3 个文件（WebUI: 选择多个文件；Desktop: 多次调用 dialog）
 4. 确认显示 3 个文件预览卡片
 5. 输入消息："Count the total lines across all attached files."
@@ -782,7 +782,7 @@ WHERE conversation_id = ? AND position = 'left' AND type = 'text';
    echo "X content" > /tmp/e2e-aionrs-<timestamp>/folder-x/x.txt
    echo "Y content" > /tmp/e2e-aionrs-<timestamp>/folder-y/y.txt
    ```
-2. 打开 guid 页，选择 aionrs agent
+2. 打开 guid 页，选择 ByteTensor CLI agent
 3. 从文件树依次选择 `folder-x/` 和 `folder-y/`
 4. 确认显示 2 个文件夹 Tag
 5. 输入消息："List all files in both attached folders."
@@ -824,7 +824,7 @@ WHERE conversation_id = ? AND position = 'left' AND type = 'text';
 
 **前置条件**:
 
-- aionrs binary **不可用**（通过环境变量 `AION_CLI_PATH=/dev/null` 模拟）
+- ByteTensor CLI binary（内部标识：`aionrs`）**不可用**（通过环境变量 `AION_CLI_PATH=/dev/null` 模拟）
 
 **维度组合**: N/A（验证前置检查逻辑）
 
@@ -832,14 +832,14 @@ WHERE conversation_id = ? AND position = 'left' AND type = 'text';
 
 1. 设置环境变量：`process.env.AION_CLI_PATH = '/dev/null'`
 2. 运行测试套件（或单个用例）
-3. 验证测试被 skip（状态：skipped，原因："aionrs binary not found"）
+3. 验证测试被 skip（状态：skipped，原因：`aionrs binary not found`）
 
 **DB 断言点**: N/A（测试未执行，不产生 DB 记录）
 
 **预期行为**:
 
 - 测试框架输出包含 `test.skip()` 标记
-- 控制台输出 skip 原因："aionrs binary not found, skipping E2E tests"
+- 控制台输出 skip 原因：`aionrs binary not found, skipping E2E tests`
 - CI 报告显示测试为 skipped（非 failed）
 
 **清理义务**: N/A（无 DB 记录产生）
@@ -895,7 +895,7 @@ test.beforeAll(async () => {
    ```bash
    dd if=/dev/zero of=/tmp/e2e-large-file.bin bs=1M count=100
    ```
-2. 打开 guid 页，选择 aionrs agent
+2. 打开 guid 页，选择 ByteTensor CLI agent
 3. 尝试上传 `/tmp/e2e-large-file.bin`
 4. **验证出现错误提示**（预期：前端拦截，显示 "文件过大" 提示）
 5. 确认文件未被添加到 `uploadFile` 数组
@@ -938,7 +938,7 @@ test.beforeAll(async () => {
 
 **操作步骤**:
 
-1. 打开 guid 页，选择 aionrs agent
+1. 打开 guid 页，选择 ByteTensor CLI agent
 2. 手动触发文件夹选择事件（模拟选择不存在的路径）：
    ```typescript
    emitter.emit('aionrs.selected.file', [
@@ -997,7 +997,7 @@ SELECT status FROM conversations WHERE id = ?;
    - 原因：根据议题 2 决策，本轮只测同一对话内切换生效
 
 4. **并发对话场景**（暂缓至后续 Gate）：
-   - 场景：同时打开 2 个 aionrs 对话，轮流发送消息 → 验证 binary 进程隔离
+   - 场景：同时打开 2 个 ByteTensor CLI 对话 → 轮流发送消息 → 验证 binary 进程隔离
    - 原因：需更复杂的测试编排（Playwright 多标签页 + 进程监控），本轮聚焦单对话流程
 
 ---
@@ -1072,7 +1072,7 @@ SELECT status FROM conversations WHERE id = ?;
 | `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 103-125  | 文件上传 handler                                  |
 | `src/renderer/pages/conversation/platforms/aionrs/AionrsSendBox.tsx`          | 206-212  | 发送消息（传递 `files` 参数）                     |
 | `src/renderer/pages/conversation/platforms/aionrs/useAionrsModelSelection.ts` | 36-40    | 过滤 Google Auth 模型                             |
-| `src/renderer/utils/model/agentModes.ts`                                      | 65-69    | aionrs 权限枚举（`default`, `auto_edit`, `yolo`） |
+| `src/renderer/utils/model/agentModes.ts`                                      | 65-69    | ByteTensor CLI 权限枚举（内部 agent type：`aionrs`；`default`, `auto_edit`, `yolo`） |
 | `src/process/task/AionrsManager.ts`                                           | 250-259  | 权限模式自动批准逻辑                              |
 | `src/process/task/AionrsManager.ts`                                           | 727-737  | `setMode()` 持久化                                |
 | `src/process/task/AionrsManager.ts`                                           | 452-489  | missing finish fallback（15s 超时）               |

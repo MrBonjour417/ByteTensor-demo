@@ -1,4 +1,4 @@
-# Aionrs Chat E2E 实现映射
+# ByteTensor CLI Chat（内部标识：`aionrs`）E2E 实现映射
 
 本文档记录 `test-cases.zh.md` 中定义的 15 个测试用例与实际 E2E 实现文件的对应关系。
 
@@ -23,7 +23,7 @@
 **当前测试状态**（v4 运行结果）：
 
 - ✅ Passed: 11/15 (TC-A-01/02/03/05/06/10/11/12/13/14/15)
-- ⏭️ Skipped: 4/15 (TC-A-04/07/08/09, aionrs binary 运行时切换挂起)
+- ⏭️ Skipped: 4/15 (TC-A-04/07/08/09, ByteTensor CLI binary（内部标识：`aionrs`）运行时切换挂起)
 - ❌ Failed: 0/15
 
 ---
@@ -123,7 +123,7 @@
 
 ### TC-A-13: Binary 不可达时跳过
 
-**原定义**：验证 aionrs binary 不可达时测试正确跳过（参考 `resolveAionrsBinary()` 返回 null 场景）
+**原定义**：验证 ByteTensor CLI binary（内部标识：`aionrs`）不可达时测试正确跳过（参考 `resolveAionrsBinary()` 返回 null 场景）
 
 **实现要点**：
 
@@ -247,9 +247,9 @@ expect(extra.workspace).toBe(workspacePath); // 或 undefined（无文件夹）
 通过 `waitForAionrsReply()` helper 轮询验证：
 
 - 等待 AI 回复完成（`conv.status === 'finished'` + content 稳定 2s）
-- 超时时间：150s（aionrs binary 比 Gemini API 快，但需要预留模型切换时间）
+- 超时时间：150s（ByteTensor CLI binary（内部标识：`aionrs`）比 Gemini API 快，但需要预留模型切换时间）
 - 字段名：`createdAt`（驼峰，非 `created_at`）
-- 状态字段：aionrs text messages 不设置 `status='finish'`，只依赖 `conv.status`
+- 状态字段：ByteTensor CLI text messages（内部 type：`aionrs`）不设置 `status='finish'`，只依赖 `conv.status`
 
 ---
 
@@ -298,7 +298,7 @@ expect(extra.workspace).toBe(workspacePath); // 或 undefined（无文件夹）
 ### TC-A-04 / TC-A-07 / TC-A-08 / TC-A-09: 运行时切换后消息挂起
 
 **症状**：
-运行时切换 model 或 permission 后，后续消息发送时 aionrs binary 静默挂起，AI 回复永不到达。
+运行时切换 model 或 permission 后，后续消息发送时 ByteTensor CLI binary（内部标识：`aionrs`）静默挂起，AI 回复永不到达。
 
 **复现场景**：
 
@@ -308,7 +308,7 @@ expect(extra.workspace).toBe(workspacePath); // 或 undefined（无文件夹）
 
 **典型复现步骤**（TC-A-08）：
 
-1. 创建 aionrs 对话，使用 modelA + default 模式
+1. 创建 ByteTensor CLI 对话，使用 modelA + default 模式
 2. 发送第一条消息，等待 AI 回复完成（✅ 正常）
 3. 通过 UI 切换：modelA → modelB（模型切换）
 4. 通过 UI 切换：default → yolo（权限切换）
@@ -333,14 +333,14 @@ expect(extra.workspace).toBe(workspacePath); // 或 undefined（无文件夹）
 
 **待排查**：
 
-- ❓ aionrs binary 的运行时状态机是否支持 model/permission 切换？
+- ❓ ByteTensor CLI binary（内部标识：`aionrs`）的运行时状态机是否支持 model/permission 切换？
 - ❓ 切换后的 binary 进程是否正确重启/重新初始化？
 - ❓ 环境变量/配置文件在运行时变更后是否生效？
 
 **当前处理**：
 
 - TC-A-04 / TC-A-07 / TC-A-08 / TC-A-09 标记为 `test.skip()`，跳过原因记录在测试代码注释中
-- 等待产品侧对 aionrs binary 的运行时切换逻辑进行诊断
+- 等待产品侧对 ByteTensor CLI binary（内部标识：`aionrs`）的运行时切换逻辑进行诊断
 - 重开条件：产品团队确认 binary 支持运行时切换，或提供 workaround 方案
 
 **影响范围**：

@@ -1,4 +1,4 @@
-# ByteTensor CLI (`aionrs`) E2E 测试 - 讨论记录
+# ByteTensor CLI（内部标识：`aionrs`）E2E 测试 - 讨论记录
 
 **项目**: ByteTensor E2E Coverage
 **子组**: chat-aionrs
@@ -14,7 +14,7 @@
 
 **完成内容**:
 
-1. 分析 aionrs 源码（guid 入口、对话页、进程端、权限枚举、DB schema）
+1. 分析 ByteTensor CLI 源码（内部标识：`aionrs`；guid 入口、对话页、进程端、权限枚举、DB schema）
 2. 起草 `requirements.zh.md` 初稿
 3. 识别 8 个重大不确定性（模型切换、权限存储范围、binary 来源等）
 
@@ -26,7 +26,7 @@
 
 **已知约束**:
 
-- aionrs **不支持 Google Auth**（`useAionrsModelSelection.ts:36-40` 过滤）
+- ByteTensor CLI（内部标识：`aionrs`）**不支持 Google Auth**（`useAionrsModelSelection.ts:36-40` 过滤）
 - 权限 "always allow" 当前仅内存存储（进程重启后失效）
 - ~~guid 页和对话页均无 `data-testid`~~ **更正**（engineer 发现）：guid 页已有 `data-agent-backend` 等属性，对话页需新增 15+ testid
 
@@ -138,7 +138,7 @@
    - 函数: `cleanupE2EAionrsConversations()`, `getAionrsMessages()` 等
 
 4. **binary 已验证可用**
-   - 版本: aionrs v0.1.12
+   - 版本: ByteTensor CLI binary（内部标识：`aionrs`）v0.1.12
    - 路径: `/Users/zhoukai/.local/bin/aionrs`
 
 **技术建议**（对 §8 不确定性）:
@@ -231,17 +231,17 @@
 
 ### 议题 4: CI 环境 binary 来源？
 
-**背景**: E2E 需依赖 aionrs binary
+**背景**: E2E 需依赖 ByteTensor CLI binary（内部标识：`aionrs`）
 
 **选项**:
 
 - A) CI 预装（需 DevOps 配置）
 - B) 测试前动态下载（需提供 URL + 版本锁定）
-- C) 跳过 aionrs E2E（标记 skip + 原因）
+- C) 跳过 ByteTensor CLI E2E（标记 skip + 原因）
 
 **engineer 建议**: 先实现 **local E2E**，CI 策略延后
 
-- **短期**: CI 跳过 aionrs E2E（`test.skip(() => resolveAionrsBinary() === null, 'aionrs binary not found')`）
+- **短期**: CI 跳过 ByteTensor CLI E2E（`test.skip(() => resolveAionrsBinary() === null, 'aionrs binary not found')`）
 - **长期**: DevOps 配置预装 或 动态下载（需 team-lead 协调）
 
 **team-lead 决策**: **选 C CI 跳过**（短期）
@@ -344,13 +344,13 @@ const isGeminiMode =
   (!agentSelection.isPresetAgent || agentSelection.currentEffectiveAgentInfo.isAvailable);
 ```
 
-**结论**: **备注不成立** — `isGeminiMode` 对 `aionrs` 默认为 **true**（`PROVIDER_BASED_AGENTS` 包含 aionrs）
+**结论**: **备注不成立** — `isGeminiMode` 对 `aionrs` 默认为 **true**（`PROVIDER_BASED_AGENTS` 包含 `aionrs`）
 
 **建议调整**:
 
 - 删除 TC-A-04 备注："若 guid 页模型选择器未启用...改为 TC-A-07"
 - 保留 TC-A-04 操作步骤 2："打开模型选择器（`GuidModelSelector`），选择第二个模型"
-- 补充 TC-A-04 前置条件："验证 `isGeminiMode=true`（aionrs 默认启用）"
+- 补充 TC-A-04 前置条件："验证 `isGeminiMode=true`（ByteTensor CLI，内部标识：`aionrs`，默认启用）"
 
 ---
 
@@ -438,7 +438,7 @@ async processDroppedFiles(files: FileList, ...) {
 **E2E 环境评估**:
 
 - `process.env` 在 **Node.js 测试进程**中修改，但 **不影响已启动的 Electron 子进程**
-- aionrs binary 解析在 **main process**（`binaryResolver.ts`），读取 `process.env.AION_CLI_PATH`
+- ByteTensor CLI binary（内部标识：`aionrs`）解析在 **main process**（`binaryResolver.ts`），读取 `process.env.AION_CLI_PATH`
 
 **建议调整**:
 
@@ -476,7 +476,7 @@ TC-A-07 备注"根据议题 1 决策，不验证 binary 内部 sessionId"，但 
 
 | 审核点          | 状态          | 调整建议                                                |
 | --------------- | ------------- | ------------------------------------------------------- |
-| 1. TC-A-04 备注 | ⚠️ 不成立     | 删除"改为 TC-A-07"备注，aionrs 默认启用模型选择器       |
+| 1. TC-A-04 备注 | ⚠️ 不成立     | 删除"改为 TC-A-07"备注，ByteTensor CLI 默认启用模型选择器（内部标识：`aionrs`）       |
 | 2. TC-A-05 断言 | ⚠️ 选择器错误 | 补充 testid 到 ConversationChatConfirm 或改用文本选择器 |
 | 3. TC-A-08 断言 | ✅ 有效       | 无需调整，`Canceled` 状态存在且写入 DB                  |
 | 4. TC-A-14 断言 | ⚠️ 需调整     | Electron 无前端限制，改测 binary 层错误处理             |
