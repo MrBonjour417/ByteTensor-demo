@@ -259,7 +259,7 @@ const AIONRS_BINARY_PATH = '/Users/zhoukai/.local/bin/aionrs';
 // 通过 binaryResolver 查找
 const binary = await ipcBridge.fs.findAionrsBinary.invoke();
 if (!binary) {
-  test.skip('aionrs binary not found in PATH or ~/.local/bin/aionrs, skipping E2E tests');
+  test.skip('ByteTensor CLI binary not found in PATH or ~/.local/bin/aionrs, skipping E2E tests');
 }
 ```
 
@@ -282,13 +282,13 @@ export async function checkAionrsBinary(page: Page): Promise<boolean> {
   try {
     const binary = await invokeBridge(page, 'fs.findAionrsBinary');
     if (!binary) {
-      console.error('[E2E Setup] aionrs binary not found in PATH or ~/.local/bin/aionrs');
+      console.error('[E2E Setup] ByteTensor CLI binary not found in PATH or ~/.local/bin/aionrs');
       return false;
     }
-    console.log(`[E2E Setup] aionrs binary found: ${binary}`);
+    console.log(`[E2E Setup] ByteTensor CLI binary found: ${binary}`);
     return true;
   } catch (error) {
-    console.error('[E2E Setup] Failed to check aionrs binary:', error);
+    console.error('[E2E Setup] Failed to check ByteTensor CLI binary:', error);
     return false;
   }
 }
@@ -297,7 +297,7 @@ export async function checkAionrsBinary(page: Page): Promise<boolean> {
 test.beforeAll(async ({ page }) => {
   const hasBinary = await checkAionrsBinary(page);
   if (!hasBinary) {
-    test.skip('aionrs binary not found, skipping E2E tests');
+    test.skip('ByteTensor CLI binary not found, skipping E2E tests');
   }
 });
 ```
@@ -305,7 +305,7 @@ test.beforeAll(async ({ page }) => {
 **关键要求**（team-lead 指示）:
 
 - 若 binary 不存在，**必须** `test.skip()` 并打印明确错误信息（不要悄悄跳过）
-- 错误信息示例: `aionrs binary not found in PATH or ~/.local/bin/aionrs`
+- 错误信息示例: `ByteTensor CLI binary not found in PATH or ~/.local/bin/aionrs`
 
 ---
 
@@ -322,7 +322,7 @@ test.beforeAll(async ({ page }) => {
 
 ```typescript
 test(
-  'should start aionrs conversation',
+  'should start ByteTensor CLI conversation',
   async ({ page }) => {
     // Playwright test timeout: 60s（留足 binary 启动时间）
   },
@@ -654,16 +654,16 @@ test('should verify DB records after conversation', async ({ page }) => {
 **场景**: 无附件 + 默认模型 + default 权限
 
 ```typescript
-test('should complete aionrs conversation with no attachments', async ({ page }) => {
+test('should complete ByteTensor CLI conversation with no attachments', async ({ page }) => {
   // 1. 导航到 guid 页
   await page.goto('/#/guid');
 
-  // 2. 选择 aionrs agent
+  // 2. 选择 ByteTensor CLI agent（内部标识：`aionrs`）
   await page.click('[data-agent-backend="aionrs"][data-agent-selected="false"]');
 
   // 3. 输入消息（通过 Playwright locator）
-  const textarea = page.locator('textarea[placeholder*="aionrs"]');
-  await textarea.fill('Hello, aionrs!');
+  const textarea = page.locator('textarea[placeholder*="ByteTensor CLI"]');
+  await textarea.fill('Hello, ByteTensor CLI!');
 
   // 4. 点击发送按钮
   await page.click('.send-button-custom'); // 或 [data-testid="aionrs-send-btn"]
@@ -757,7 +757,7 @@ test('should complete aionrs conversation with no attachments', async ({ page })
 **降级策略**（若条件不满足）:
 
 - 若只有 1 个 model: 测试降级为"只验证当前 model，跳过切换场景"
-- 若无可用 provider: `test.skip('No available providers for aionrs, skipping E2E tests')`
+- 若无可用 provider: `test.skip('No available providers for ByteTensor CLI (internal identifier: aionrs), skipping E2E tests')`
 
 **动态 model 选择**（E2E setup 实现）:
 
@@ -858,7 +858,7 @@ export async function checkAionrsBinary(page: Page): Promise<boolean> {
 test.beforeAll(async ({ page }) => {
   const hasBinary = await checkAionrsBinary(page);
   if (!hasBinary) {
-    test.skip('aionrs binary not found in PATH or ~/.local/bin/aionrs, skipping E2E tests');
+    test.skip('ByteTensor CLI binary not found in PATH or ~/.local/bin/aionrs, skipping E2E tests');
   }
 });
 ```
