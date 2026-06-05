@@ -99,7 +99,7 @@
 | 1. 模型切换是否需重启 binary？      | 等 team-lead 验证能力                | A（运行时切换）验证 sessionId 不变；B（需重启）验证 sessionId 变化；C（不支持）UI 降级 |
 | 2. 权限 "always allow" 是否持久化？ | 保持内存存储（B 选项）               | 验证单次对话内生效 + 重启应用后失效                                                    |
 | 3. 工具确认中途切换权限/模型？      | 切换权限取消 pending 确认            | 用例：弹窗确认中 → 切换 yolo → 验证弹窗消失 + 自动批准                                 |
-| 4. CI 环境 binary 来源？            | 跳过 CI E2E（C 选项） + 本地测试套件 | `test.beforeAll()` 检查 binary，不存在则 `test.skip('aionrs binary not found')`        |
+| 4. CI 环境 binary 来源？            | 跳过 CI E2E（C 选项） + 本地测试套件 | `test.beforeAll()` 检查 ByteTensor CLI binary，不存在则 `test.skip('ByteTensor CLI binary not found')` |
 
 **下一步**:
 
@@ -148,7 +148,7 @@
 | 1. 模型切换是否需重启 binary？      | 用 **E2E 探测式测试** 记录当前行为       | 发送消息 A（模型 M1）→ 切换到 M2 → 发送消息 B → 查 DB: `messages[B].extra.model === M2 ?` |
 | 2. 权限 "always allow" 是否持久化？ | **内存存储不阻塞 E2E**，持久化属产品需求 | 同一对话内验证 "always allow" 生效即可                                                    |
 | 3. 工具确认中途切换权限/模型？      | E2E 先 **记录当前行为**（截图+日志）     | 触发弹窗 → 切换模式 → 观察弹窗状态 → 提交 team-lead 决策                                  |
-| 4. CI 环境 binary 来源？            | 短期 **CI skip**，长期 DevOps 配置       | `test.skip(() => resolveAionrsBinary() === null, 'aionrs binary not found')`              |
+| 4. CI 环境 binary 来源？            | 短期 **CI skip**，长期 DevOps 配置       | `test.skip(() => resolveAionrsBinary() === null, 'ByteTensor CLI binary not found')`              |
 
 **工作量预估**:
 
@@ -241,13 +241,13 @@
 
 **engineer 建议**: 先实现 **local E2E**，CI 策略延后
 
-- **短期**: CI 跳过 ByteTensor CLI E2E（`test.skip(() => resolveAionrsBinary() === null, 'aionrs binary not found')`）
+- **短期**: CI 跳过 ByteTensor CLI E2E（`test.skip(() => resolveAionrsBinary() === null, 'ByteTensor CLI binary not found')`）
 - **长期**: DevOps 配置预装 或 动态下载（需 team-lead 协调）
 
 **team-lead 决策**: **选 C CI 跳过**（短期）
 
 - **理由**: 长期 CI 策略延后，不阻塞本轮 E2E 交付
-- **实施**: `test.skip(() => resolveAionrsBinary() === null, 'aionrs binary not found')`
+- **实施**: `test.skip(() => resolveAionrsBinary() === null, 'ByteTensor CLI binary not found')`
 
 **实现方案**:
 
@@ -266,7 +266,7 @@ export async function checkAionrsBinary(): Promise<boolean> {
 test.beforeAll(async () => {
   const hasBinary = await checkAionrsBinary();
   if (!hasBinary) {
-    test.skip('aionrs binary not found, skipping E2E tests');
+    test.skip('ByteTensor CLI binary not found, skipping E2E tests');
   }
 });
 ```

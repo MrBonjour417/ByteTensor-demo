@@ -128,7 +128,7 @@
 **实现要点**：
 
 1. 在 `beforeAll` 中临时 mock `resolveAionrsBinary()` 返回 null
-2. 验证 `test.skip(true, 'aionrs binary not found')` 被触发
+2. 验证 `test.skip(true, 'ByteTensor CLI binary not found')` 被触发
 3. 无截图（跳过测试不执行主体）
 
 ### TC-A-14: 超大文件上传限制
