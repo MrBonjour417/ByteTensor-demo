@@ -114,7 +114,7 @@ function normalizeAgentDisplayName(agent: AgentMetadata): AgentMetadata {
     ...agent,
     name: 'ByteTensor CLI',
     name_i18n: {
-      ...(agent.name_i18n ?? {}),
+      ...agent.name_i18n,
       'en-US': 'ByteTensor CLI',
       'zh-CN': 'ByteTensor CLI',
       'zh-TW': 'ByteTensor CLI',
