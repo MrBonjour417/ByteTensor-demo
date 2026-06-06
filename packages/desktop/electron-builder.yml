@@ -109,9 +109,9 @@ extraResources:
     to: .
   - from: resources/app.png
     to: app.png
-  # aioncore binary (pre-compiled per platform/arch, ships its own bun runtime)
-  - from: resources/bundled-aioncore
-    to: bundled-aioncore
+  # ByteTensorCore binary (pre-compiled per platform/arch, ships its own bun runtime)
+  - from: resources/bundled-bytetensorcore
+    to: bundled-bytetensorcore
   - from: resources/hub
     to: hub
 win:

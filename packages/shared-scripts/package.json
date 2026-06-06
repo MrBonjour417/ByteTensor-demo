@@ -5,7 +5,8 @@
   "description": "Shared build scripts for ByteTensor packages",
   "type": "commonjs",
   "exports": {
-    "./prepare-aioncore": "./src/prepare-aioncore.js"
+    "./prepare-aioncore": "./src/prepare-aioncore.js",
+    "./prepare-bytetensorcore": "./src/prepare-aioncore.js"
   },
   "scripts": {
     "test": "vitest run",

@@ -14,8 +14,8 @@
  *   BYTETENSOR_DATA_DIR       : override userData path (default Electron-compatible)
  *   BYTETENSOR_LOG_DIR        : override log dir (default <dataDir>/logs)
  *   BYTETENSOR_STATIC_DIR     : override static dir (default out/renderer)
- *   BYTETENSOR_BACKEND_BIN    : absolute path to aioncore binary (else PATH lookup)
- *   BYTETENSOR_BACKEND_BUNDLED_DIR : dir containing bundled-aioncore/<plat-arch>/binary
+ *   BYTETENSOR_BACKEND_BIN    : absolute path to ByteTensorCore binary (else PATH lookup)
+ *   BYTETENSOR_BACKEND_BUNDLED_DIR : dir containing bundled-bytetensorcore/<plat-arch>/binary
  *   BYTETENSOR_OPEN_BROWSER   : "1"/"true" to force open, "0"/"false" to disable
  */
 
@@ -33,7 +33,8 @@ const DEFAULT_PORT = (() => {
   if (process.env.BYTETENSOR_MULTI_INSTANCE === '1') return 25810;
   return 25809;
 })();
-const BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
+const BACKEND_BINARY = process.platform === 'win32' ? 'bytetensorcore.exe' : 'bytetensorcore';
+const LEGACY_BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
 
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
@@ -48,7 +49,7 @@ const getFlag = (name: string): string | undefined => {
 };
 
 /**
- * Resolve the directory where aioncore persists its SQLite DB.
+ * Resolve the directory where ByteTensorCore persists its SQLite DB.
  *
  * `bun run webui` runs **independently of the Electron desktop app** — it must
  * work on hosts that never installed ByteTensor.app, and its default work dir must
@@ -142,10 +143,18 @@ function resolveBackendBinary(): string {
   if (process.env.BYTETENSOR_BACKEND_BIN) return process.env.BYTETENSOR_BACKEND_BIN;
 
   const bundledBase =
-    process.env.BYTETENSOR_BACKEND_BUNDLED_DIR ?? path.join(repoRoot, 'resources', 'bundled-aioncore');
+    process.env.BYTETENSOR_BACKEND_BUNDLED_DIR ?? path.join(repoRoot, 'resources', 'bundled-bytetensorcore');
   const runtimeKey = `${process.platform}-${process.arch}`;
   const bundled = path.join(bundledBase, runtimeKey, BACKEND_BINARY);
   if (fs.existsSync(bundled)) return bundled;
+
+  const legacyBundledInBase = path.join(bundledBase, runtimeKey, LEGACY_BACKEND_BINARY);
+  if (fs.existsSync(legacyBundledInBase)) return legacyBundledInBase;
+
+  if (!process.env.BYTETENSOR_BACKEND_BUNDLED_DIR) {
+    const legacyBundled = path.join(repoRoot, 'resources', 'bundled-aioncore', runtimeKey, LEGACY_BACKEND_BINARY);
+    if (fs.existsSync(legacyBundled)) return legacyBundled;
+  }
 
   try {
     const cmd = process.platform === 'win32' ? `where ${BACKEND_BINARY}` : `which ${BACKEND_BINARY}`;

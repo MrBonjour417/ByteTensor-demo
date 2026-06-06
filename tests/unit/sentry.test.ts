@@ -58,7 +58,7 @@ describe('selectRecentLogFiles', () => {
   it('returns every file from the N most recent non-empty days', () => {
     const files = [
       { path: '/a/2026-05-22.log', mtime: Date.UTC(2026, 4, 22, 10), size: 100 },
-      { path: '/a/2026-05-22.aioncore.log', mtime: Date.UTC(2026, 4, 22, 11), size: 200 },
+      { path: '/a/2026-05-22.bytetensorcore.log', mtime: Date.UTC(2026, 4, 22, 11), size: 200 },
       { path: '/a/2026-05-21.log', mtime: Date.UTC(2026, 4, 21, 10), size: 50 },
       { path: '/a/2026-05-20.log', mtime: Date.UTC(2026, 4, 20, 10), size: 0 },
       { path: '/a/2026-05-19.log', mtime: Date.UTC(2026, 4, 19, 10), size: 80 },
@@ -111,12 +111,12 @@ describe('packAndCap', () => {
 describe('captureBackendStartupFailure', () => {
   it('captures and flushes a dedicated backend startup failure with diagnostics', async () => {
     autoUpdateDiagnosticsMock.readAutoUpdateDiagnostics.mockReturnValue(undefined);
-    const error = new Error('aioncore failed to start within timeout') as Error & {
+    const error = new Error('ByteTensorCore failed to start within timeout') as Error & {
       details?: Record<string, unknown>;
     };
     error.details = {
       stage: 'health_timeout',
-      binaryPath: '/abs/path/aioncore',
+      binaryPath: '/abs/path/bytetensorcore',
       port: 33334,
       stderrTail: 'database is locked',
     };
@@ -127,7 +127,7 @@ describe('captureBackendStartupFailure', () => {
     expect(Sentry.flush).toHaveBeenCalledWith(2000);
     expect(Sentry.withScope).toHaveBeenCalledOnce();
     expect(scopeSetContext).toHaveBeenCalledWith(
-      'aioncore_install_diagnostics',
+      'bytetensorcore_install_diagnostics',
       expect.objectContaining({
         appVersion: '0.0.0-test',
         isPackaged: false,
@@ -152,14 +152,14 @@ describe('captureBackendStartupFailure', () => {
     vi.setSystemTime(new Date('2026-06-01T22:41:49.273Z'));
 
     try {
-      const error = new Error('aioncore startup failed while resolving backend binary') as Error & {
+      const error = new Error('ByteTensorCore startup failed while resolving backend binary') as Error & {
         details?: Record<string, unknown>;
       };
       error.details = {
         stage: 'resolve_binary',
         isPackaged: true,
         runtimeKey: 'win32-x64',
-        binaryName: 'aioncore.exe',
+        binaryName: 'bytetensorcore.exe',
         resourcesPath: 'C:\\Users\\alice\\AppData\\Local\\Programs\\ByteTensor\\resources',
         bundledDirExists: false,
         runtimeDirExists: false,
@@ -188,10 +188,10 @@ describe('captureBackendStartupFailure', () => {
       expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.seconds_since_quit_and_install', '46');
       expect(scopeSetTag).toHaveBeenCalledWith('bytetensor.backend_startup.install_path_kind', 'user_local_programs');
       expect(scopeSetContext).toHaveBeenCalledWith(
-        'aioncore_startup_classification',
+        'bytetensorcore_startup_classification',
         expect.objectContaining({
           incompleteInstallationKind: 'missing_directory_resources',
-          missingBundledAioncoreDir: true,
+          missingBundledByteTensorCoreDir: true,
           missingRuntimeDir: true,
           missingBackendBinary: true,
         })
@@ -205,12 +205,12 @@ describe('captureBackendStartupFailure', () => {
   it('sets bucketed health polling tags for backend startup timeouts', async () => {
     scopeSetTag.mockClear();
     autoUpdateDiagnosticsMock.readAutoUpdateDiagnostics.mockReturnValue(undefined);
-    const error = new Error('aioncore failed to start within timeout') as Error & {
+    const error = new Error('ByteTensorCore failed to start within timeout') as Error & {
       details?: Record<string, unknown>;
     };
     error.details = {
       stage: 'health_timeout',
-      binaryPath: '/abs/path/aioncore',
+      binaryPath: '/abs/path/bytetensorcore',
       port: 33334,
       healthCheckAttempts: 1,
       healthCheckExpectedAttempts: 150,
@@ -267,7 +267,7 @@ describe('initSentry beforeSend', () => {
       exception: {
         values: [
           {
-            value: '[WebUI] Cannot start: aioncore is not running (globalThis.__backendPort unset)',
+            value: '[WebUI] Cannot start: ByteTensorCore is not running (globalThis.__backendPort unset)',
           },
         ],
       },

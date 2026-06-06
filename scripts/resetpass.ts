@@ -12,7 +12,7 @@
  *   1. A `bun run webui` is already running on the default port → reach its
  *      reverse-proxied /api/webui/reset-password directly. Users don't have to
  *      stop the server first; the just-reset password can be used immediately.
- *   2. No webui running → spawn a short-lived aioncore against the same
+ *   2. No webui running → spawn a short-lived ByteTensorCore against the same
  *      data-dir, POST /api/webui/reset-password, and stop the backend. This is
  *      the offline / cold-start path.
  *
@@ -30,7 +30,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { startBackend, stopBackend } from '@bytetensor/web-host';
 
-const BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
+const BACKEND_BINARY = process.platform === 'win32' ? 'bytetensorcore.exe' : 'bytetensorcore';
+const LEGACY_BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
 
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
@@ -83,10 +84,18 @@ function resolveBackendBinary(): string {
   if (process.env.BYTETENSOR_BACKEND_BIN) return process.env.BYTETENSOR_BACKEND_BIN;
 
   const bundledBase =
-    process.env.BYTETENSOR_BACKEND_BUNDLED_DIR ?? path.join(repoRoot, 'resources', 'bundled-aioncore');
+    process.env.BYTETENSOR_BACKEND_BUNDLED_DIR ?? path.join(repoRoot, 'resources', 'bundled-bytetensorcore');
   const runtimeKey = `${process.platform}-${process.arch}`;
   const bundled = path.join(bundledBase, runtimeKey, BACKEND_BINARY);
   if (fs.existsSync(bundled)) return bundled;
+
+  const legacyBundledInBase = path.join(bundledBase, runtimeKey, LEGACY_BACKEND_BINARY);
+  if (fs.existsSync(legacyBundledInBase)) return legacyBundledInBase;
+
+  if (!process.env.BYTETENSOR_BACKEND_BUNDLED_DIR) {
+    const legacyBundled = path.join(repoRoot, 'resources', 'bundled-aioncore', runtimeKey, LEGACY_BACKEND_BINARY);
+    if (fs.existsSync(legacyBundled)) return legacyBundled;
+  }
 
   try {
     const cmd = process.platform === 'win32' ? `where ${BACKEND_BINARY}` : `which ${BACKEND_BINARY}`;

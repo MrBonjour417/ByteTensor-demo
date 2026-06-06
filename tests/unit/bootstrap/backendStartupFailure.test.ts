@@ -3,14 +3,14 @@ import { classifyBackendStartupFailure } from '@/process/startup/backendStartupF
 
 describe('classifyBackendStartupFailure', () => {
   it('classifies missing GLIBC symbols as an incompatible backend runtime', () => {
-    const error = new Error('aioncore exited before health check passed') as Error & {
+    const error = new Error('ByteTensorCore exited before health check passed') as Error & {
       details?: Record<string, unknown>;
     };
     error.details = {
       stage: 'early_exit',
       stderrTail:
-        "/opt/ByteTensor/resources/bundled-aioncore/linux-x64/aioncore.bin: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found\n" +
-        "/opt/ByteTensor/resources/bundled-aioncore/linux-x64/aioncore.bin: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.32' not found",
+        "/opt/ByteTensor/resources/bundled-bytetensorcore/linux-x64/bytetensorcore.bin: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found\n" +
+        "/opt/ByteTensor/resources/bundled-bytetensorcore/linux-x64/bytetensorcore.bin: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.32' not found",
     };
 
     expect(classifyBackendStartupFailure(error)).toEqual({
@@ -21,7 +21,7 @@ describe('classifyBackendStartupFailure', () => {
   });
 
   it('keeps unrelated startup failures in the generic bucket', () => {
-    const error = new Error('aioncore failed to start within timeout') as Error & {
+    const error = new Error('ByteTensorCore failed to start within timeout') as Error & {
       details?: Record<string, unknown>;
     };
     error.details = {
@@ -35,14 +35,14 @@ describe('classifyBackendStartupFailure', () => {
   });
 
   it('classifies packaged app resources missing from installation as incomplete installation', () => {
-    const error = new Error('aioncore startup failed while resolving backend binary') as Error & {
+    const error = new Error('ByteTensorCore startup failed while resolving backend binary') as Error & {
       details?: Record<string, unknown>;
     };
     error.details = {
       stage: 'resolve_binary',
       isPackaged: true,
       runtimeKey: 'win32-x64',
-      binaryName: 'aioncore.exe',
+      binaryName: 'bytetensorcore.exe',
       bundledDirExists: false,
       runtimeDirExists: false,
       resourcesDirEntries: [
@@ -60,24 +60,24 @@ describe('classifyBackendStartupFailure', () => {
       reason: 'backend_incomplete_installation',
       incompleteInstallationKind: 'missing_directory_resources',
       missingBackendBinary: true,
-      missingBundledAioncoreDir: true,
+      missingBundledByteTensorCoreDir: true,
       missingHubDir: true,
       missingPetStatesDir: true,
       missingPwaDir: true,
-      missingResources: ['bundled-aioncore/', 'bundled-aioncore/win32-x64/'],
+      missingResources: ['bundled-bytetensorcore/', 'bundled-bytetensorcore/win32-x64/'],
       missingRuntimeDir: true,
     });
   });
 
   it('classifies packaged runtime directories without the backend binary as incomplete installation', () => {
-    const error = new Error('aioncore startup failed while resolving backend binary') as Error & {
+    const error = new Error('ByteTensorCore startup failed while resolving backend binary') as Error & {
       details?: Record<string, unknown>;
     };
     error.details = {
       stage: 'resolve_binary',
       isPackaged: true,
       runtimeKey: 'win32-x64',
-      binaryName: 'aioncore.exe',
+      binaryName: 'bytetensorcore.exe',
       bundledDirExists: true,
       runtimeDirExists: true,
       resourcesDirEntries: [
@@ -85,7 +85,7 @@ describe('classifyBackendStartupFailure', () => {
         'app.asar',
         'app.asar.unpacked/',
         'app.png',
-        'bundled-aioncore/',
+        'bundled-bytetensorcore/',
         'elevate.exe',
         'hub/',
         'manifest.webmanifest',
@@ -100,11 +100,11 @@ describe('classifyBackendStartupFailure', () => {
       reason: 'backend_incomplete_installation',
       incompleteInstallationKind: 'missing_backend_binary',
       missingBackendBinary: true,
-      missingBundledAioncoreDir: false,
+      missingBundledByteTensorCoreDir: false,
       missingHubDir: false,
       missingPetStatesDir: false,
       missingPwaDir: false,
-      missingResources: ['bundled-aioncore/win32-x64/aioncore.exe'],
+      missingResources: ['bundled-bytetensorcore/win32-x64/bytetensorcore.exe'],
       missingRuntimeDir: false,
     });
   });

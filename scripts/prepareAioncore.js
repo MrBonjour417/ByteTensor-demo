@@ -1,11 +1,11 @@
 /**
- * CLI wrapper for prepare-aioncore.
+ * CLI wrapper for preparing ByteTensorCore.
  *
  * Reads environment variables and invokes the shared module.
  *
  * Version resolution order:
  *  1. BYTETENSOR_BACKEND_VERSION env (for ad-hoc overrides)
- *  2. "aioncoreVersion" field in repo-root package.json (the pin)
+ *  2. "aioncoreVersion" field in repo-root package.json (the upstream release pin)
  *  3. 'latest' (fallback; not recommended for reproducible builds)
  *
  * Environment variables:
@@ -15,7 +15,7 @@
  */
 
 const path = require('path');
-const { prepareAioncore } = require('../packages/shared-scripts/src/prepare-aioncore.js');
+const { prepareByteTensorCore } = require('../packages/shared-scripts/src/prepare-aioncore.js');
 const { resolveAioncoreVersion } = require('./resolveAioncoreVersion.js');
 
 const projectRoot = path.resolve(__dirname, '..');
@@ -25,17 +25,17 @@ const arch = process.env.BYTETENSOR_BACKEND_ARCH || process.env.npm_config_targe
 const version = resolveAioncoreVersion(projectRoot);
 
 try {
-  prepareAioncore({ projectRoot, platform, arch, version });
+  prepareByteTensorCore({ projectRoot, platform, arch, version });
 } catch (error) {
-  console.error('❌ prepareAioncore failed:', error.message);
+  console.error('❌ prepareByteTensorCore failed:', error.message);
   process.exit(1);
 }
 
 module.exports = function () {
   try {
-    return prepareAioncore({ projectRoot, platform, arch, version });
+    return prepareByteTensorCore({ projectRoot, platform, arch, version });
   } catch (error) {
-    console.error('❌ prepareAioncore failed:', error.message);
+    console.error('❌ prepareByteTensorCore failed:', error.message);
     throw error;
   }
 };

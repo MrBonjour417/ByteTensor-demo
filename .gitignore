@@ -203,6 +203,7 @@ worktrees/
 docs/superpowers/
 resources/bundled-bun
 resources/bundled-aioncore
+resources/bundled-bytetensorcore
 resources/hub
 
 # Server build output

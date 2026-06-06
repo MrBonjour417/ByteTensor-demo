@@ -357,8 +357,8 @@ export type TChatConversation =
   // Legacy Gemini conversations. Kept solely so that the renderer can
   // open historical rows with type='gemini' (message history is served
   // by the shared messages table). The backend factory rejects any
-  // attempt to resume this conversation — see
-  // AionCore/crates/bytetensor-common/src/enums.rs and factory.rs.
+  // attempt to resume this conversation — see the backend common enums
+  // and factory code.
   // Every field is optional because legacy rows shape-varies across
   // several older Gemini-runtime versions.
   | Omit<

@@ -538,7 +538,7 @@ const handleAppReady = async (): Promise<void> => {
     return;
   }
 
-  // Start aioncore only after initializeProcess(). initStorage may open
+  // Start ByteTensorCore only after initializeProcess(). initStorage may open
   // the legacy Electron SQLite catalog for a one-shot v26 migration and must
   // close it before the backend touches the same file.
   const backendStartup = await startBackendOrExit({
@@ -680,7 +680,7 @@ const handleAppReady = async (): Promise<void> => {
             // Spawning a second backend here would race the first on SQLite.
             const port = (globalThis as typeof globalThis & { __backendPort?: number }).__backendPort;
             if (!port) {
-              throw new Error('[WebUI] Cannot start: aioncore is not running (globalThis.__backendPort unset)');
+              throw new Error('[WebUI] Cannot start: ByteTensorCore is not running (globalThis.__backendPort unset)');
             }
             return port;
           })(),
@@ -870,7 +870,7 @@ installQuitCleanup({
     disposeCronResumeListener?.();
     disposeCronResumeListener = null;
   },
-  // Stop aioncore subprocess — backend shutdown kills all agent children
+  // Stop ByteTensorCore subprocess — backend shutdown kills all agent children
   // transitively (no separate frontend workerTaskManager remains).
   stopBackend: () => backendManager.stop(),
   destroyPetWindow: async () => {

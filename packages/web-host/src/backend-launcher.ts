@@ -1,5 +1,5 @@
 /**
- * Lifecycle manager for the aioncore subprocess (web-host version).
+ * Lifecycle manager for the ByteTensorCore subprocess (web-host version).
  *
  * Migrated from packages/desktop/src/process/backend/lifecycleManager.ts in M4.
  * Electron dependency removed: `app.*` replaced with constructor-injected
@@ -113,6 +113,11 @@ export type BackendStartupErrorDetails = {
   runtimeDirExists?: boolean;
   resourcesDirEntries?: string[];
   runtimeDirEntries?: string[];
+  legacyBinaryName?: string;
+  legacyCheckedBundledPath?: string;
+  legacyBundledDirExists?: boolean;
+  legacyRuntimeDirExists?: boolean;
+  legacyRuntimeDirEntries?: string[];
   pathLookupCommand?: string;
   pathLookupResult?: string;
   pathLookupError?: string;
@@ -165,7 +170,7 @@ export class BackendStartupError extends Error {
 }
 
 export class BackendStartupCancelledError extends Error {
-  constructor(message = 'aioncore startup cancelled') {
+  constructor(message = 'ByteTensorCore startup cancelled') {
     super(message);
     this.name = 'BackendStartupCancelledError';
   }
@@ -191,7 +196,7 @@ export function buildSpawnArgs(config: SpawnConfig): string[] {
 
 /**
  * Backend reads BYTETENSOR_{CACHE,WORK,LOG}_DIR env vars to report system dirs
- * (see AionCore/crates/bytetensor-system/src/sysinfo.rs). Inject them so the
+ * (see the backend system-info crate). Inject them so the
  * backend's `/api/system/info` matches what Electron main persists in
  * ProcessEnv('bytetensor.dir').
  */
@@ -212,7 +217,9 @@ const FETCH_FORBIDDEN_PORTS = new Set([
 ]);
 
 const FETCH_COMPATIBLE_PORT_MAX_ATTEMPTS = 50;
-const AIONCORE_LISTENING_PREFIX = 'AIONCORE_LISTENING ';
+const BACKEND_LOG_PREFIX = '[ByteTensorCore]';
+const BYTETENSORCORE_LISTENING_PREFIX = 'BYTETENSORCORE_LISTENING ';
+const LEGACY_AIONCORE_LISTENING_PREFIX = 'AIONCORE_LISTENING ';
 const BACKEND_PORT_REPORT_TIMEOUT_MS = 30_000;
 
 function isFetchForbiddenPort(port: number): boolean {
@@ -229,7 +236,7 @@ export function findAvailablePort(
 
   const firstRequestedPort = preferredPort && !isFetchForbiddenPort(preferredPort) ? preferredPort : 0;
   if (preferredPort && firstRequestedPort === 0) {
-    console.info(`[aioncore] skipped fetch-blocked backend port ${preferredPort}`);
+    console.info(`${BACKEND_LOG_PREFIX} skipped fetch-blocked backend port ${preferredPort}`);
   }
 
   const tryPort = (requestedPort: number, remainingAttempts: number, attempt: number): Promise<number> =>
@@ -256,12 +263,12 @@ export function findAvailablePort(
         server.close(() => {
           cleanup();
           if (resolvedPort > 0 && !isFetchForbiddenPort(resolvedPort)) {
-            console.info(`[aioncore] selected backend port ${resolvedPort} after ${attempt} attempts`);
+            console.info(`${BACKEND_LOG_PREFIX} selected backend port ${resolvedPort} after ${attempt} attempts`);
             resolve(resolvedPort);
             return;
           }
           if (resolvedPort > 0 && remainingAttempts > 1) {
-            console.info(`[aioncore] skipped fetch-blocked backend port ${resolvedPort}`);
+            console.info(`${BACKEND_LOG_PREFIX} skipped fetch-blocked backend port ${resolvedPort}`);
             tryPort(0, remainingAttempts - 1, attempt + 1).then(resolve, reject);
             return;
           }
@@ -316,10 +323,15 @@ function clearHealthCheckErrorDiagnostics(diagnostics: HealthCheckDiagnostics): 
   delete diagnostics.healthCheckLastErrorCauseCode;
 }
 
-function parseAioncoreListeningPort(line: string): number | undefined {
-  if (!line.startsWith(AIONCORE_LISTENING_PREFIX)) return undefined;
+function parseBackendListeningPort(line: string): number | undefined {
+  const prefix = line.startsWith(BYTETENSORCORE_LISTENING_PREFIX)
+    ? BYTETENSORCORE_LISTENING_PREFIX
+    : line.startsWith(LEGACY_AIONCORE_LISTENING_PREFIX)
+      ? LEGACY_AIONCORE_LISTENING_PREFIX
+      : undefined;
+  if (!prefix) return undefined;
   try {
-    const parsed = JSON.parse(line.slice(AIONCORE_LISTENING_PREFIX.length)) as { port?: unknown };
+    const parsed = JSON.parse(line.slice(prefix.length)) as { port?: unknown };
     if (typeof parsed.port !== 'number' || !Number.isInteger(parsed.port)) return undefined;
     if (parsed.port <= 0 || parsed.port > 65535) return undefined;
     return parsed.port;
@@ -419,6 +431,7 @@ export class BackendLifecycleManager {
   private _lastLogDir?: string;
   private _lastDirs?: BackendDirConfig;
   private _lastOptions?: BackendStartOptions;
+  private killOnExitCleanup?: () => void;
   private restartCount = 0;
   private restartWindowStart = 0;
   private readonly maxRestarts = 3;
@@ -437,6 +450,26 @@ export class BackendLifecycleManager {
     return this._status;
   }
 
+  private registerKillOnExit(childProcess: ChildProcess): void {
+    this.clearKillOnExit();
+    const killOnExit = () => {
+      killBackendProcessTree(childProcess, 'SIGKILL');
+    };
+    const cleanup = () => {
+      process.removeListener('exit', killOnExit);
+      if (this.killOnExitCleanup === cleanup) {
+        this.killOnExitCleanup = undefined;
+      }
+    };
+    this.killOnExitCleanup = cleanup;
+    process.on('exit', killOnExit);
+  }
+
+  private clearKillOnExit(): void {
+    this.killOnExitCleanup?.();
+    this.killOnExitCleanup = undefined;
+  }
+
   async start(
     dbPath: string,
     logDir?: string,
@@ -451,7 +484,7 @@ export class BackendLifecycleManager {
     } catch (error) {
       const diagnostics = getResolveDiagnostics(error);
       throw new BackendStartupError(
-        'aioncore startup failed while resolving backend binary',
+        'ByteTensorCore startup failed while resolving backend binary',
         {
           stage: 'resolve_binary',
           appVersion,
@@ -517,7 +550,7 @@ export class BackendLifecycleManager {
       appVersion,
       isPackaged: this.appMeta.isPackaged,
     });
-    console.log(`[aioncore] starting: ${binaryPath} ${args.join(' ')}`);
+    console.log(`${BACKEND_LOG_PREFIX} starting: ${binaryPath} ${args.join(' ')}`);
 
     try {
       this.childProcess = spawn(binaryPath, args, {
@@ -527,35 +560,32 @@ export class BackendLifecycleManager {
       });
     } catch (error) {
       this._status = 'error';
-      throw makeStartupError('spawn', 'aioncore process spawn threw before startup', error);
+      throw makeStartupError('spawn', 'ByteTensorCore process spawn threw before startup', error);
     }
 
     this.childProcess.stdin?.end();
 
     backendPid = this.childProcess.pid;
-    const pid = backendPid;
-    const killOnExit = () => {
-      if (pid) killBackendProcessTree(this.childProcess, 'SIGKILL');
-    };
-    process.on('exit', killOnExit);
+    this.registerKillOnExit(this.childProcess);
 
     const startupFailure = new Promise<never>((_resolve, reject) => {
       this.childProcess?.once('error', (error) => {
         if (startupSettled) return;
         this._status = 'error';
-        reject(makeStartupError('spawn_error', 'aioncore process emitted an error before startup', error));
+        this.clearKillOnExit();
+        reject(makeStartupError('spawn_error', 'ByteTensorCore process emitted an error before startup', error));
       });
 
       this.childProcess?.once('exit', (code, signal) => {
-        process.removeListener('exit', killOnExit);
+        this.clearKillOnExit();
         if (!startupSettled) {
           if (this._status === 'stopped') {
-            reject(new BackendStartupCancelledError('aioncore startup cancelled before health check passed'));
+            reject(new BackendStartupCancelledError('ByteTensorCore startup cancelled before health check passed'));
             return;
           }
           this._status = 'error';
           reject(
-            makeStartupError('early_exit', 'aioncore exited before health check passed', undefined, {
+            makeStartupError('early_exit', 'ByteTensorCore exited before health check passed', undefined, {
               exitCode: code ?? undefined,
               signal: signal ?? undefined,
             })
@@ -566,13 +596,13 @@ export class BackendLifecycleManager {
           this._status = 'error';
           void Promise.resolve(
             options?.onPendingExit?.(
-              makeStartupError('early_exit', 'aioncore exited after startup health timeout', undefined, {
+              makeStartupError('early_exit', 'ByteTensorCore exited after startup health timeout', undefined, {
                 exitCode: code ?? undefined,
                 signal: signal ?? undefined,
               })
             )
           ).catch((error) => {
-            console.error('[aioncore] pending exit handler failed:', error);
+            console.error(`${BACKEND_LOG_PREFIX} pending exit handler failed:`, error);
           });
           return;
         }
@@ -598,10 +628,15 @@ export class BackendLifecycleManager {
       };
       reportedPortTimer = setTimeout(() => {
         rejectReportedPort(
-          makeStartupError('listen_timeout', 'aioncore did not report its listening port before timeout', undefined, {
-            healthCheckTimeoutMs: BACKEND_PORT_REPORT_TIMEOUT_MS,
-            healthCheckElapsedMs: Date.now() - startupStartedAt,
-          })
+          makeStartupError(
+            'listen_timeout',
+            'ByteTensorCore did not report its listening port before timeout',
+            undefined,
+            {
+              healthCheckTimeoutMs: BACKEND_PORT_REPORT_TIMEOUT_MS,
+              healthCheckElapsedMs: Date.now() - startupStartedAt,
+            }
+          )
         );
       }, BACKEND_PORT_REPORT_TIMEOUT_MS);
     });
@@ -610,7 +645,7 @@ export class BackendLifecycleManager {
       stdoutTail = appendOutputTail(stdoutTail, data);
       for (const line of data.toString().split('\n')) {
         const trimmed = line.trim();
-        const port = parseAioncoreListeningPort(trimmed);
+        const port = parseBackendListeningPort(trimmed);
         if (port !== undefined) {
           this._port = port;
           serverListeningObserved = true;
@@ -626,14 +661,14 @@ export class BackendLifecycleManager {
           serverListeningObservedAfterMs = Date.now() - startupStartedAt;
           serverListeningLine = trimmed;
         }
-        if (trimmed) console.log(`[aioncore] ${line}`);
+        if (trimmed) console.log(`${BACKEND_LOG_PREFIX} ${line}`);
       }
     });
 
     this.childProcess.stderr?.on('data', (data: Buffer) => {
       stderrTail = appendOutputTail(stderrTail, data);
       for (const line of data.toString().split('\n')) {
-        if (line.trim()) console.error(`[aioncore] ${line}`);
+        if (line.trim()) console.error(`${BACKEND_LOG_PREFIX} ${line}`);
       }
     });
 
@@ -643,6 +678,7 @@ export class BackendLifecycleManager {
     } catch (error) {
       if (error instanceof BackendStartupError && error.details.stage === 'listen_timeout') {
         startupSettled = true;
+        this.clearKillOnExit();
         killBackendProcessTree(this.childProcess, 'SIGKILL');
         this.childProcess = null;
         this._status = 'error';
@@ -653,7 +689,7 @@ export class BackendLifecycleManager {
     if (!health.ok) {
       const healthTimeoutError = makeStartupError(
         'health_timeout',
-        'aioncore failed to start within timeout',
+        'ByteTensorCore failed to start within timeout',
         undefined,
         {
           ...health.diagnostics,
@@ -661,14 +697,15 @@ export class BackendLifecycleManager {
       );
       if (options?.allowPendingOnHealthTimeout && this.childProcess) {
         startupSettled = true;
-        console.warn(`[aioncore] health check timed out; keeping process alive on port ${this._port}`);
+        console.warn(`${BACKEND_LOG_PREFIX} health check timed out; keeping process alive on port ${this._port}`);
         void Promise.resolve(options.onHealthTimeout?.(healthTimeoutError)).catch((error) => {
-          console.error('[aioncore] health timeout handler failed:', error);
+          console.error(`${BACKEND_LOG_PREFIX} health timeout handler failed:`, error);
         });
         this.continueWaitingForHealth(this._port, this.childProcess, startupStartedAt, options.onReady);
         return this._port;
       }
       startupSettled = true;
+      this.clearKillOnExit();
       killBackendProcessTree(this.childProcess, 'SIGKILL');
       this.childProcess = null;
       this._status = 'error';
@@ -679,7 +716,7 @@ export class BackendLifecycleManager {
     this._status = 'running';
     this.restartCount = 0;
     console.info(
-      `[aioncore] health ready on port ${this._port} after ${health.diagnostics.healthCheckAttempts} attempts, elapsed_ms=${health.diagnostics.healthCheckElapsedMs}, data-dir: ${dbPath}`
+      `${BACKEND_LOG_PREFIX} health ready on port ${this._port} after ${health.diagnostics.healthCheckAttempts} attempts, elapsed_ms=${health.diagnostics.healthCheckElapsedMs}, data-dir: ${dbPath}`
     );
     return this._port;
   }
@@ -701,6 +738,7 @@ export class BackendLifecycleManager {
         resolve();
       });
     });
+    this.clearKillOnExit();
     await cleanupRegisteredAgentProcesses(dataDir);
     this.childProcess = null;
   }
@@ -784,11 +822,11 @@ export class BackendLifecycleManager {
       this.restartCount = 0;
       const elapsedMs = health.diagnostics.healthCheckElapsedMs ?? Date.now() - startupStartedAt;
       console.info(
-        `[aioncore] late health ready on port ${port} after ${health.diagnostics.healthCheckAttempts} attempts, elapsed_ms=${elapsedMs}, data-dir: ${this._lastDbPath}`
+        `${BACKEND_LOG_PREFIX} late health ready on port ${port} after ${health.diagnostics.healthCheckAttempts} attempts, elapsed_ms=${elapsedMs}, data-dir: ${this._lastDbPath}`
       );
       await onReady?.(port);
     })().catch((error) => {
-      console.error('[aioncore] background health wait failed:', error);
+      console.error(`${BACKEND_LOG_PREFIX} background health wait failed:`, error);
     });
   }
 
@@ -810,12 +848,12 @@ export class BackendLifecycleManager {
 
     if (this.restartCount > this.maxRestarts) {
       this._status = 'error';
-      console.error('[aioncore] child exited unexpectedly; restart limit exceeded', crashContext);
+      console.error(`${BACKEND_LOG_PREFIX} child exited unexpectedly; restart limit exceeded`, crashContext);
       return;
     }
 
     const delay = Math.pow(2, this.restartCount - 1) * 1000;
-    console.warn('[aioncore] child exited unexpectedly; scheduling restart', {
+    console.warn(`${BACKEND_LOG_PREFIX} child exited unexpectedly; scheduling restart`, {
       ...crashContext,
       delayMs: delay,
     });
@@ -831,7 +869,7 @@ export class BackendLifecycleManager {
         })
         .catch((error) => {
           this._status = 'error';
-          console.error('[aioncore] restart after crash failed', {
+          console.error(`${BACKEND_LOG_PREFIX} restart after crash failed`, {
             port: this._port,
             restartCount: this.restartCount,
             maxRestarts: this.maxRestarts,

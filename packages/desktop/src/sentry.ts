@@ -241,7 +241,10 @@ export async function captureBackendStartupFailure(error: unknown): Promise<void
       scope.setTag('bytetensor.backend_startup.incomplete_installation_kind', failureInfo.incompleteInstallationKind);
     }
     for (const [tag, value] of [
-      ['bytetensor.backend_startup.missing_bundled_dir', getBooleanTagValue(failureInfo.missingBundledAioncoreDir)],
+      [
+        'bytetensor.backend_startup.missing_bundled_dir',
+        getBooleanTagValue(failureInfo.missingBundledByteTensorCoreDir),
+      ],
       ['bytetensor.backend_startup.missing_runtime_dir', getBooleanTagValue(failureInfo.missingRuntimeDir)],
       ['bytetensor.backend_startup.missing_binary', getBooleanTagValue(failureInfo.missingBackendBinary)],
       ['bytetensor.backend_startup.missing_hub_dir', getBooleanTagValue(failureInfo.missingHubDir)],
@@ -276,13 +279,13 @@ export async function captureBackendStartupFailure(error: unknown): Promise<void
       if (value) scope.setTag(tag, value);
     }
     if (details) {
-      scope.setContext('aioncore_startup', details);
-      scope.setExtra('aioncore_startup', details);
+      scope.setContext('bytetensorcore_startup', details);
+      scope.setExtra('bytetensorcore_startup', details);
     }
-    scope.setContext('aioncore_startup_classification', { ...failureInfo });
-    scope.setExtra('aioncore_startup_classification', failureInfo);
-    scope.setContext('aioncore_install_diagnostics', installDiagnostics);
-    scope.setExtra('aioncore_install_diagnostics', installDiagnostics);
+    scope.setContext('bytetensorcore_startup_classification', { ...failureInfo });
+    scope.setExtra('bytetensorcore_startup_classification', failureInfo);
+    scope.setContext('bytetensorcore_install_diagnostics', installDiagnostics);
+    scope.setExtra('bytetensorcore_install_diagnostics', installDiagnostics);
     if (autoUpdateDiagnostics) {
       scope.setContext('auto_update_diagnostics', autoUpdateDiagnostics);
       scope.setExtra('auto_update_diagnostics', autoUpdateDiagnostics);

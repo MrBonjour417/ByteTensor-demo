@@ -31,7 +31,7 @@ export type BackendIncompleteInstallationKind = 'missing_backend_binary' | 'miss
 export interface BackendStartupFailureInfo {
   incompleteInstallationKind?: BackendIncompleteInstallationKind;
   missingBackendBinary?: boolean;
-  missingBundledAioncoreDir?: boolean;
+  missingBundledByteTensorCoreDir?: boolean;
   missingHubDir?: boolean;
   missingPetStatesDir?: boolean;
   missingPwaDir?: boolean;

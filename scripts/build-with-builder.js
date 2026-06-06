@@ -455,11 +455,11 @@ try {
     return;
   }
 
-  // 5. Prepare aioncore binary (for packaged runtime usage)
-  const { prepareAioncore } = require('../packages/shared-scripts/src/prepare-aioncore.js');
+  // 5. Prepare ByteTensorCore binary (for packaged runtime usage)
+  const { prepareByteTensorCore } = require('../packages/shared-scripts/src/prepare-aioncore.js');
   const { resolveAioncoreVersion } = require('./resolveAioncoreVersion.js');
   const projectRoot = path.resolve(__dirname, '..');
-  prepareAioncore({
+  prepareByteTensorCore({
     projectRoot,
     platform: process.platform,
     arch: targetArch,

@@ -98,4 +98,20 @@ describe('configureConsoleLog', () => {
 
     expect(log.transports.console.level).toBe('silly');
   });
+
+  it('normalizes ByteTensorCore tracing output under the runtime prefix', async () => {
+    const log = await loadConfigureConsoleLog(true);
+    const hook = log.hooks.push.mock.calls[0][0] as (message: { level: string; data: unknown[] }) => {
+      level: string;
+      data: unknown[];
+    };
+
+    const message = hook({
+      level: 'info',
+      data: ['[ByteTensorCore] 2026-04-25T11:17:43.184875Z  WARN target: backend warning'],
+    });
+
+    expect(message.level).toBe('warn');
+    expect(message.data[0]).toBe('[ByteTensorCore] target: backend warning');
+  });
 });

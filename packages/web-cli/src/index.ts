@@ -12,7 +12,7 @@ import { ensureAdminPassword } from './ensureAdminPassword.js';
 //   bytetensor-web/
 //   ├── bytetensor-web              ← bun-compiled standalone binary (process.execPath)
 //   ├── package.json             ← for runtime version lookup
-//   ├── bundled-aioncore/<plat-arch>/aioncore[.exe]
+//   ├── bundled-bytetensorcore/<plat-arch>/bytetensorcore[.exe]
 //   └── static/                  ← SPA assets
 //
 // Under `bun build --compile`, import.meta.url resolves to a virtual /$bunfs/
@@ -49,7 +49,8 @@ const isPackaged = (() => {
   return exeName === 'bytetensor-web' || exeName === 'bytetensor-web.exe';
 })();
 
-const BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
+const BACKEND_BINARY = process.platform === 'win32' ? 'bytetensorcore.exe' : 'bytetensorcore';
+const LEGACY_BACKEND_BINARY = process.platform === 'win32' ? 'aioncore.exe' : 'aioncore';
 const DEFAULT_PORT = 25808;
 const RESET_COMMAND = isPackaged ? 'bytetensor-web resetpass' : 'bun run resetpass';
 
@@ -79,7 +80,10 @@ function resolveBackendBinary(flags: Map<string, string | true>): string {
   const envOverride = process.env.BYTETENSOR_BACKEND_BIN;
   if (envOverride) return path.resolve(envOverride);
   const platArch = `${process.platform}-${process.arch}`;
-  const bundled = path.join(cliRoot, 'bundled-aioncore', platArch, BACKEND_BINARY);
+  const bundled = path.join(cliRoot, 'bundled-bytetensorcore', platArch, BACKEND_BINARY);
+  if (fs.existsSync(bundled)) return bundled;
+  const legacyBundled = path.join(cliRoot, 'bundled-aioncore', platArch, LEGACY_BACKEND_BINARY);
+  if (fs.existsSync(legacyBundled)) return legacyBundled;
   return bundled;
 }
 
@@ -170,7 +174,7 @@ async function runStart(flags: Map<string, string | true>): Promise<void> {
     console.warn('⚠️  Backend binary not found — starting in FRONTEND-ONLY mode.');
     console.warn(`   Missing: ${backendBin}`);
     console.warn('   The web UI will load but API calls will fail until a backend is available.');
-    console.warn('   To enable backend: download aioncore and set BYTETENSOR_BACKEND_BIN.');
+    console.warn('   To enable backend: download ByteTensorCore and set BYTETENSOR_BACKEND_BIN.');
     console.warn('');
 
     const handle = await startStaticServer({

@@ -1,12 +1,12 @@
 /**
- * Prepare aioncore binary for packaging.
+ * Prepare ByteTensorCore runtime binary for packaging.
  *
  * Resolution order:
- *  1. GitHub release download (requires version or defaults to "latest")
+ *  1. GitHub upstream backend release download (requires version or defaults to "latest")
  *
- * Output: {projectRoot}/resources/bundled-aioncore/{platform}-{arch}/aioncore[.exe]
+ * Output: {projectRoot}/resources/bundled-bytetensorcore/{platform}-{arch}/bytetensorcore[.exe]
  *
- * @module prepare-aioncore
+ * @module prepare-bytetensorcore
  */
 
 const { execSync, execFileSync } = require('child_process');
@@ -47,7 +47,11 @@ function writeJson(filePath, payload) {
   fs.writeFileSync(filePath, JSON.stringify(payload, null, 2) + '\n', 'utf-8');
 }
 
-function getBinaryName(platform) {
+function getOutputBinaryName(platform) {
+  return platform === 'win32' ? 'bytetensorcore.exe' : 'bytetensorcore';
+}
+
+function getUpstreamBinaryName(platform) {
   return platform === 'win32' ? 'aioncore.exe' : 'aioncore';
 }
 
@@ -113,7 +117,7 @@ function getDownloadUrl(assetName, tag) {
 }
 
 function downloadFile(url, outputPath) {
-  console.log(`  Downloading aioncore from ${url}`);
+  console.log(`  Downloading ByteTensorCore upstream binary from ${url}`);
   if (process.platform === 'win32') {
     const ps = `$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -Uri '${url}' -OutFile '${outputPath.replace(/'/g, "''")}'`;
     execFileSync('powershell', ['-NoProfile', '-NonInteractive', '-Command', ps], {
@@ -158,11 +162,11 @@ function findBinaryInDir(dir, binaryName) {
 function downloadAndExtract(platform, arch, tag) {
   const assetName = getAssetName(platform, arch, tag);
   if (!assetName) {
-    throw new Error(`Unsupported aioncore target: ${platform}-${arch}`);
+    throw new Error(`Unsupported ByteTensorCore target: ${platform}-${arch}`);
   }
 
   const url = getDownloadUrl(assetName, tag);
-  const tempDir = path.join(os.tmpdir(), 'aioncore-prepare', tag, `${platform}-${arch}`);
+  const tempDir = path.join(os.tmpdir(), 'bytetensorcore-prepare', tag, `${platform}-${arch}`);
   const archivePath = path.join(tempDir, assetName);
   const extractDir = path.join(tempDir, 'extracted');
 
@@ -172,10 +176,10 @@ function downloadAndExtract(platform, arch, tag) {
   downloadFile(url, archivePath);
   extractArchive(archivePath, extractDir, platform);
 
-  const binaryName = getBinaryName(platform);
-  const binaryPath = findBinaryInDir(extractDir, binaryName);
+  const upstreamBinaryName = getUpstreamBinaryName(platform);
+  const binaryPath = findBinaryInDir(extractDir, upstreamBinaryName);
   if (!binaryPath) {
-    throw new Error(`Binary ${binaryName} not found in downloaded archive`);
+    throw new Error(`Upstream binary ${upstreamBinaryName} not found in downloaded archive`);
   }
 
   return { binaryPath, tempDir, url };
@@ -186,7 +190,7 @@ function downloadAndExtract(platform, arch, tag) {
 // ---------------------------------------------------------------------------
 
 /**
- * Prepare aioncore binary for packaging.
+ * Prepare ByteTensorCore runtime binary for packaging.
  *
  * @param {object} options - Configuration options
  * @param {string} options.projectRoot - Project root directory
@@ -204,19 +208,19 @@ function prepareAioncore(options) {
   if (version === 'latest') {
     const resolved = resolveLatestTag();
     if (!resolved) {
-      throw new Error('Failed to resolve latest aioncore release tag from GitHub API');
+      throw new Error('Failed to resolve latest ByteTensorCore upstream release tag from GitHub API');
     }
     tag = resolved;
-    console.log(`Resolved aioncore "latest" → ${tag}`);
+    console.log(`Resolved ByteTensorCore upstream "latest" → ${tag}`);
   } else {
     tag = version.startsWith('v') ? version : `v${version}`;
   }
 
-  const targetDir = path.join(projectRoot, 'resources', 'bundled-aioncore', runtimeKey);
-  const binaryName = getBinaryName(platform);
+  const targetDir = path.join(projectRoot, 'resources', 'bundled-bytetensorcore', runtimeKey);
+  const binaryName = getOutputBinaryName(platform);
   const targetBinaryPath = path.join(targetDir, binaryName);
 
-  console.log(`Preparing aioncore for ${runtimeKey} (version: ${tag})`);
+  console.log(`Preparing ByteTensorCore for ${runtimeKey} from upstream release ${tag}`);
 
   removeDirectorySafe(targetDir);
   ensureDirectory(targetDir);
@@ -245,7 +249,7 @@ function prepareAioncore(options) {
     copyFileSafe(sourcePath, targetBinaryPath);
     ensureExecutableMode(targetBinaryPath);
 
-    // The release tag is the authoritative version — the aioncore
+    // The release tag is the authoritative version — the upstream backend
     // binary does not expose a --version flag (it has --app-version which
     // takes a value, not a self-report).
     const manifest = {
@@ -260,14 +264,16 @@ function prepareAioncore(options) {
 
     writeJson(path.join(targetDir, 'manifest.json'), manifest);
     console.log(
-      `  Bundled aioncore prepared: resources/bundled-aioncore/${runtimeKey}/${binaryName} [source=${sourceType}]`
+      `  Bundled ByteTensorCore prepared: resources/bundled-bytetensorcore/${runtimeKey}/${binaryName} [source=${sourceType}]`
     );
 
     if (tempDir) removeDirectorySafe(tempDir);
     return { prepared: true, dir: targetDir, sourceType };
   }
 
-  throw new Error(`aioncore binary not found for ${runtimeKey} (tag: ${tag})`);
+  throw new Error(`ByteTensorCore binary not found for ${runtimeKey} (upstream tag: ${tag})`);
 }
 
-module.exports = { prepareAioncore };
+const prepareByteTensorCore = prepareAioncore;
+
+module.exports = { prepareAioncore, prepareByteTensorCore };

@@ -1,5 +1,5 @@
 /**
- * Resolve the aioncore binary path.
+ * Resolve the ByteTensorCore binary path.
  *
  * Search order:
  *  1. Bundled with app (production)
@@ -12,7 +12,10 @@ import { cwd } from 'node:process';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 
-const BINARY_NAME = 'aioncore';
+const BINARY_NAME = 'bytetensorcore';
+const LEGACY_BINARY_NAME = 'aioncore';
+const BUNDLED_DIR = 'bundled-bytetensorcore';
+const LEGACY_BUNDLED_DIR = 'bundled-aioncore';
 const MAX_DIR_ENTRIES = 20;
 const MAX_LOOKUP_TEXT_LENGTH = 1000;
 
@@ -23,8 +26,13 @@ type BackendBinaryResolveDiagnostics = {
   checkedBundledPath?: string;
   bundledDirExists?: boolean;
   runtimeDirExists?: boolean;
+  legacyBinaryName?: string;
+  legacyCheckedBundledPath?: string;
+  legacyBundledDirExists?: boolean;
+  legacyRuntimeDirExists?: boolean;
   resourcesDirEntries?: string[];
   runtimeDirEntries?: string[];
+  legacyRuntimeDirEntries?: string[];
   pathLookupCommand: string;
   pathLookupResult?: string;
   pathLookupError?: string;
@@ -40,8 +48,8 @@ class BackendBinaryResolveError extends Error {
   }
 }
 
-function getBinaryName(): string {
-  return process.platform === 'win32' ? `${BINARY_NAME}.exe` : BINARY_NAME;
+function getBinaryName(binaryName = BINARY_NAME): string {
+  return process.platform === 'win32' ? `${binaryName}.exe` : binaryName;
 }
 
 function getRuntimeKey(): string {
@@ -63,7 +71,7 @@ function trimLookupText(text: string): string {
 }
 
 /**
- * Resolve the aioncore binary path.
+ * Resolve the ByteTensorCore binary path.
  * Returns the absolute path to the binary, or throws if not found.
  */
 export function resolveBinaryPath(): string {
@@ -82,14 +90,32 @@ export function resolveBinaryPath(): string {
   if (fromPath) return fromPath;
 
   throw new BackendBinaryResolveError(
-    `Cannot find "${BINARY_NAME}" binary. Checked bundled location and system PATH.`,
+    `Cannot find "${BINARY_NAME}" binary. Checked bundled location, legacy bundled location, and system PATH.`,
     diagnostics
   );
 }
 
+type BundledCandidate = {
+  bundledDir: string;
+  runtimeDir: string;
+  candidate: string;
+};
+
+function getBundledCandidate(
+  resourcesPath: string,
+  bundledDirName: string,
+  runtimeKey: string,
+  binaryName: string
+): BundledCandidate {
+  const bundledDir = join(resourcesPath, bundledDirName);
+  const runtimeDir = join(bundledDir, runtimeKey);
+  return { bundledDir, runtimeDir, candidate: join(runtimeDir, binaryName) };
+}
+
 /**
  * Check bundled binary in resources directory.
- * Layout: bundled-aioncore/{platform}-{arch}/aioncore[.exe]
+ * Preferred layout: bundled-bytetensorcore/{platform}-{arch}/bytetensorcore[.exe]
+ * Legacy layout: bundled-aioncore/{platform}-{arch}/aioncore[.exe]
  */
 function bundledPath(
   runtimeKey: string,
@@ -99,26 +125,36 @@ function bundledPath(
   const resourcesPath = resolveResourcesPath();
   if (!resourcesPath) return null;
   diagnostics.resourcesPath = resourcesPath;
-
-  const bundledDir = join(resourcesPath, 'bundled-aioncore');
-  const runtimeDir = join(bundledDir, runtimeKey);
-  const candidate = join(runtimeDir, binaryName);
-  diagnostics.checkedBundledPath = candidate;
-  diagnostics.bundledDirExists = existsSync(bundledDir);
-  diagnostics.runtimeDirExists = existsSync(runtimeDir);
   diagnostics.resourcesDirEntries = listDirEntries(resourcesPath);
-  diagnostics.runtimeDirEntries = listDirEntries(runtimeDir);
 
-  if (existsSync(candidate)) return candidate;
+  const preferred = getBundledCandidate(resourcesPath, BUNDLED_DIR, runtimeKey, binaryName);
+  diagnostics.checkedBundledPath = preferred.candidate;
+  diagnostics.bundledDirExists = existsSync(preferred.bundledDir);
+  diagnostics.runtimeDirExists = existsSync(preferred.runtimeDir);
+  diagnostics.runtimeDirEntries = listDirEntries(preferred.runtimeDir);
+  if (existsSync(preferred.candidate)) return preferred.candidate;
+
+  const legacyBinaryName = getBinaryName(LEGACY_BINARY_NAME);
+  const legacy = getBundledCandidate(resourcesPath, LEGACY_BUNDLED_DIR, runtimeKey, legacyBinaryName);
+  diagnostics.legacyBinaryName = legacyBinaryName;
+  diagnostics.legacyCheckedBundledPath = legacy.candidate;
+  diagnostics.legacyBundledDirExists = existsSync(legacy.bundledDir);
+  diagnostics.legacyRuntimeDirExists = existsSync(legacy.runtimeDir);
+  diagnostics.legacyRuntimeDirEntries = listDirEntries(legacy.runtimeDir);
+  if (existsSync(legacy.candidate)) return legacy.candidate;
+
   return null;
+}
+
+function hasKnownBundledDir(resourcesPath: string): boolean {
+  return existsSync(join(resourcesPath, BUNDLED_DIR)) || existsSync(join(resourcesPath, LEGACY_BUNDLED_DIR));
 }
 
 function resolveResourcesPath(): string | undefined {
   const packagedResourcesPath = (process as NodeJS.Process & { resourcesPath?: string }).resourcesPath;
-  if (packagedResourcesPath && existsSync(join(packagedResourcesPath, 'bundled-aioncore')))
-    return packagedResourcesPath;
+  if (packagedResourcesPath && hasKnownBundledDir(packagedResourcesPath)) return packagedResourcesPath;
   const devResourcesPath = join(cwd(), 'resources');
-  if (existsSync(join(devResourcesPath, 'bundled-aioncore'))) return devResourcesPath;
+  if (hasKnownBundledDir(devResourcesPath)) return devResourcesPath;
   return packagedResourcesPath;
 }
 

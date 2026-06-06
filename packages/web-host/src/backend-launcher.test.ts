@@ -76,7 +76,32 @@ function makeFakeChild(): ChildProcess {
 }
 
 function emitListening(child: ChildProcess, port: number): void {
-  child.stdout?.emit('data', Buffer.from(`AIONCORE_LISTENING {"host":"127.0.0.1","port":${port}}\n`));
+  child.stdout?.emit('data', Buffer.from(`BYTETENSORCORE_LISTENING {"host":"127.0.0.1","port":${port}}\n`));
+}
+
+function expectBackendKillRequested(killSpy: ReturnType<typeof vi.spyOn>): void {
+  if (process.platform === 'win32') {
+    expect(spawn).toHaveBeenCalledWith(
+      'taskkill',
+      expect.arrayContaining(['/PID', '99999', '/T']),
+      expect.objectContaining({ stdio: 'ignore', windowsHide: true })
+    );
+    return;
+  }
+  expect(killSpy).toHaveBeenCalled();
+}
+
+function expectBackendKillSignalRequested(killSpy: ReturnType<typeof vi.spyOn>, signal: 'SIGTERM' | 'SIGKILL'): void {
+  if (process.platform === 'win32') {
+    const args = signal === 'SIGKILL' ? ['/F', '/PID', '99999', '/T'] : ['/PID', '99999', '/T'];
+    expect(spawn).toHaveBeenCalledWith(
+      'taskkill',
+      args,
+      expect.objectContaining({ stdio: 'ignore', windowsHide: true })
+    );
+    return;
+  }
+  expect(killSpy.mock.calls).toEqual(expect.arrayContaining([[expect.any(Number), signal]]));
 }
 
 function makeFakeSocket(): Socket {
@@ -201,8 +226,8 @@ describe('findAvailablePort', () => {
 
       expect(port).toBe(40404);
       expect(createServer).toHaveBeenCalledTimes(2);
-      expect(infoSpy).toHaveBeenCalledWith('[aioncore] skipped fetch-blocked backend port 1720');
-      expect(infoSpy).toHaveBeenCalledWith('[aioncore] selected backend port 40404 after 2 attempts');
+      expect(infoSpy).toHaveBeenCalledWith('[ByteTensorCore] skipped fetch-blocked backend port 1720');
+      expect(infoSpy).toHaveBeenCalledWith('[ByteTensorCore] selected backend port 40404 after 2 attempts');
     } finally {
       infoSpy.mockRestore();
     }
@@ -234,7 +259,7 @@ describe('findAvailablePort', () => {
 });
 
 describe('BackendLifecycleManager.start (success path)', () => {
-  it('lets aioncore choose the backend port and waits for the reported listening event', async () => {
+  it('lets ByteTensorCore choose the backend port and waits for the reported listening event', async () => {
     vi.mocked(createServer).mockImplementation(() => {
       throw new Error('launcher must not pre-bind backend ports');
     });
@@ -245,7 +270,7 @@ describe('BackendLifecycleManager.start (success path)', () => {
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(new Response('ok', { status: 200 }) as unknown as Response);
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path', '/log/dir', {
       cacheDir: '/c',
       workDir: '/w',
@@ -253,7 +278,7 @@ describe('BackendLifecycleManager.start (success path)', () => {
     });
 
     await Promise.resolve();
-    child.stdout?.emit('data', Buffer.from('AIONCORE_LISTENING {"host":"127.0.0.1","port":55555}\n'));
+    child.stdout?.emit('data', Buffer.from('BYTETENSORCORE_LISTENING {"host":"127.0.0.1","port":55555}\n'));
 
     const port = await startPromise;
 
@@ -280,6 +305,24 @@ describe('BackendLifecycleManager.start (success path)', () => {
     fetchSpy.mockRestore();
   });
 
+  it('continues accepting the legacy AIONCORE_LISTENING marker', async () => {
+    const child = makeFakeChild();
+    vi.mocked(spawn).mockReturnValue(child as unknown as ChildProcess);
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('ok', { status: 200 }) as unknown as Response);
+
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
+    const startPromise = mgr.start('/db/path');
+    await Promise.resolve();
+    child.stdout?.emit('data', Buffer.from('AIONCORE_LISTENING {"host":"127.0.0.1","port":55556}\n'));
+
+    await expect(startPromise).resolves.toBe(55556);
+    expect(fetchSpy).toHaveBeenCalledWith('http://127.0.0.1:55556/health');
+
+    fetchSpy.mockRestore();
+  });
+
   it('spawns with correct args, waits for /health, reports running', async () => {
     const child = makeFakeChild();
     vi.mocked(spawn).mockReturnValue(child as unknown as ChildProcess);
@@ -289,7 +332,7 @@ describe('BackendLifecycleManager.start (success path)', () => {
       .mockResolvedValue(new Response('ok', { status: 200 }) as unknown as Response);
     const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
-    const resolveBackend = vi.fn(() => '/abs/path/aioncore');
+    const resolveBackend = vi.fn(() => '/abs/path/bytetensorcore');
     const mgr = new BackendLifecycleManager(APP_META_PACKAGED, resolveBackend);
 
     try {
@@ -310,7 +353,7 @@ describe('BackendLifecycleManager.start (success path)', () => {
       expect(spawn).toHaveBeenCalledTimes(1);
 
       const spawnCall = vi.mocked(spawn).mock.calls[0];
-      expect(spawnCall[0]).toBe('/abs/path/aioncore');
+      expect(spawnCall[0]).toBe('/abs/path/bytetensorcore');
       expect(spawnCall[1]).toEqual([
         '--port',
         '0',
@@ -334,7 +377,7 @@ describe('BackendLifecycleManager.start (success path)', () => {
 
       expect(fetchSpy).toHaveBeenCalled();
       expect(infoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[aioncore] health ready on port 55555 after 1 attempts, elapsed_ms=')
+        expect.stringContaining('[ByteTensorCore] health ready on port 55555 after 1 attempts, elapsed_ms=')
       );
     } finally {
       fetchSpy.mockRestore();
@@ -344,13 +387,13 @@ describe('BackendLifecycleManager.start (success path)', () => {
 });
 
 describe('BackendLifecycleManager.start (health timeout)', () => {
-  it('kills child and reports listen_timeout when aioncore never reports a port', async () => {
+  it('kills child and reports listen_timeout when ByteTensorCore never reports a port', async () => {
     vi.useFakeTimers();
     const child = makeFakeChild();
     vi.mocked(spawn).mockReturnValue(child as unknown as ChildProcess);
     const killSpy = vi.spyOn(process, 'kill').mockImplementation(() => true);
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path');
     const expectedRejection = expect(startPromise).rejects.toMatchObject({
       name: 'BackendStartupError',
@@ -364,7 +407,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
     await expectedRejection;
 
     expect(mgr.status).toBe('error');
-    expect(killSpy).toHaveBeenCalled();
+    expectBackendKillRequested(killSpy);
 
     killSpy.mockRestore();
   }, 15_000);
@@ -393,7 +436,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
     await expectedRejection;
 
     expect(mgr.status).toBe('error');
-    expect(killSpy).toHaveBeenCalled();
+    expectBackendKillRequested(killSpy);
 
     fetchSpy.mockRestore();
     killSpy.mockRestore();
@@ -410,7 +453,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
 
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('ECONNREFUSED'));
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path', '/log/dir', {
       cacheDir: '/cache',
       workDir: '/work',
@@ -420,7 +463,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
       name: 'BackendStartupError',
       details: expect.objectContaining({
         stage: 'health_timeout',
-        binaryPath: '/abs/path/aioncore',
+        binaryPath: '/abs/path/bytetensorcore',
         port: 33334,
         healthCheckAttempts: expect.any(Number),
         healthCheckLastError: 'ECONNREFUSED',
@@ -452,7 +495,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
       .spyOn(globalThis, 'fetch')
       .mockImplementation(() => Promise.resolve(new Response('starting', { status: 503 })));
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path');
     const expectedRejection = expect(startPromise).rejects.toMatchObject({
       name: 'BackendStartupError',
@@ -483,7 +526,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
 
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('fetch failed'));
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path');
     const expectedRejection = expect(startPromise).rejects.toMatchObject({
       name: 'BackendStartupError',
@@ -493,7 +536,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
         healthCheckLastError: 'fetch failed',
         serverListeningObserved: true,
         serverListeningObservedAfterMs: expect.any(Number),
-        serverListeningLine: expect.stringContaining('AIONCORE_LISTENING'),
+        serverListeningLine: expect.stringContaining('BYTETENSORCORE_LISTENING'),
       }),
     });
 
@@ -526,7 +569,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
     });
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(fetchError);
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path');
     const expectedRejection = expect(startPromise).rejects.toMatchObject({
       details: expect.objectContaining({
@@ -587,7 +630,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
         })
     );
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path');
     const expectedRejection = expect(startPromise).rejects.toMatchObject({
       details: expect.objectContaining({
@@ -629,7 +672,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
 
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('fetch failed'));
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path');
     const expectedRejection = expect(startPromise).rejects.toMatchObject({
       details: expect.objectContaining({
@@ -665,7 +708,7 @@ describe('BackendLifecycleManager.start (health timeout)', () => {
     const onHealthTimeout = vi.fn();
     const onReady = vi.fn();
 
-    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/aioncore');
+    const mgr = new BackendLifecycleManager(APP_META_PACKAGED, () => '/abs/path/bytetensorcore');
     const startPromise = mgr.start('/db/path', '/log/dir', undefined, {
       allowPendingOnHealthTimeout: true,
       onHealthTimeout,
@@ -749,7 +792,7 @@ describe('BackendLifecycleManager.stop', () => {
     (child as unknown as EventEmitter).emit('exit', 0);
     await stopPromise;
 
-    expect(killSpy).toHaveBeenCalled();
+    expectBackendKillRequested(killSpy);
     expect(cleanupRegisteredAgentProcesses).toHaveBeenCalledWith('/db');
     expect(mgr.status).toBe('stopped');
 
@@ -780,8 +823,8 @@ describe('BackendLifecycleManager.stop', () => {
     await new Promise((r) => setTimeout(r, 5_200));
     await stopPromise;
 
-    expect(killSpy.mock.calls).toEqual(expect.arrayContaining([[expect.any(Number), 'SIGTERM']]));
-    expect(killSpy.mock.calls).toEqual(expect.arrayContaining([[expect.any(Number), 'SIGKILL']]));
+    expectBackendKillSignalRequested(killSpy, 'SIGTERM');
+    expectBackendKillSignalRequested(killSpy, 'SIGKILL');
     expect(cleanupRegisteredAgentProcesses).toHaveBeenCalledWith('/db');
 
     fetchSpy.mockRestore();
@@ -847,7 +890,7 @@ describe('BackendLifecycleManager crash restart', () => {
     (child1 as unknown as EventEmitter).emit('exit', 1, 'SIGABRT');
     await new Promise((r) => setTimeout(r, 1_200));
 
-    expect(warnSpy).toHaveBeenCalledWith('[aioncore] child exited unexpectedly; scheduling restart', {
+    expect(warnSpy).toHaveBeenCalledWith('[ByteTensorCore] child exited unexpectedly; scheduling restart', {
       exitCode: 1,
       signal: 'SIGABRT',
       port: 65303,
@@ -874,7 +917,7 @@ describe('BackendLifecycleManager crash restart', () => {
     mgr.handleCrash(1, 'SIGABRT');
 
     expect(mgr.status).toBe('error');
-    expect(errorSpy).toHaveBeenCalledWith('[aioncore] child exited unexpectedly; restart limit exceeded', {
+    expect(errorSpy).toHaveBeenCalledWith('[ByteTensorCore] child exited unexpectedly; restart limit exceeded', {
       exitCode: 1,
       signal: 'SIGABRT',
       port: 0,

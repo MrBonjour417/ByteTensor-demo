@@ -22,7 +22,7 @@ describe('build-with-builder', () => {
       args: ['auto', '--mac', '--x64'],
       expectedArch: 'x64',
     },
-  ])('prepares bundled ByteTensor Core for $expectedArch with args $args', ({ args, expectedArch }) => {
+  ])('prepares bundled ByteTensorCore for $expectedArch with args $args', ({ args, expectedArch }) => {
     const tempDir = mkdtempSync(join(tmpdir(), 'bytetensor-build-test-'));
     const hookPath = join(tempDir, 'hook.cjs');
     const callsPath = join(tempDir, 'prepare-calls.json');
@@ -42,7 +42,7 @@ function recordPrepareCall(options) {
   const calls = fs.existsSync(callsPath) ? JSON.parse(fs.readFileSync(callsPath, 'utf8')) : [];
   calls.push(options ?? null);
   fs.writeFileSync(callsPath, JSON.stringify(calls));
-  return { prepared: true, dir: 'mock-bundled-aioncore', sourceType: 'mock' };
+  return { prepared: true, dir: 'mock-bundled-bytetensorcore', sourceType: 'mock' };
 }
 
 Module._load = function patchedLoad(request, parent, isMain) {
@@ -51,7 +51,7 @@ Module._load = function patchedLoad(request, parent, isMain) {
   }
 
   if (request.endsWith('packages/shared-scripts/src/prepare-aioncore.js')) {
-    return { prepareAioncore: recordPrepareCall };
+    return { prepareAioncore: recordPrepareCall, prepareByteTensorCore: recordPrepareCall };
   }
 
   if (request === './resolveAioncoreVersion.js' || request.endsWith('/resolveAioncoreVersion.js')) {

@@ -2,7 +2,7 @@
  * WebUI static server.
  *
  * Serves out/renderer/ as the SPA and reverse-proxies /api/*, /ws, /login and
- * /logout to aioncore. All auth goes to backend's bytetensor-auth crate;
+ * /logout to ByteTensorCore. All auth goes to backend's bytetensor-auth crate;
  * /login and /logout are bytetensor-auth's top-level paths, the rest live under
  * /api/auth/*.
  *

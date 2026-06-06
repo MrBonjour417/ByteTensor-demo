@@ -1,9 +1,9 @@
 /**
- * Resolve the aioncore version tag to download for packaging.
+ * Resolve the ByteTensor backend version tag to download for packaging.
  *
  * Order:
  *   1. BYTETENSOR_BACKEND_VERSION env (ad-hoc override, e.g. CI dispatch input)
- *   2. "aioncoreVersion" field in repo-root package.json (the pin)
+ *   2. "aioncoreVersion" field in repo-root package.json (the upstream release pin)
  *   3. 'latest' (GitHub API releases/latest; non-reproducible fallback)
  *
  * Keep this file tiny and dependency-free — it's required from both
