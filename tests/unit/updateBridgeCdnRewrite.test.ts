@@ -147,6 +147,26 @@ describe('updateBridge CDN URL rewriting', () => {
     }
   });
 
+  it('checks the ByteTensor demo release repository by default', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => makeGitHubReleaseResponse(),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    try {
+      const handler = await getCheckHandler();
+      await handler({});
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://api.github.com/repos/MrBonjour417/ByteTensor-demo/releases',
+        expect.any(Object)
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('uses the normalized version (no v prefix) in the CDN path', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,

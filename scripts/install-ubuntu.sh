@@ -12,7 +12,7 @@
 #   7. (可選) 建立桌面捷徑
 #
 # 用法：
-#   curl -fsSL https://raw.githubusercontent.com/iOfficeAI/AionUi/main/scripts/install-ubuntu.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/MrBonjour417/ByteTensor-demo/main/scripts/install-ubuntu.sh | bash
 #   # 或指定版本：
 #   BYTETENSOR_VERSION=1.8.25 bash install-ubuntu.sh
 #   # 僅安裝桌面版（跳過 headless 設定）：
@@ -93,11 +93,11 @@ resolve_version() {
         info "正在查詢最新版本..."
         # 透過 GitHub API 取得 latest release tag
         if command -v curl &>/dev/null; then
-            VERSION=$(curl -fsSL "https://api.github.com/repos/iOfficeAI/AionUi/releases/latest" \
-                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^"]*\)".*/\1/')
+            VERSION=$(curl -fsSL "https://api.github.com/repos/MrBonjour417/ByteTensor-demo/releases/latest" \
+                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^\"]*\)".*/\1/')
         elif command -v wget &>/dev/null; then
-            VERSION=$(wget -qO- "https://api.github.com/repos/iOfficeAI/AionUi/releases/latest" \
-                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^"]*\)".*/\1/')
+            VERSION=$(wget -qO- "https://api.github.com/repos/MrBonjour417/ByteTensor-demo/releases/latest" \
+                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^\"]*\)".*/\1/')
         else
             die "需要 curl 或 wget 來下載，請先安裝: sudo apt-get install -y curl"
         fi
@@ -109,7 +109,7 @@ resolve_version() {
     fi
 
     DEB_FILENAME="ByteTensor-${VERSION}-linux-${DEB_ARCH}.deb"
-    DOWNLOAD_URL="https://github.com/iOfficeAI/AionUi/releases/download/v${VERSION}/${DEB_FILENAME}"
+    DOWNLOAD_URL="https://github.com/MrBonjour417/ByteTensor-demo/releases/download/v${VERSION}/${DEB_FILENAME}"
 }
 
 # ─── 下載 .deb 套件 ──────────────────────────────────────────────────────────

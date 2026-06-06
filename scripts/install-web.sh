@@ -3,7 +3,7 @@
 # ByteTensor WebUI — One-Click Installation Script
 # ============================================================================
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/iOfficeAI/AionUi/main/scripts/install-web.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/MrBonjour417/ByteTensor-demo/main/scripts/install-web.sh | bash
 #   # Or specify version:
 #   VERSION=1.0.0 bash install-web.sh
 #   # Or install to custom directory:
@@ -20,7 +20,7 @@ VERSION="${VERSION:-__VERSION__}"
 # so never add a literal "__VERSION__" string to any comparison below.
 INSTALL_DIR="${INSTALL_DIR:-${HOME}/.local/share/bytetensor-web}"
 BIN_DIR="${BIN_DIR:-${HOME}/.local/bin}"
-MIRROR="${MIRROR:-https://github.com/iOfficeAI/AionUi/releases/download}"
+MIRROR="${MIRROR:-https://github.com/MrBonjour417/ByteTensor-demo/releases/download}"
 CREATE_SYMLINK="${CREATE_SYMLINK:-1}"
 UPDATE_PATH="${UPDATE_PATH:-1}"
 
@@ -171,11 +171,11 @@ resolve_version() {
         info "Resolving latest version from GitHub API..."
 
         if command -v curl &>/dev/null; then
-            VERSION=$(curl -fsSL "https://api.github.com/repos/iOfficeAI/AionUi/releases/latest" \
-                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^"]*\)".*/\1/')
+            VERSION=$(curl -fsSL "https://api.github.com/repos/MrBonjour417/ByteTensor-demo/releases/latest" \
+                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^\"]*\)".*/\1/')
         elif command -v wget &>/dev/null; then
-            VERSION=$(wget -qO- "https://api.github.com/repos/iOfficeAI/AionUi/releases/latest" \
-                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^"]*\)".*/\1/')
+            VERSION=$(wget -qO- "https://api.github.com/repos/MrBonjour417/ByteTensor-demo/releases/latest" \
+                | grep '"tag_name"' | head -1 | sed 's/.*"v\([^\"]*\)".*/\1/')
         else
             die "curl or wget is required to resolve version. Please install curl or wget."
         fi
