@@ -1,8 +1,8 @@
 /**
  * Prepare ByteTensorCore runtime binary for packaging.
  *
- * Resolution order:
- *  1. GitHub upstream backend release download (requires version or defaults to "latest")
+ *  1. Existing checked-in ByteTensorCore binary in resources/bundled-bytetensorcore
+ *  2. GitHub upstream backend release download (requires version or defaults to "latest")
  *
  * Output: {projectRoot}/resources/bundled-bytetensorcore/{platform}-{arch}/bytetensorcore[.exe]
  *
@@ -220,8 +220,25 @@ function prepareAioncore(options) {
   const binaryName = getOutputBinaryName(platform);
   const targetBinaryPath = path.join(targetDir, binaryName);
 
+  if (fs.existsSync(targetBinaryPath)) {
+    ensureExecutableMode(targetBinaryPath);
+    writeJson(path.join(targetDir, 'manifest.json'), {
+      platform,
+      arch,
+      version: tag,
+      generatedAt: new Date().toISOString(),
+      sourceType: 'existing',
+      source: {
+        path: path.relative(projectRoot, targetBinaryPath).replace(/\\/g, '/'),
+      },
+      files: [binaryName],
+    });
+    console.log(
+      `  Using checked-in ByteTensorCore: resources/bundled-bytetensorcore/${runtimeKey}/${binaryName} [source=existing]`
+    );
+    return { prepared: true, dir: targetDir, sourceType: 'existing' };
+  }
   console.log(`Preparing ByteTensorCore for ${runtimeKey} from upstream release ${tag}`);
-
   removeDirectorySafe(targetDir);
   ensureDirectory(targetDir);
 
@@ -230,7 +247,7 @@ function prepareAioncore(options) {
   let sourceDetail = {};
   let tempDir = null;
 
-  // 1. Download from GitHub releases
+  // 2. Download from GitHub releases
   if (!sourcePath) {
     try {
       const result = downloadAndExtract(platform, arch, tag);
