@@ -95,3 +95,21 @@ childProcess.execSync = function mockedExecSync(command) {
     }
   });
 });
+
+describe('release artifact publication', () => {
+  it('uploads ByteTensor desktop zip artifacts used by updater metadata', () => {
+    const reusableWorkflow = readFileSync(join(repoRoot, '.github/workflows/_build-reusable.yml'), 'utf8');
+
+    expect(reusableWorkflow).toContain('out/*.zip');
+    expect(reusableWorkflow).not.toContain('out/AionUi-*-win32-*.zip');
+    expect(reusableWorkflow).not.toContain('out/AionUi-*-mac-*.zip');
+  });
+
+  it('ships installer scripts that point users at the ByteTensor demo repository', () => {
+    const installWeb = readFileSync(join(repoRoot, 'scripts/install-web.sh'), 'utf8');
+    const installUbuntu = readFileSync(join(repoRoot, 'scripts/install-ubuntu.sh'), 'utf8');
+
+    expect(installWeb).not.toContain('github.com/iOfficeAI/AionUi');
+    expect(installUbuntu).not.toContain('github.com/iOfficeAI/AionUi');
+  });
+});

@@ -300,7 +300,7 @@ create_systemd_service() {
     $SUDO tee "$service_path" > /dev/null << 'SERVICE_EOF'
 [Unit]
 Description=ByteTensor AI Agent Desktop App (WebUI Mode)
-Documentation=https://github.com/iOfficeAI/AionUi
+Documentation=https://github.com/MrBonjour417/ByteTensor-demo
 After=network-online.target
 Wants=network-online.target
 
@@ -392,8 +392,8 @@ print_summary() {
         echo ""
     fi
 
-    echo -e "  ${BOLD}📖 文件:${NC}  https://github.com/iOfficeAI/AionUi"
-    echo -e "  ${BOLD}🐛 回報:${NC}  https://github.com/iOfficeAI/AionUi/issues"
+    echo -e "  ${BOLD}📖 文件:${NC}  https://github.com/MrBonjour417/ByteTensor-demo"
+    echo -e "  ${BOLD}🐛 回報:${NC}  https://github.com/MrBonjour417/ByteTensor-demo/issues"
     echo ""
 
     if [[ "${MODE}" == "headless" ]]; then

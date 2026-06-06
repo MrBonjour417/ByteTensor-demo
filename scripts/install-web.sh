@@ -104,7 +104,7 @@ Environment Variables:
 
 Examples:
   # Install latest version
-  curl -fsSL https://raw.githubusercontent.com/iOfficeAI/AionUi/main/scripts/install-web.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/MrBonjour417/ByteTensor-demo/main/scripts/install-web.sh | bash
 
   # Install specific version
   VERSION=1.0.0 bash install-web.sh
@@ -202,7 +202,7 @@ download_tarball() {
 
     # Build download URL
     # MIRROR formats:
-    #   - GitHub: https://github.com/iOfficeAI/AionUi/releases/download
+    #   - GitHub: https://github.com/MrBonjour417/ByteTensor-demo/releases/download
     #   - file: file:///path/to/releases
     if [[ "$MIRROR" == file://* ]]; then
         # Local file mirror (for offline installation or testing)
@@ -456,8 +456,8 @@ print_summary() {
         fi
     fi
     echo ""
-    echo -e "  ${BOLD}📖 Documentation:${NC}  https://github.com/iOfficeAI/AionUi"
-    echo -e "  ${BOLD}🐛 Report issues:${NC}  https://github.com/iOfficeAI/AionUi/issues"
+    echo -e "  ${BOLD}📖 Documentation:${NC}  https://github.com/MrBonjour417/ByteTensor-demo"
+    echo -e "  ${BOLD}🐛 Report issues:${NC}  https://github.com/MrBonjour417/ByteTensor-demo/issues"
     echo ""
     echo -e "  ${BOLD}🗑️  Uninstall:${NC}"
     echo ""
