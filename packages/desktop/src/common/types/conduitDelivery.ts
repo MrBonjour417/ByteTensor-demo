@@ -54,8 +54,11 @@ export type ConduitDeliveryRunLookup = {
   runId?: string;
 };
 
+export type ConduitDeliveryReplayStage = 'plan' | 'patch' | 'verify' | 'summary';
+
 export type ConduitDeliveryReplayRequest = {
   runId: string;
+  stage?: ConduitDeliveryReplayStage;
 };
 
 export type ConduitSkillTargetFile = {
@@ -237,6 +240,7 @@ export type ConduitSessionState = {
   createdAt: number;
   updatedAt: number;
   pmInputs: string[];
+  notes?: string[];
   clarificationQuestions: string[];
   entries?: ConduitConversationEntry[];
   requirementDsl?: ConduitRequirementDsl;
@@ -269,5 +273,5 @@ export type ConduitConfirmRunRequest = {
 
 export type ConduitStageReplayRequest = {
   conversationId: string;
-  stage: 'plan' | 'patch' | 'verify' | 'summary';
+  stage: ConduitDeliveryReplayStage;
 };
