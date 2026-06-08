@@ -61,6 +61,23 @@ import type {
   UpdateDownloadRequest,
   UpdateDownloadResult,
 } from '../update/updateTypes';
+import type {
+  ConduitConfirmRunRequest,
+  ConduitChangedFile,
+  ConduitDeliveryBindSandboxRequest,
+  ConduitDeliveryCloneSandboxRequest,
+  ConduitDeliveryReplayRequest,
+  ConduitDeliveryRunLookup,
+  ConduitDeliveryRunState,
+  ConduitDeliveryRunSummary,
+  ConduitDeliveryStartRunRequest,
+  ConduitSessionCommandResult,
+  ConduitSessionInputRequest,
+  ConduitSessionLookup,
+  ConduitSessionState,
+  ConduitStageReplayRequest,
+  ConduitSandboxBinding,
+} from '../types/conduitDelivery';
 import type { ProtocolDetectionRequest, ProtocolDetectionResponse } from '../utils/protocolDetector';
 import { fromApiConversation, fromApiPaginatedConversations, toApiModelOptional } from './apiModelMapper';
 import {
@@ -1162,6 +1179,42 @@ export const webui = {
   })),
   resetPassword: httpPost<{ new_password: string }, void>('/api/webui/reset-password'),
   generateQRToken: httpPost<{ token: string; expires_at_ms: number }, void>('/api/webui/generate-qr-token'),
+};
+
+// ---------------------------------------------------------------------------
+// Conduit Delivery — stays IPC (desktop sandbox IO + verification runner)
+// ---------------------------------------------------------------------------
+
+export const conduitDelivery = {
+  getState: bridge.buildProvider<ConduitDeliveryRunState | undefined, ConduitDeliveryRunLookup>(
+    'conduit-delivery.get-state'
+  ),
+  startRun: bridge.buildProvider<ConduitDeliveryRunState, ConduitDeliveryStartRunRequest>('conduit-delivery.start-run'),
+  bindSandbox: bridge.buildProvider<ConduitSandboxBinding, ConduitDeliveryBindSandboxRequest>(
+    'conduit-delivery.bind-sandbox'
+  ),
+  cloneSandbox: bridge.buildProvider<ConduitSandboxBinding, ConduitDeliveryCloneSandboxRequest>(
+    'conduit-delivery.clone-sandbox'
+  ),
+  listRuns: bridge.buildProvider<ConduitDeliveryRunSummary[], void>('conduit-delivery.list-runs'),
+  replayRun: bridge.buildProvider<ConduitDeliveryRunState, ConduitDeliveryReplayRequest>('conduit-delivery.replay-run'),
+  getChangedFiles: bridge.buildProvider<ConduitChangedFile[], ConduitDeliveryRunLookup>(
+    'conduit-delivery.get-changed-files'
+  ),
+  getSessionState: bridge.buildProvider<ConduitSessionState | undefined, ConduitSessionLookup>(
+    'conduit-delivery.get-session-state'
+  ),
+  handleSessionInput: bridge.buildProvider<ConduitSessionCommandResult, ConduitSessionInputRequest>(
+    'conduit-delivery.handle-session-input'
+  ),
+  confirmSessionRun: bridge.buildProvider<ConduitSessionState, ConduitConfirmRunRequest>(
+    'conduit-delivery.confirm-session-run'
+  ),
+  replaySessionStage: bridge.buildProvider<ConduitSessionState, ConduitStageReplayRequest>(
+    'conduit-delivery.replay-session-stage'
+  ),
+  sessionChanged: bridge.buildEmitter<ConduitSessionState>('conduit-delivery.session-changed'),
+  stateChanged: bridge.buildEmitter<ConduitDeliveryRunState>('conduit-delivery.state-changed'),
 };
 
 // ---------------------------------------------------------------------------
