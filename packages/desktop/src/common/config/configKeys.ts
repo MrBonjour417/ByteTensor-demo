@@ -35,6 +35,7 @@ export type ConfigKeyMap = {
   'webui.desktop.enabled': boolean | undefined;
   'webui.desktop.allowRemote': boolean | undefined;
   'webui.desktop.port': number | undefined;
+  'conduit.lastSandboxPath': string | undefined;
   customCss: string;
   'css.themes': ICssTheme[];
   'css.activeThemeId': string;
