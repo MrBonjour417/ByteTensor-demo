@@ -38,7 +38,7 @@ const NanobotChat: React.FC<{
         <FlexFullContainer>
           <MessageList className='flex-1' emptySlot={emptySlot}></MessageList>
         </FlexFullContainer>
-        {!hideSendBox && <NanobotSendBox conversation_id={conversation_id} />}
+        {!hideSendBox && <NanobotSendBox conversation_id={conversation_id} workspacePath={workspace} />}
       </div>
     </ConversationProvider>
   );

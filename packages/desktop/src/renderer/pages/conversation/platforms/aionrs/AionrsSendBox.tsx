@@ -27,6 +27,7 @@ import { useSlashCommands } from '@/renderer/hooks/chat/useSlashCommands';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
 import { useAddOrUpdateMessage, useRemoveMessageByMsgId } from '@/renderer/pages/conversation/Messages/hooks';
+import { useConduitConversationMode } from '@/renderer/pages/conversation/hooks/useConduitConversationMode';
 import { savePreferredMode } from '@/renderer/pages/guid/hooks/agentSelectionUtils';
 import {
   shouldEnqueueConversationCommand,
@@ -120,6 +121,10 @@ const AionrsSendBox: React.FC<{
   const { current_model } = modelSelection;
   const teamPermission = useTeamPermission();
   const propagateMode = teamPermission?.propagateMode;
+  const { handleConduitInput } = useConduitConversationMode({
+    conversationId: conversation_id,
+    workspacePath,
+  });
 
   const { thought, running, hasHydratedRunningState, setActiveMsgId, setWaitingResponse, resetState } =
     useAionrsMessage(conversation_id, {
@@ -602,6 +607,7 @@ const AionrsSendBox: React.FC<{
         }
         onStop={handleStop}
         className='z-10'
+        onConduitInput={handleConduitInput}
         onFilesAdded={handleFilesAdded}
         hasPendingAttachments={uploadFile.length > 0 || atPath.length > 0}
         supportedExts={allSupportedExts}

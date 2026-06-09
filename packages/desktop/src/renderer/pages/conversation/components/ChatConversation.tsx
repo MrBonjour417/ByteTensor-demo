@@ -35,6 +35,7 @@ import AionrsModelSelector from '../platforms/aionrs/AionrsModelSelector';
 import { useAionrsModelSelection } from '../platforms/aionrs/useAionrsModelSelection';
 import { usePreviewContext } from '../Preview';
 import StarOfficeMonitorCard from '../platforms/openclaw/StarOfficeMonitorCard.tsx';
+import ConduitDeliveryPanel from './ConduitDeliveryPanel';
 // import SkillRuleGenerator from './components/SkillRuleGenerator'; // Temporarily hidden
 
 /** Check whether a specific skill is mounted on the conversation. */
@@ -172,6 +173,7 @@ const AionrsConversationPanel: React.FC<{ conversation: AionrsConversation; slid
     sider: <ChatSlider conversation={conversation} />,
     headerExtra: (
       <div className='flex items-center gap-8px'>
+        <ConduitDeliveryPanel conversationId={conversation.id} workspacePath={conversation.extra?.workspace} />
         <CronJobManager
           conversation_id={conversation.id}
           cron_job_id={conversation.extra?.cron_job_id as string | undefined}
@@ -392,6 +394,11 @@ const ChatConversation: React.FC<{
               openPreview(url, 'url', metadata);
             }}
           />
+        </div>
+      )}
+      {conversation && (
+        <div className='shrink-0'>
+          <ConduitDeliveryPanel conversationId={conversation.id} workspacePath={conversation.extra?.workspace} />
         </div>
       )}
       {conversation && (

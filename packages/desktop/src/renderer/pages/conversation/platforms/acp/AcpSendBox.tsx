@@ -26,6 +26,7 @@ import { useLayoutContext } from '@/renderer/hooks/context/LayoutContext';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
 import { useAddOrUpdateMessage } from '@/renderer/pages/conversation/Messages/hooks';
+import { useConduitConversationMode } from '@/renderer/pages/conversation/hooks/useConduitConversationMode';
 import {
   shouldEnqueueConversationCommand,
   useConversationCommandQueue,
@@ -128,6 +129,10 @@ const AcpSendBox: React.FC<{
     }));
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [currentMode, setCurrentMode] = useState<string | undefined>(session_mode);
+  const { handleConduitInput } = useConduitConversationMode({
+    conversationId: conversation_id,
+    workspacePath,
+  });
   const prepareRuntimeSync = useCallback(async () => {
     if (teamPermission) {
       await teamPermission.warmupSession();
@@ -606,6 +611,7 @@ Please check your local CLI tool authentication status`,
         })}
         onStop={handleStop}
         className='z-10'
+        onConduitInput={handleConduitInput}
         onFilesAdded={handleFilesAdded}
         hasPendingAttachments={uploadFile.length > 0 || atPath.length > 0}
         enableBtw={isSideQuestionSupported({ type: 'acp', backend })}

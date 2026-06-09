@@ -20,6 +20,7 @@ import { useSlashCommands } from '@/renderer/hooks/chat/useSlashCommands';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
 import { useAddOrUpdateMessage, useRemoveMessageByMsgId } from '@/renderer/pages/conversation/Messages/hooks';
+import { useConduitConversationMode } from '@/renderer/pages/conversation/hooks/useConduitConversationMode';
 import {
   shouldEnqueueConversationCommand,
   useConversationCommandQueue,
@@ -55,8 +56,7 @@ const useNanobotSendBoxDraft = getSendBoxDraftHook('nanobot', {
 const EMPTY_AT_PATH: Array<string | FileOrFolderItem> = [];
 const EMPTY_UPLOAD_FILES: string[] = [];
 
-const NanobotSendBox: React.FC<{ conversation_id: string }> = ({ conversation_id }) => {
-  const [workspacePath, setWorkspacePath] = useState('');
+const NanobotSendBox: React.FC<{ conversation_id: string; workspacePath: string }> = ({ conversation_id, workspacePath }) => {
   const { t } = useTranslation();
   const teamPermission = useTeamPermission();
   const { checkAndUpdateTitle } = useAutoTitle();
@@ -64,6 +64,10 @@ const NanobotSendBox: React.FC<{ conversation_id: string }> = ({ conversation_id
   const addOrUpdateMessage = useAddOrUpdateMessage();
   const removeMessageByMsgId = useRemoveMessageByMsgId();
   const { setSendBoxHandler } = usePreviewContext();
+  const { handleConduitInput } = useConduitConversationMode({
+    conversationId: conversation_id,
+    workspacePath,
+  });
 
   const [aiProcessing, setAiProcessing] = useState(false);
   const [hasHydratedRunningState, setHasHydratedRunningState] = useState(false);
@@ -370,7 +374,7 @@ const NanobotSendBox: React.FC<{ conversation_id: string }> = ({ conversation_id
         const { input, files = [] } = JSON.parse(stored) as { input: string; files?: string[] };
         const res = await getConversationOrNull(conversation_id);
         const resolvedWorkspace = res?.extra?.workspace ?? '';
-        setWorkspacePath(resolvedWorkspace);
+        // Use the persisted conversation workspace for the initial display message without mutating the active sendbox workspace.
         const initialDisplayMessage = buildDisplayMessage(input, files, resolvedWorkspace);
 
         void checkAndUpdateTitle(conversation_id, input);
@@ -459,6 +463,7 @@ const NanobotSendBox: React.FC<{ conversation_id: string }> = ({ conversation_id
               })
         }
         onStop={handleStop}
+        onConduitInput={handleConduitInput}
         onFilesAdded={handleFilesAdded}
         hasPendingAttachments={uploadFile.length > 0 || atPath.length > 0}
         supportedExts={allSupportedExts}

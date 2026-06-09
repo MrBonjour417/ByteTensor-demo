@@ -19,6 +19,7 @@ import { createSetUploadFile } from '@/renderer/hooks/chat/useSendBoxFiles';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
 import { useAddOrUpdateMessage, useRemoveMessageByMsgId } from '@/renderer/pages/conversation/Messages/hooks';
+import { useConduitConversationMode } from '@/renderer/pages/conversation/hooks/useConduitConversationMode';
 import {
   shouldEnqueueConversationCommand,
   useConversationCommandQueue,
@@ -62,6 +63,10 @@ const RemoteSendBox: React.FC<{ conversation_id: string }> = ({ conversation_id 
   const addOrUpdateMessage = useAddOrUpdateMessage();
   const removeMessageByMsgId = useRemoveMessageByMsgId();
   const { setSendBoxHandler } = usePreviewContext();
+  const { handleConduitInput } = useConduitConversationMode({
+    conversationId: conversation_id,
+    workspacePath,
+  });
 
   const [agent_name, setAgentName] = useState('Remote Agent');
   const [aiProcessing, setAiProcessing] = useState(false);
@@ -493,6 +498,7 @@ const RemoteSendBox: React.FC<{ conversation_id: string }> = ({ conversation_id 
               })
         }
         onStop={handleStop}
+        onConduitInput={handleConduitInput}
         onFilesAdded={handleFilesAdded}
         supportedExts={allSupportedExts}
         defaultMultiLine={true}

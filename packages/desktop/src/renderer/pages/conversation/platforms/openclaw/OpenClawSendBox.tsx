@@ -21,6 +21,7 @@ import { useSlashCommands } from '@/renderer/hooks/chat/useSlashCommands';
 import { useOpenFileSelector } from '@/renderer/hooks/file/useOpenFileSelector';
 import { useLatestRef } from '@/renderer/hooks/ui/useLatestRef';
 import { useAddOrUpdateMessage, useRemoveMessageByMsgId } from '@/renderer/pages/conversation/Messages/hooks';
+import { useConduitConversationMode } from '@/renderer/pages/conversation/hooks/useConduitConversationMode';
 import {
   shouldEnqueueConversationCommand,
   useConversationCommandQueue,
@@ -64,6 +65,10 @@ const OpenClawSendBox: React.FC<{ conversation_id: string }> = ({ conversation_i
   const addOrUpdateMessage = useAddOrUpdateMessage();
   const removeMessageByMsgId = useRemoveMessageByMsgId();
   const { setSendBoxHandler } = usePreviewContext();
+  const { handleConduitInput } = useConduitConversationMode({
+    conversationId: conversation_id,
+    workspacePath,
+  });
 
   const [aiProcessing, setAiProcessing] = useState(false);
   const [hasHydratedRunningState, setHasHydratedRunningState] = useState(false);
@@ -582,6 +587,7 @@ const OpenClawSendBox: React.FC<{ conversation_id: string }> = ({ conversation_i
               })
         }
         onStop={handleStop}
+        onConduitInput={handleConduitInput}
         onFilesAdded={handleFilesAdded}
         hasPendingAttachments={uploadFile.length > 0 || atPath.length > 0}
         supportedExts={allSupportedExts}
