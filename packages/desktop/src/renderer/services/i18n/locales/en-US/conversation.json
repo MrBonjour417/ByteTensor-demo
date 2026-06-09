@@ -523,6 +523,8 @@
       "replayVerify": "Replay verification"
     },
     "submitClarification": "Submit clarification",
-    "recalledDemands": "Recalled demands"
+    "recalledDemands": "Recalled demands",
+    "contextSlices": "Context slices",
+    "agentInvocations": "Subagent invocations"
   }
 }

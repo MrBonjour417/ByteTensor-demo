@@ -523,6 +523,8 @@
       "replayVerify": "重放验证"
     },
     "submitClarification": "提交澄清",
-    "recalledDemands": "召回的历史需求"
+    "recalledDemands": "召回的历史需求",
+    "contextSlices": "上下文切片",
+    "agentInvocations": "子代理调用"
   }
 }

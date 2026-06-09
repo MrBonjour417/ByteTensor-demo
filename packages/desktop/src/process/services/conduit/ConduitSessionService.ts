@@ -27,6 +27,7 @@ type WorkflowLike = {
 
 type ClarifierResultWithMetrics = ConduitClarifierResult & {
   modelMetrics?: ConduitSessionState['modelMetrics'];
+  agentInvocations?: ConduitSessionState['agentInvocations'];
 };
 
 type ClarifierLike = {
@@ -260,6 +261,9 @@ export class ConduitSessionService {
     const entries = [this.#entry(session, 'user', 'pm_input', pmInput)];
     const analysis = await this.#clarifier.analyze(session.pmInputs);
     session.modelMetrics = analysis.modelMetrics ?? session.modelMetrics;
+    if (analysis.agentInvocations?.length) {
+      session.agentInvocations = [...(session.agentInvocations ?? []), ...analysis.agentInvocations];
+    }
     if (analysis.status === 'needs_clarification') {
       session.status = 'clarifying';
       session.requirementDsl = undefined;

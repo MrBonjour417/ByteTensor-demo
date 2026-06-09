@@ -125,6 +125,38 @@ describe('ConduitWorkflowService', () => {
     ).resolves.toContain('WORDS_PER_MINUTE');
   });
 
+  it('cuts repository context to selected Skill target files before patching', async () => {
+    const sandboxPath = await createSandbox();
+    await mkdir(path.join(sandboxPath, 'frontend/src/routes/Article'), { recursive: true });
+    await mkdir(path.join(sandboxPath, 'frontend/src/routes/Profile'), { recursive: true });
+    await writeFile(
+      path.join(sandboxPath, 'frontend/src/routes/Article/Article.jsx'),
+      'export default function Article() { return null; }\n'
+    );
+    await writeFile(
+      path.join(sandboxPath, 'frontend/src/routes/Profile/Profile.jsx'),
+      'export default function Profile() { return null; }\n'
+    );
+    const workflow = await createWorkflow(sandboxPath);
+
+    const state = await workflow.startRun({
+      requirement: 'show article word count and estimated reading time on the article detail page',
+    });
+
+    expect(state.contextSlices?.map((slice) => slice.path)).toEqual([
+      'frontend/src/helpers/articleReadingStats.js',
+      'frontend/src/helpers/articleReadingStats.test.js',
+      'frontend/src/routes/Article/Article.jsx',
+    ]);
+    expect(state.contextSlices?.find((slice) => slice.path.endsWith('Article.jsx'))).toMatchObject({
+      reason: 'replace',
+      lineStart: 1,
+      lineEnd: 1,
+      tokenEstimate: 13,
+    });
+    expect(state.contextSlices?.some((slice) => slice.path.includes('Profile'))).toBe(false);
+  });
+
   it('propagates verification failure into the run state', async () => {
     const sandboxPath = await createSandbox();
     const workflow = new ConduitWorkflowService({

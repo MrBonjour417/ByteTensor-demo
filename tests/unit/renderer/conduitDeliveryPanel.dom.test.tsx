@@ -76,6 +76,8 @@ const translations: Record<string, string> = {
   'conversation.conduitDelivery.actions.replayVerify': 'Replay verification',
   'conversation.conduitDelivery.recalledDemands': 'Recalled demands',
   'conversation.conduitDelivery.submitClarification': 'Submit clarification',
+  'conversation.conduitDelivery.contextSlices': 'Context slices',
+  'conversation.conduitDelivery.agentInvocations': 'Subagent invocations',
 };
 const emitSessionChanged = (session: ConduitSessionState) => {
   const handler = conduitMocks.sessionHandlers.at(-1);
@@ -293,6 +295,44 @@ describe('ConduitDeliveryPanel', () => {
     expect(screen.getByText('doubao/seed: 22 tokens, 35ms')).toBeInTheDocument();
     expect(screen.getByText('doubao/seed-pro: 40 tokens, 65ms')).toBeInTheDocument();
     expect(screen.getByText('DOUBAO_ENDPOINT and DOUBAO_API_KEY must be set in the environment.')).toBeInTheDocument();
+  });
+
+  it('shows context slices and clarification subagent invocations', async () => {
+    render(<ConduitDeliveryPanel conversationId='conversation-1' />);
+
+    emitSessionChanged(
+      createSession({
+        agentInvocations: [
+          {
+            id: 'clarify-1',
+            agentName: 'clarification_subagent',
+            purpose: '需求澄清',
+            status: 'succeeded',
+            startedAt: 10,
+            finishedAt: 14,
+            inputTokens: 30,
+            outputTokens: 18,
+          },
+        ],
+        runState: createRunState({
+          contextSlices: [
+            {
+              path: 'frontend/src/routes/Article/Article.jsx',
+              reason: 'modify article detail page',
+              lineStart: 1,
+              lineEnd: 80,
+              charCount: 2400,
+              tokenEstimate: 600,
+            },
+          ],
+        }),
+      })
+    );
+
+    expect(await screen.findByText('Context slices')).toBeInTheDocument();
+    expect(screen.getByText('frontend/src/routes/Article/Article.jsx:1-80 (600 tokens)')).toBeInTheDocument();
+    expect(screen.getByText('Subagent invocations')).toBeInTheDocument();
+    expect(screen.getByText('clarification_subagent: succeeded, 48 tokens')).toBeInTheDocument();
   });
 
   it('shows recalled historical demands for similar requirements', async () => {

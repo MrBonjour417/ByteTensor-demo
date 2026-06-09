@@ -128,6 +128,12 @@ export class ConduitRepoService {
     }
   }
 
+  async readTextFile(sandboxPath: string, relativePath: string): Promise<string> {
+    const safeRoot = await this.#normalizeSandboxRoot(sandboxPath);
+    const targetPath = await this.resolveInsideSandbox(safeRoot, relativePath);
+    return readFile(targetPath, 'utf8');
+  }
+
   async listChangedFiles(sandboxPath: string): Promise<ConduitChangedFile[]> {
     const result = await this.#commandRunner('git', ['status', '--porcelain'], sandboxPath, { shell: false });
     if (result.exitCode !== 0) {

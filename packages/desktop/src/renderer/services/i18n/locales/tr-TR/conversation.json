@@ -525,6 +525,8 @@
       "replayVerify": "Doğrulamayı yeniden oynat"
     },
     "submitClarification": "Netleştirmeyi gönder",
-    "recalledDemands": "Geri çağrılan geçmiş gereksinimler"
+    "recalledDemands": "Geri çağrılan geçmiş gereksinimler",
+    "contextSlices": "Bağlam dilimleri",
+    "agentInvocations": "Alt aracı çağrıları"
   }
 }

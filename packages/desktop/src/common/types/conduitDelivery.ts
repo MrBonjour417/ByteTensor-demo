@@ -132,6 +132,28 @@ export type ConduitModelCallMetrics = {
   error?: string;
 };
 
+export type ConduitAgentInvocation = {
+  id: string;
+  agentName: string;
+  purpose: string;
+  status: 'succeeded' | 'failed' | 'fallback';
+  startedAt: number;
+  finishedAt: number;
+  inputTokens: number;
+  outputTokens: number;
+  error?: string;
+};
+
+export type ConduitContextSlice = {
+  path: string;
+  reason: string;
+  lineStart: number;
+  lineEnd: number;
+  charCount: number;
+  tokenEstimate: number;
+  preview?: string;
+};
+
 export type ConduitPrReadySummary = {
   title: string;
   body: string;
@@ -175,6 +197,8 @@ export type ConduitDeliveryRunState = {
   changedFiles: ConduitChangedFile[];
   verificationResults: ConduitVerificationResult[];
   modelMetrics?: ConduitModelCallMetrics[];
+  agentInvocations?: ConduitAgentInvocation[];
+  contextSlices?: ConduitContextSlice[];
   summary?: ConduitPrReadySummary;
   error?: string;
 };
@@ -259,6 +283,7 @@ export type ConduitSessionState = {
   activeRunId?: string;
   runState?: ConduitDeliveryRunState;
   modelMetrics?: ConduitModelCallMetrics[];
+  agentInvocations?: ConduitAgentInvocation[];
   error?: string;
 };
 

@@ -10,6 +10,7 @@ import {
   CONDUIT_DELIVERY_STAGE_ORDER,
   CONDUIT_READING_STATS_SKILL_ID,
   type ConduitChangedFile,
+  type ConduitContextSlice,
   type ConduitClarification,
   type ConduitDeliveryEvent,
   type ConduitDeliveryReplayRequest,
@@ -141,6 +142,7 @@ export class ConduitWorkflowService {
     try {
       state.moduleLocations = this.#buildModuleLocations(skill);
       await this.#completeStage(state, 'locate', 'Located Conduit frontend article modules.');
+      if (state.sandbox?.path) state.contextSlices = await this.#buildContextSlices(state.sandbox.path, skill);
     } catch (error) {
       return this.#markReplayFailed(state, 'locate', error);
     }
@@ -341,7 +343,8 @@ export class ConduitWorkflowService {
       await this.#completeStage(state, 'plan', 'Generated deterministic L1 implementation plan.');
 
       state.moduleLocations = this.#buildModuleLocations(skill);
-      await this.#completeStage(state, 'locate', 'Located Conduit frontend article modules.');
+      state.contextSlices = await this.#buildContextSlices(sandbox.path, skill);
+      await this.#completeStage(state, 'locate', 'Cut repository context to selected Skill target files.');
 
       await this.#repoService.applyPatches(sandbox.path, skill.buildPatches());
       await this.#completeStage(state, 'patch', 'Applied deterministic Skill patch to the Conduit sandbox.');
@@ -422,6 +425,31 @@ export class ConduitWorkflowService {
 
   #buildModuleLocations(skill: ConduitDeliverySkill): ConduitModuleLocation[] {
     return skill.targetFiles.map((file) => ({ path: file.path, reason: file.purpose }));
+  }
+
+  async #buildContextSlices(sandboxPath: string, skill: ConduitDeliverySkill): Promise<ConduitContextSlice[]> {
+    const slices: ConduitContextSlice[] = [];
+    for (const target of skill.targetFiles) {
+      let content = '';
+      try {
+        content = await this.#repoService.readTextFile(sandboxPath, target.path);
+      } catch {
+        content = '';
+      }
+      const lines = content.length > 0 ? content.replace(/\r?\n$/, '').split(/\r?\n/) : [];
+      const previewLines = lines.slice(0, 80);
+      const preview = previewLines.join('\n');
+      slices.push({
+        path: target.path,
+        reason: target.purpose,
+        lineStart: 1,
+        lineEnd: previewLines.length || 1,
+        charCount: content.length,
+        tokenEstimate: Math.ceil((content.length || target.path.length) / 4),
+        preview: preview || undefined,
+      });
+    }
+    return slices;
   }
 
   #buildSummary(

@@ -522,6 +522,8 @@
       "replayVerify": "Повторити перевірку"
     },
     "submitClarification": "Надіслати уточнення",
-    "recalledDemands": "Знайдені схожі вимоги"
+    "recalledDemands": "Знайдені схожі вимоги",
+    "contextSlices": "Зрізи контексту",
+    "agentInvocations": "Виклики субагентів"
   }
 }

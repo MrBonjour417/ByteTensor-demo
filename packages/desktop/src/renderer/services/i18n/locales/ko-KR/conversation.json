@@ -523,6 +523,8 @@
       "replayVerify": "검증 다시 실행"
     },
     "submitClarification": "확인 내용 제출",
-    "recalledDemands": "회상된 과거 요구사항"
+    "recalledDemands": "회상된 과거 요구사항",
+    "contextSlices": "컨텍스트 슬라이스",
+    "agentInvocations": "서브에이전트 호출"
   }
 }

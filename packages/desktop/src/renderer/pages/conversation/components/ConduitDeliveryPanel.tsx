@@ -103,6 +103,8 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
   const runState = state ?? session?.runState;
   const modelMetrics = runState?.modelMetrics ?? session?.modelMetrics;
   const verificationResults = runState?.verificationResults;
+  const contextSlices = runState?.contextSlices;
+  const agentInvocations = session?.agentInvocations ?? runState?.agentInvocations;
   const verificationFailure = useMemo(() => failedVerificationText(runState), [runState]);
   const metricAggregateLabels = useMemo(() => {
     if (!modelMetrics?.length) return [];
@@ -286,6 +288,30 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
                   </Typography.Text>
                   {metric.error && <Typography.Text className='block'>{metric.error}</Typography.Text>}
                 </div>
+              ))}
+            </Space>
+          </div>
+        ) : null}
+        {agentInvocations?.length ? (
+          <div>
+            <Typography.Title heading={6}>{t('conversation.conduitDelivery.agentInvocations')}</Typography.Title>
+            <Space direction='vertical' size='mini'>
+              {agentInvocations.map((invocation) => (
+                <Typography.Text key={invocation.id} className='block'>
+                  {invocation.agentName}: {invocation.status}, {invocation.inputTokens + invocation.outputTokens} tokens
+                </Typography.Text>
+              ))}
+            </Space>
+          </div>
+        ) : null}
+        {contextSlices?.length ? (
+          <div>
+            <Typography.Title heading={6}>{t('conversation.conduitDelivery.contextSlices')}</Typography.Title>
+            <Space direction='vertical' size='mini'>
+              {contextSlices.map((slice) => (
+                <Typography.Text key={slice.path} className='block'>
+                  {slice.path}:{slice.lineStart}-{slice.lineEnd} ({slice.tokenEstimate} tokens)
+                </Typography.Text>
               ))}
             </Space>
           </div>

@@ -523,6 +523,8 @@
       "replayVerify": "検証を再実行"
     },
     "submitClarification": "確認内容を送信",
-    "recalledDemands": "再利用された過去の要件"
+    "recalledDemands": "再利用された過去の要件",
+    "contextSlices": "コンテキストスライス",
+    "agentInvocations": "サブエージェント呼び出し"
   }
 }

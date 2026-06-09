@@ -523,6 +523,8 @@
       "replayVerify": "Повторить проверку"
     },
     "submitClarification": "Отправить уточнение",
-    "recalledDemands": "Найденные похожие требования"
+    "recalledDemands": "Найденные похожие требования",
+    "contextSlices": "Срезы контекста",
+    "agentInvocations": "Вызовы субагентов"
   }
 }

@@ -81,6 +81,65 @@ describe('ConduitSessionService', () => {
     expect(result.entries.map((entry) => entry.content)).toContain('请确认展示页面。');
   });
 
+  it('stores clarification subagent traces from the Agent result', async () => {
+    const clarifier = {
+      analyze: vi.fn(async () => ({
+        status: 'needs_clarification' as const,
+        questions: ['请确认展示页面。'],
+        agentInvocations: [
+          {
+            id: 'clarify-1',
+            agentName: 'clarification_subagent',
+            purpose: '需求澄清',
+            status: 'succeeded' as const,
+            startedAt: 10,
+            finishedAt: 12,
+            inputTokens: 20,
+            outputTokens: 12,
+          },
+        ],
+      })),
+    };
+    const service = new ConduitSessionService({ clarifier, now: () => 10, sessionIdFactory: () => 'session-1' });
+
+    const result = await service.handleInput({ conversationId: 'conversation-1', input: '/conduit 模糊需求' });
+
+    expect(result.session?.agentInvocations).toEqual([
+      expect.objectContaining({ agentName: 'clarification_subagent', status: 'succeeded' }),
+    ]);
+  });
+
+  it('appends clarification subagent traces across multiple PM turns', async () => {
+    let turn = 0;
+    const clarifier = {
+      analyze: vi.fn(async () => {
+        turn += 1;
+        return {
+          status: 'needs_clarification' as const,
+          questions: [`question-${turn}`],
+          agentInvocations: [
+            {
+              id: `clarify-${turn}`,
+              agentName: 'clarification_subagent',
+              purpose: '需求澄清',
+              status: 'succeeded' as const,
+              startedAt: turn,
+              finishedAt: turn + 1,
+              inputTokens: 10,
+              outputTokens: 5,
+            },
+          ],
+        };
+      }),
+    };
+    const service = new ConduitSessionService({ clarifier, now: () => 10, sessionIdFactory: () => 'session-1' });
+
+    await service.handleInput({ conversationId: 'conversation-1', input: '/conduit 模糊需求' });
+    const result = await service.handleInput({ conversationId: 'conversation-1', input: '继续澄清' });
+
+    expect(result.session?.agentInvocations?.map((invocation) => invocation.id)).toEqual(['clarify-1', 'clarify-2']);
+  });
+
   it('blocks run for incomplete requirements while staying in clarification mode', async () => {
     const workflow = { startRun: vi.fn(async () => createRunState()), replayRun: vi.fn(async () => createRunState()) };
     const service = new ConduitSessionService({ workflow, now: () => 10, sessionIdFactory: () => 'session-1' });
