@@ -477,5 +477,37 @@
   "sendbox": {
     "hint": "输入 / 唤起命令，@ 引用文件"
   },
-  "notFound": "会话不存在或已被删除"
+  "notFound": "会话不存在或已被删除",
+  "conduitDelivery": {
+    "button": "Conduit 交付",
+    "title": "Conduit 交付工作区",
+    "sandboxPathLabel": "沙箱路径",
+    "sandboxPathPlaceholder": "Conduit 沙箱路径",
+    "requirementLabel": "PM 需求",
+    "requirementPlaceholder": "描述 Conduit 改动",
+    "bindSandbox": "绑定沙箱",
+    "startRun": "启动 L1 任务",
+    "verificationFailed": "验证失败",
+    "stageTimeline": "阶段时间线",
+    "changedFiles": "变更文件",
+    "verificationResults": "验证结果",
+    "prSummary": "PR 摘要",
+    "modeEntered": "Conduit 交付模式已启用",
+    "requirementDsl": "需求 DSL",
+    "planSummary": "计划摘要",
+    "clarificationQuestions": "澄清问题",
+    "metrics": "模型指标",
+    "status": "状态",
+    "commands": {
+      "help": "可使用 /conduit、/conduit <需求>、/conduit run、/conduit status、/conduit revise、/conduit replay <阶段> 或 /conduit exit。",
+      "unknown": "不支持的 Conduit 命令",
+      "exited": "已退出 Conduit 交付模式",
+      "notReady": "Conduit 会话尚未准备好运行"
+    },
+    "errors": {
+      "missingSandbox": "运行前请绑定或克隆官方 Conduit 仓库。",
+      "nonOfficialRepository": "所选仓库不是官方 Conduit 仓库或已验证的 fork。",
+      "verificationFailed": "验证失败。请查看命令输出并重放失败阶段。"
+    }
+  }
 }

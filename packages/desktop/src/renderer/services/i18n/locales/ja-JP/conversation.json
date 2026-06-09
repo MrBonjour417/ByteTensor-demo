@@ -477,5 +477,37 @@
   "sendbox": {
     "hint": "/ でコマンド、@ でファイルを参照"
   },
-  "notFound": "会話が存在しないか、削除されました"
+  "notFound": "会話が存在しないか、削除されました",
+  "conduitDelivery": {
+    "button": "Conduit Delivery",
+    "title": "Conduit Delivery ワークスペース",
+    "sandboxPathLabel": "サンドボックスパス",
+    "sandboxPathPlaceholder": "Conduit サンドボックスのパス",
+    "requirementLabel": "PM 要件",
+    "requirementPlaceholder": "Conduit の変更内容を入力",
+    "bindSandbox": "サンドボックスを接続",
+    "startRun": "L1 実行を開始",
+    "verificationFailed": "検証に失敗しました",
+    "stageTimeline": "ステージタイムライン",
+    "changedFiles": "変更ファイル",
+    "verificationResults": "検証結果",
+    "prSummary": "PR サマリー",
+    "modeEntered": "Conduit 配信モードが有効です",
+    "requirementDsl": "要件 DSL",
+    "planSummary": "計画サマリー",
+    "clarificationQuestions": "確認質問",
+    "metrics": "モデル指標",
+    "status": "ステータス",
+    "commands": {
+      "help": "/conduit、/conduit <要件>、/conduit run、/conduit status、/conduit revise、/conduit replay <ステージ>、/conduit exit を使用できます。",
+      "unknown": "未対応の Conduit コマンド",
+      "exited": "Conduit 配信モードを終了しました",
+      "notReady": "Conduit セッションはまだ実行準備ができていません"
+    },
+    "errors": {
+      "missingSandbox": "実行前に公式 Conduit リポジトリを接続またはクローンしてください。",
+      "nonOfficialRepository": "選択したリポジトリは公式 Conduit リポジトリまたは検証済み fork ではありません。",
+      "verificationFailed": "検証に失敗しました。コマンド出力を確認し、失敗したステージを再実行してください。"
+    }
+  }
 }

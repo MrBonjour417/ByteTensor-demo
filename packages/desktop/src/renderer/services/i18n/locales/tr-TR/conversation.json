@@ -479,5 +479,37 @@
   "sendbox": {
     "hint": "Komutlar için /, dosya için @ yazın"
   },
-  "notFound": "Konuşma bulunamadı veya silinmiş"
+  "notFound": "Konuşma bulunamadı veya silinmiş",
+  "conduitDelivery": {
+    "button": "Conduit Delivery",
+    "title": "Conduit Delivery Çalışma Alanı",
+    "sandboxPathLabel": "Sandbox yolu",
+    "sandboxPathPlaceholder": "Conduit sandbox yolu",
+    "requirementLabel": "PM gereksinimi",
+    "requirementPlaceholder": "Conduit değişikliğini açıklayın",
+    "bindSandbox": "Sandbox bağla",
+    "startRun": "L1 çalıştır",
+    "verificationFailed": "Doğrulama başarısız",
+    "stageTimeline": "Aşama zaman çizelgesi",
+    "changedFiles": "Değişen dosyalar",
+    "verificationResults": "Doğrulama sonuçları",
+    "prSummary": "PR özeti",
+    "modeEntered": "Conduit teslim modu etkin",
+    "requirementDsl": "Gereksinim DSL",
+    "planSummary": "Plan özeti",
+    "clarificationQuestions": "Netleştirme soruları",
+    "metrics": "Model metrikleri",
+    "status": "Durum",
+    "commands": {
+      "help": "/conduit, /conduit <gereksinim>, /conduit run, /conduit status, /conduit revise, /conduit replay <aşama> veya /conduit exit kullanın.",
+      "unknown": "Desteklenmeyen Conduit komutu",
+      "exited": "Conduit teslim modundan çıkıldı",
+      "notReady": "Conduit oturumu çalıştırmaya hazır değil"
+    },
+    "errors": {
+      "missingSandbox": "Çalıştırmadan önce resmi Conduit deposunu bağlayın veya klonlayın.",
+      "nonOfficialRepository": "Seçilen depo resmi Conduit deposu veya doğrulanmış fork değil.",
+      "verificationFailed": "Doğrulama başarısız. Komut çıktısını inceleyin ve başarısız aşamayı yeniden oynatın."
+    }
+  }
 }

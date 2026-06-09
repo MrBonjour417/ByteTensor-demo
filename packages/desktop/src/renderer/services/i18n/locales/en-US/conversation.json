@@ -477,5 +477,37 @@
   "sendbox": {
     "hint": "Type / for commands, @ to reference files"
   },
-  "notFound": "Conversation not found or has been deleted"
+  "notFound": "Conversation not found or has been deleted",
+  "conduitDelivery": {
+    "button": "Conduit Delivery",
+    "title": "Conduit Delivery Workspace",
+    "sandboxPathLabel": "Sandbox path",
+    "sandboxPathPlaceholder": "Path to Conduit sandbox",
+    "requirementLabel": "PM requirement",
+    "requirementPlaceholder": "Describe the Conduit change",
+    "bindSandbox": "Bind sandbox",
+    "startRun": "Start L1 run",
+    "verificationFailed": "Verification failed",
+    "stageTimeline": "Stage timeline",
+    "changedFiles": "Changed files",
+    "verificationResults": "Verification results",
+    "prSummary": "PR summary",
+    "modeEntered": "Conduit delivery mode is active",
+    "requirementDsl": "Requirement DSL",
+    "planSummary": "Plan summary",
+    "clarificationQuestions": "Clarification questions",
+    "metrics": "Model metrics",
+    "status": "Status",
+    "commands": {
+      "help": "Use /conduit, /conduit <requirement>, /conduit run, /conduit status, /conduit revise, /conduit replay <stage>, or /conduit exit.",
+      "unknown": "Unsupported Conduit command",
+      "exited": "Conduit delivery mode exited",
+      "notReady": "Conduit session is not ready to run"
+    },
+    "errors": {
+      "missingSandbox": "Bind or clone the official Conduit repository before running.",
+      "nonOfficialRepository": "The selected repository is not the official Conduit repository or a verified fork.",
+      "verificationFailed": "Verification failed. Review the command output and replay the failed stage."
+    }
+  }
 }

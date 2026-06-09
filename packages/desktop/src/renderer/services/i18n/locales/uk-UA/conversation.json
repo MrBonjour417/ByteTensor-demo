@@ -476,5 +476,37 @@
   "sendbox": {
     "hint": "Введіть / для команд, @ для посилань на файли"
   },
-  "notFound": "Розмову не знайдено або її видалено"
+  "notFound": "Розмову не знайдено або її видалено",
+  "conduitDelivery": {
+    "button": "Conduit Delivery",
+    "title": "Робоча область Conduit Delivery",
+    "sandboxPathLabel": "Шлях до sandbox",
+    "sandboxPathPlaceholder": "Шлях до sandbox Conduit",
+    "requirementLabel": "Вимога PM",
+    "requirementPlaceholder": "Опишіть зміну Conduit",
+    "bindSandbox": "Підключити sandbox",
+    "startRun": "Запустити L1",
+    "verificationFailed": "Перевірка не пройдена",
+    "stageTimeline": "Хронологія етапів",
+    "changedFiles": "Змінені файли",
+    "verificationResults": "Результати перевірки",
+    "prSummary": "Підсумок PR",
+    "modeEntered": "Режим доставки Conduit активний",
+    "requirementDsl": "DSL вимог",
+    "planSummary": "Підсумок плану",
+    "clarificationQuestions": "Уточнювальні питання",
+    "metrics": "Метрики моделі",
+    "status": "Статус",
+    "commands": {
+      "help": "Використовуйте /conduit, /conduit <вимога>, /conduit run, /conduit status, /conduit revise, /conduit replay <етап> або /conduit exit.",
+      "unknown": "Непідтримувана команда Conduit",
+      "exited": "Режим доставки Conduit завершено",
+      "notReady": "Сесія Conduit ще не готова до запуску"
+    },
+    "errors": {
+      "missingSandbox": "Перед запуском прив’яжіть або клонуйте офіційний репозиторій Conduit.",
+      "nonOfficialRepository": "Вибраний репозиторій не є офіційним Conduit або перевіреним fork.",
+      "verificationFailed": "Перевірка не пройшла. Перегляньте вивід команди й повторіть невдалий етап."
+    }
+  }
 }
