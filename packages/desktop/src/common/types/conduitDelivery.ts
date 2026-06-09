@@ -9,6 +9,10 @@ export const CONDUIT_OFFICIAL_REPOSITORY_URL = 'https://github.com/TonyMckes/con
 export const CONDUIT_READING_STATS_SKILL_ID = 'conduit.article-reading-stats';
 export const CONDUIT_ARTICLE_PREVIEW_READING_STATS_SKILL_ID = 'conduit.article-preview-reading-stats';
 export const CONDUIT_ARTICLE_COMMENT_COUNT_SKILL_ID = 'conduit.article-comment-count';
+export const CONDUIT_ARTICLE_FAVORITE_FILTER_SKILL_ID = 'conduit.article-favorite-filter';
+export const CONDUIT_HELP_PAGE_SKILL_ID = 'conduit.help-page';
+export const CONDUIT_COPY_ARTICLE_LINK_SKILL_ID = 'conduit.copy-article-link';
+export const CONDUIT_ARTICLE_SUMMARY_FIELD_SKILL_ID = 'conduit.article-summary-field';
 
 export const CONDUIT_DELIVERY_STAGE_ORDER = [
   'intake',
@@ -221,12 +225,21 @@ export type ConduitSessionStatus =
   | 'exited';
 
 export type ConduitRequirementLevel = 'L1' | 'L2' | 'L3';
+export type ConduitRequirementOperation =
+  | 'add_field'
+  | 'add_page'
+  | 'add_filter'
+  | 'add_interaction'
+  | 'modify_api'
+  | 'modify_schema'
+  | 'custom_skill';
 
 export type ConduitRequirementDsl = {
+  operation?: ConduitRequirementOperation;
   level: ConduitRequirementLevel;
   title: string;
   userGoal: string;
-  targetSurface: 'article_detail' | 'article_list' | 'profile' | 'editor' | 'unknown';
+  targetSurface: 'article_detail' | 'article_list' | 'profile' | 'editor' | 'home' | 'new_page' | 'unknown';
   acceptanceCriteria: string[];
   requiresBackend: boolean;
   requiresDatabase: boolean;

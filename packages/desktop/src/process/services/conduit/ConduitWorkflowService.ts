@@ -7,8 +7,12 @@
 import {
   CONDUIT_ARTICLE_COMMENT_COUNT_SKILL_ID,
   CONDUIT_ARTICLE_PREVIEW_READING_STATS_SKILL_ID,
+  CONDUIT_ARTICLE_FAVORITE_FILTER_SKILL_ID,
+  CONDUIT_ARTICLE_SUMMARY_FIELD_SKILL_ID,
   CONDUIT_DELIVERY_STAGE_ORDER,
+  CONDUIT_COPY_ARTICLE_LINK_SKILL_ID,
   CONDUIT_READING_STATS_SKILL_ID,
+  CONDUIT_HELP_PAGE_SKILL_ID,
   type ConduitChangedFile,
   type ConduitContextSlice,
   type ConduitClarification,
@@ -27,6 +31,12 @@ import {
 import { createArticleCommentCountSkill } from './articleCommentCountSkill';
 import { createArticlePreviewReadingStatsSkill } from './articlePreviewReadingStatsSkill';
 import { createArticleReadingStatsSkill } from './articleReadingStatsSkill';
+import {
+  createArticleFavoriteFilterSkill,
+  createArticleSummaryFieldSkill,
+  createConduitHelpPageSkill,
+  createCopyArticleLinkSkill,
+} from './genericConduitSkills';
 import type { ConduitEventStore } from './ConduitEventStore';
 import { ConduitRepoService } from './ConduitRepoService';
 import { ConduitSkillRegistry, type ConduitDeliverySkill } from './ConduitSkillRegistry';
@@ -63,6 +73,10 @@ export class ConduitWorkflowService {
     this.#registry =
       options.registry ??
       new ConduitSkillRegistry([
+        createArticleFavoriteFilterSkill(),
+        createConduitHelpPageSkill(),
+        createCopyArticleLinkSkill(),
+        createArticleSummaryFieldSkill(),
         createArticlePreviewReadingStatsSkill(),
         createArticleCommentCountSkill(),
         createArticleReadingStatsSkill(),
@@ -493,6 +507,37 @@ export class ConduitWorkflowService {
     branch: string;
     summaryBullets: string[];
   } {
+    if (skill?.id === CONDUIT_ARTICLE_FAVORITE_FILTER_SKILL_ID) {
+      return {
+        title: 'feat: add article favorite filter',
+        branch: 'feat/article-favorite-filter',
+        summaryBullets: [
+          '- Add a favorited-articles filter tab for authenticated users.',
+          '- Reuse the existing favorited query path with focused URL coverage.',
+        ],
+      };
+    }
+    if (skill?.id === CONDUIT_HELP_PAGE_SKILL_ID) {
+      return {
+        title: 'feat: add conduit help page',
+        branch: 'feat/conduit-help-page',
+        summaryBullets: ['- Add a routed Conduit help page with render coverage.'],
+      };
+    }
+    if (skill?.id === CONDUIT_COPY_ARTICLE_LINK_SKILL_ID) {
+      return {
+        title: 'feat: add copy article link interaction',
+        branch: 'feat/copy-article-link',
+        summaryBullets: ['- Add a tested copy-link interaction for article URLs.'],
+      };
+    }
+    if (skill?.id === CONDUIT_ARTICLE_SUMMARY_FIELD_SKILL_ID) {
+      return {
+        title: 'feat: add article summary field',
+        branch: 'feat/article-summary-field',
+        summaryBullets: ['- Add database/model support for Article.summary with focused model coverage.'],
+      };
+    }
     if (skill?.id === CONDUIT_ARTICLE_PREVIEW_READING_STATS_SKILL_ID) {
       return {
         title: 'feat: show article preview reading statistics',

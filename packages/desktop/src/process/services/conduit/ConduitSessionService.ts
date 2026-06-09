@@ -11,6 +11,8 @@ import type {
   ConduitDeliveryReplayRequest,
   ConduitDeliveryRunState,
   ConduitDeliveryStartRunRequest,
+  ConduitPlanSummary,
+  ConduitRequirementDsl,
   ConduitSessionCommandResult,
   ConduitSessionInputRequest,
   ConduitSessionState,
@@ -46,6 +48,58 @@ const HELP_TEXT =
 
 const MIN_RECALL_SIMILARITY = 0.4;
 const DEMAND_TOKEN_STOP_WORDS = new Set(['a', 'an', 'and', 'for', 'in', 'of', 'on', 'the', 'to', 'with']);
+
+const buildPlanSummary = (dsl: ConduitRequirementDsl): ConduitPlanSummary => {
+  if (dsl.operation === 'add_filter') {
+    return {
+      summary: '在首页文章列表增加收藏文章筛选入口，并复用现有 favorited 查询能力。',
+      targetFiles: [
+        'frontend/src/context/FeedContext.jsx',
+        'frontend/src/components/FeedToggler/FeedToggler.jsx',
+        'frontend/src/routes/HomeArticles.jsx',
+        'frontend/src/services/getArticles.test.js',
+      ],
+      risks: ['收藏筛选仅对已登录用户展示，避免匿名态调用需要用户名的接口。'],
+    };
+  }
+  if (dsl.operation === 'add_page') {
+    return {
+      summary: '新增帮助页面并接入现有前端路由。',
+      targetFiles: ['frontend/src/routes/Help.jsx', 'frontend/src/routes/Help.test.jsx', 'frontend/src/main.jsx'],
+      risks: ['路由接入必须保留现有 nested routes 与 NotFound fallback。'],
+    };
+  }
+  if (dsl.operation === 'add_interaction') {
+    return {
+      summary: '新增文章复制链接交互，并用 clipboard 行为测试兜底。',
+      targetFiles: [
+        'frontend/src/components/CopyArticleLinkButton.jsx',
+        'frontend/src/components/CopyArticleLinkButton.test.jsx',
+      ],
+      risks: ['浏览器 clipboard API 在测试环境中需要显式注入。'],
+    };
+  }
+  if (dsl.operation === 'add_field' || dsl.operation === 'modify_schema' || dsl.operation === 'modify_api') {
+    return {
+      summary: '新增文章字段并贯通数据库、后端模型与验证测试。',
+      targetFiles: [
+        'backend/migrations/20260609000000-add-article-summary.js',
+        'backend/models/Article.js',
+        'backend/models/Article.test.js',
+      ],
+      risks: ['数据库字段变更必须可回滚，并保持 Article 序列化兼容。'],
+    };
+  }
+  return {
+    summary: 'Add a frontend helper and render article reading statistics on the article detail page.',
+    targetFiles: [
+      'frontend/src/helpers/articleReadingStats.js',
+      'frontend/src/helpers/articleReadingStats.test.js',
+      'frontend/src/routes/Article/Article.jsx',
+    ],
+    risks: ['Markdown syntax must not inflate the word count.'],
+  };
+};
 
 export class ConduitSessionService {
   readonly #workflow?: WorkflowLike;
@@ -277,15 +331,7 @@ export class ConduitSessionService {
       session.status = 'ready_to_run';
       session.clarificationQuestions = [];
       session.requirementDsl = analysis.dsl;
-      session.planSummary = {
-        summary: 'Add a frontend helper and render article reading statistics on the article detail page.',
-        targetFiles: [
-          'frontend/src/helpers/articleReadingStats.js',
-          'frontend/src/helpers/articleReadingStats.test.js',
-          'frontend/src/routes/Article/Article.jsx',
-        ],
-        risks: ['Markdown syntax must not inflate the word count.'],
-      };
+      session.planSummary = buildPlanSummary(analysis.dsl);
       session.recalledDemands = this.#recallDemands(session, session.pmInputs.join('\n'));
       session.error = undefined;
       entries.push(this.#entry(session, 'conduit', 'plan_summary', 'Requirement is ready. Confirm with /conduit run.'));

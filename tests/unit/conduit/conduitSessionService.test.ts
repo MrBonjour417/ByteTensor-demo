@@ -209,6 +209,28 @@ describe('ConduitSessionService', () => {
     });
   });
 
+  it('builds a filter-specific plan summary for article favorite filters', async () => {
+    const service = new ConduitSessionService({ now: () => 10, sessionIdFactory: () => 'session-1' });
+
+    const result = await service.handleInput({
+      conversationId: 'conversation-1',
+      input: '/conduit 新增文章收藏筛选器',
+      workspacePath: 'D:/conduit',
+    });
+
+    expect(result.session?.status).toBe('ready_to_run');
+    expect(result.session?.planSummary).toEqual({
+      summary: '在首页文章列表增加收藏文章筛选入口，并复用现有 favorited 查询能力。',
+      targetFiles: [
+        'frontend/src/context/FeedContext.jsx',
+        'frontend/src/components/FeedToggler/FeedToggler.jsx',
+        'frontend/src/routes/HomeArticles.jsx',
+        'frontend/src/services/getArticles.test.js',
+      ],
+      risks: ['收藏筛选仅对已登录用户展示，避免匿名态调用需要用户名的接口。'],
+    });
+  });
+
   it('preserves L2 comment-count requirements through clarification before running', async () => {
     const workflow = { startRun: vi.fn(async () => createRunState()), replayRun: vi.fn(async () => createRunState()) };
     const service = new ConduitSessionService({ workflow, now: () => 10, sessionIdFactory: () => 'session-1' });

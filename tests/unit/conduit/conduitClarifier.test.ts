@@ -18,14 +18,14 @@ describe('ConduitClarifier', () => {
     expect(result.questions).toContain('这个统计信息要展示在哪个 Conduit 页面或组件上？');
   });
 
-  it('keeps unsupported home/feed surfaces in clarification instead of finalizing delivery DSL', () => {
+  it('keeps unsupported home/feed statistic requests in clarification with Chinese follow-up questions', () => {
     const clarifier = new ConduitClarifier();
 
     const result = clarifier.analyze(['首页展示字数和预计阅读时间']);
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
-    expect(result.questions).toContain('P0/P1/P2 当前仅支持文章详情页或文章列表卡片交付，请确认目标页面。');
+    expect(result.questions).toContain('这个统计信息要展示在哪个 Conduit 页面或组件上？');
   });
 
   it('builds a preview-card DSL for article-list reading-statistics requirements', () => {
@@ -57,6 +57,54 @@ describe('ConduitClarifier', () => {
     });
   });
 
+  it('routes commentsCount field wording to the comments-count DSL before generic add_field', () => {
+    const clarifier = new ConduitClarifier();
+
+    const result = clarifier.analyze(['Add commentsCount field from the backend API to Conduit article detail pages']);
+
+    expect(result.status).toBe('ready');
+    if (result.status !== 'ready') throw new Error('Expected ready result.');
+    expect(result.dsl.title).toBe('Article comments count cross-stack field');
+    expect(result.dsl.userGoal).toBe('Add commentsCount from the backend API to Conduit article detail pages.');
+  });
+
+  it('builds a Chinese add_filter DSL for article favorite filter requirements', () => {
+    const clarifier = new ConduitClarifier();
+
+    const result = clarifier.analyze(['新增文章收藏筛选器']);
+
+    expect(result.status).toBe('ready');
+    if (result.status !== 'ready') throw new Error('Expected ready result.');
+    expect(result.dsl).toMatchObject({
+      operation: 'add_filter',
+      level: 'L2',
+      targetSurface: 'article_list',
+      userGoal: '在文章列表增加收藏文章筛选器。',
+      requiresBackend: false,
+      requiresDatabase: false,
+    });
+    expect(result.dsl.acceptanceCriteria).toContain('已登录用户可以在首页文章列表切换到收藏文章筛选。');
+  });
+
+  it('asks for clarification instead of routing broad add_page/add_interaction/add_field wording to fixed Skills', () => {
+    const clarifier = new ConduitClarifier();
+
+    const aboutPage = clarifier.analyze(['新增 About 页面']);
+    const genericInteraction = clarifier.analyze(['新增按钮交互']);
+    const genericField = clarifier.analyze(['新增字段']);
+
+    expect(aboutPage.status).toBe('needs_clarification');
+    expect(genericInteraction.status).toBe('needs_clarification');
+    expect(genericField.status).toBe('needs_clarification');
+  });
+
+  it('respects latest corrections from a supported generic page to an unsupported page', () => {
+    const clarifier = new ConduitClarifier();
+
+    const result = clarifier.analyze(['新增帮助页面', '改成 About 页面']);
+
+    expect(result.status).toBe('needs_clarification');
+  });
   it('does not treat non-article detail pages as article detail delivery', () => {
     const clarifier = new ConduitClarifier();
 

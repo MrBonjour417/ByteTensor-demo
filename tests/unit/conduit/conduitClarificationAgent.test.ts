@@ -91,6 +91,37 @@ describe('ConduitClarificationAgent', () => {
     expect(result.modelMetrics?.[0]?.totalTokens).toBe(64);
   });
 
+  it('instructs the clarification subagent to answer Chinese PM input in Chinese', async () => {
+    const dispatcher = {
+      run: vi.fn(async () => ({
+        content: JSON.stringify({ status: 'needs_clarification', questions: ['请说明筛选规则。'] }),
+        metrics: {
+          provider: 'doubao' as const,
+          status: 'configured' as const,
+          endpointConfigured: true,
+          apiKeyConfigured: true,
+        },
+        invocation: {
+          id: 'clarify-zh',
+          agentName: 'clarification_subagent',
+          purpose: '需求澄清',
+          status: 'succeeded' as const,
+          startedAt: 1,
+          finishedAt: 2,
+          inputTokens: 10,
+          outputTokens: 8,
+        },
+      })),
+    };
+    const agent = new ConduitClarificationAgent({ dispatcher });
+
+    await agent.analyze(['新增文章收藏筛选器']);
+
+    expect(dispatcher.run).toHaveBeenCalledWith(
+      expect.objectContaining({ input: expect.stringContaining('用户输入是中文时，澄清问题必须使用中文') })
+    );
+  });
+
   it('falls back to deterministic clarification when model configuration is missing', async () => {
     const fallback = new ConduitClarifier();
     const modelClient = {

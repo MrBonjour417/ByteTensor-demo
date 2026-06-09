@@ -8,6 +8,12 @@ export { createArticleCommentCountSkill } from './articleCommentCountSkill';
 export { createArticlePreviewReadingStatsSkill } from './articlePreviewReadingStatsSkill';
 export { ConduitClarificationAgent } from './ConduitClarificationAgent';
 export { ConduitClarifier } from './ConduitClarifier';
+export {
+  createArticleFavoriteFilterSkill,
+  createArticleSummaryFieldSkill,
+  createConduitHelpPageSkill,
+  createCopyArticleLinkSkill,
+} from './genericConduitSkills';
 export { ConduitEventStore } from './ConduitEventStore';
 export { ConduitRepoService } from './ConduitRepoService';
 export { ConduitSkillRegistry } from './ConduitSkillRegistry';

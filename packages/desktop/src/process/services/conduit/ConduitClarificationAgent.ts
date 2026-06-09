@@ -124,6 +124,8 @@ export class ConduitClarificationAgent {
       'Return {"status":"needs_clarification","questions":[...]} when information is ambiguous.',
       'Return {"status":"ready","dsl":{...}} only when executable acceptance criteria are clear.',
       'Supported tasks: P0 article-detail word count + estimated reading time; P1 article-preview/card word count + estimated reading time; P2 commentsCount propagated from backend article API to article detail UI.',
+      '用户输入是中文时，澄清问题必须使用中文；不要把支持范围说明写成英文。',
+      'Concrete generic deliveries supported today: article favorite filter, help page, article copy-link interaction, article summary field. For any other page, field, API, schema, filter, or interaction request, return needs_clarification in the user language instead of inventing a ready DSL.',
       'PM inputs:',
       ...pmInputs,
     ].join('\n');

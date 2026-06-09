@@ -337,6 +337,38 @@ describe('ConduitWorkflowService', () => {
     ).resolves.toContain('FavButton');
   });
 
+  it('routes Chinese article favorite filter requirements to the generic add_filter Skill', async () => {
+    const sandboxPath = await createSandbox();
+    const workflow = new ConduitWorkflowService({
+      repoService: new ConduitRepoService({
+        now: () => 1,
+        commandRunner: async () => ({
+          exitCode: 0,
+          stdout:
+            ' M frontend/src/context/FeedContext.jsx\n M frontend/src/components/FeedToggler/FeedToggler.jsx\n M frontend/src/routes/HomeArticles.jsx\n?? frontend/src/services/getArticles.test.js\n',
+          stderr: '',
+        }),
+      }),
+      verifier: new ConduitVerifier({
+        now: () => 2,
+        commandRunner: async () => ({ exitCode: 0, stdout: 'tests passed', stderr: '' }),
+      }),
+      modelClient: new DoubaoModelClient({ env: {} }),
+      eventStore: new ConduitEventStore({ directory: await mkdtemp(path.join(tmpdir(), 'conduit-events-')) }),
+      now: () => 3,
+      runIdFactory: () => 'run-filter',
+      defaultSandboxPath: sandboxPath,
+    });
+
+    const state = await workflow.startRun({ requirement: '新增文章收藏筛选器' });
+
+    expect(state.selectedSkill?.id).toBe('conduit.article-favorite-filter');
+    expect(state.summary?.title).toBe('feat: add article favorite filter');
+    await expect(
+      readFile(path.join(sandboxPath, 'frontend/src/components/FeedToggler/FeedToggler.jsx'), 'utf8')
+    ).resolves.toContain('Favorited Articles');
+  });
+
   it('builds a PR summary and manual commands from preview Skill changed files', async () => {
     const sandboxPath = await createSandbox();
     const workflow = new ConduitWorkflowService({
