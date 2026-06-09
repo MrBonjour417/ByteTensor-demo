@@ -6,6 +6,7 @@
 
 import { ipcBridge } from '@/common';
 import type { IMcpServer, TProviderWithModel } from '@/common/config/storage';
+import { isConduitCommand } from '@/common/chat/conduitCommands';
 import { buildAgentConversationParams } from '@/common/utils/buildAgentConversationParams';
 import { toSessionMcpServer } from '@/renderer/hooks/mcp/catalog';
 import { emitter } from '@/renderer/utils/emitter';
@@ -154,6 +155,24 @@ export const useGuidSend = (deps: GuidSendDeps): GuidSendResult => {
       .map((server) => toSessionMcpServer(server));
 
     const finalEffectiveAgentType = effectiveAgentType;
+    const shouldStartConduitSession = isConduitCommand(input);
+    const startConduitSession = async (conversationId: string): Promise<boolean> => {
+      if (!shouldStartConduitSession) return false;
+      await ipcBridge.conduitDelivery.handleSessionInput.invoke({
+        conversationId,
+        input,
+        workspacePath: finalWorkspace || undefined,
+      });
+      return true;
+    };
+
+    const storeInitialMessage = (key: string) => {
+      const initialMessage = {
+        input,
+        files: files.length > 0 ? files : undefined,
+      };
+      sessionStorage.setItem(key, JSON.stringify(initialMessage));
+    };
 
     // OpenClaw Gateway path
     if (selectedAgent === 'openclaw-gateway') {
@@ -197,11 +216,12 @@ export const useGuidSend = (deps: GuidSendDeps): GuidSendResult => {
 
         emitter.emit('chat.history.refresh');
 
-        const initialMessage = {
-          input,
-          files: files.length > 0 ? files : undefined,
-        };
-        sessionStorage.setItem(`openclaw_initial_message_${conversation.id}`, JSON.stringify(initialMessage));
+        if (await startConduitSession(conversation.id)) {
+          await navigate(`/conversation/${conversation.id}`);
+          return;
+        }
+
+        storeInitialMessage(`openclaw_initial_message_${conversation.id}`);
 
         await navigate(`/conversation/${conversation.id}`);
       } catch (error: unknown) {
@@ -244,11 +264,12 @@ export const useGuidSend = (deps: GuidSendDeps): GuidSendResult => {
 
         emitter.emit('chat.history.refresh');
 
-        const initialMessage = {
-          input,
-          files: files.length > 0 ? files : undefined,
-        };
-        sessionStorage.setItem(`nanobot_initial_message_${conversation.id}`, JSON.stringify(initialMessage));
+        if (await startConduitSession(conversation.id)) {
+          await navigate(`/conversation/${conversation.id}`);
+          return;
+        }
+
+        storeInitialMessage(`nanobot_initial_message_${conversation.id}`);
 
         await navigate(`/conversation/${conversation.id}`);
       } catch (error: unknown) {
@@ -297,11 +318,12 @@ export const useGuidSend = (deps: GuidSendDeps): GuidSendResult => {
 
         emitter.emit('chat.history.refresh');
 
-        const initialMessage = {
-          input,
-          files: files.length > 0 ? files : undefined,
-        };
-        sessionStorage.setItem(`aionrs_initial_message_${conversation.id}`, JSON.stringify(initialMessage));
+        if (await startConduitSession(conversation.id)) {
+          await navigate(`/conversation/${conversation.id}`);
+          return;
+        }
+
+        storeInitialMessage(`aionrs_initial_message_${conversation.id}`);
 
         await navigate(`/conversation/${conversation.id}`);
       } catch (error: unknown) {
@@ -382,11 +404,12 @@ export const useGuidSend = (deps: GuidSendDeps): GuidSendResult => {
 
         emitter.emit('chat.history.refresh');
 
-        const initialMessage = {
-          input,
-          files: files.length > 0 ? files : undefined,
-        };
-        sessionStorage.setItem(`acp_initial_message_${conversation.id}`, JSON.stringify(initialMessage));
+        if (await startConduitSession(conversation.id)) {
+          await navigate(`/conversation/${conversation.id}`);
+          return;
+        }
+
+        storeInitialMessage(`acp_initial_message_${conversation.id}`);
 
         await navigate(`/conversation/${conversation.id}`);
       } catch (error: unknown) {
