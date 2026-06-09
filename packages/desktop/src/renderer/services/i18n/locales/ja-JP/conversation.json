@@ -497,6 +497,13 @@
     "planSummary": "計画サマリー",
     "clarificationQuestions": "確認質問",
     "metrics": "モデル指標",
+    "metricsAggregate": {
+      "totalTokens": "合計トークン: {{value}}",
+      "averageLatency": "平均レイテンシ: {{value}} ms",
+      "estimatedCost": "推定コスト: ${{value}}",
+      "modelSuccessRate": "モデル成功率: {{value}}",
+      "verificationSuccessRate": "検証成功率: {{value}}"
+    },
     "status": "ステータス",
     "commands": {
       "help": "/conduit、/conduit <要件>、/conduit run、/conduit status、/conduit revise、/conduit replay <ステージ>、/conduit exit を使用できます。",
@@ -515,6 +522,7 @@
       "exit": "モード終了",
       "replayVerify": "検証を再実行"
     },
-    "submitClarification": "確認内容を送信"
+    "submitClarification": "確認内容を送信",
+    "recalledDemands": "再利用された過去の要件"
   }
 }

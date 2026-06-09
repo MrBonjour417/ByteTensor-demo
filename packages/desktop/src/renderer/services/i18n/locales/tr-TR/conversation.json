@@ -499,6 +499,13 @@
     "planSummary": "Plan özeti",
     "clarificationQuestions": "Netleştirme soruları",
     "metrics": "Model metrikleri",
+    "metricsAggregate": {
+      "totalTokens": "Toplam token: {{value}}",
+      "averageLatency": "Ortalama gecikme: {{value}} ms",
+      "estimatedCost": "Tahmini maliyet: ${{value}}",
+      "modelSuccessRate": "Model başarı oranı: {{value}}",
+      "verificationSuccessRate": "Doğrulama başarı oranı: {{value}}"
+    },
     "status": "Durum",
     "commands": {
       "help": "/conduit, /conduit <gereksinim>, /conduit run, /conduit status, /conduit revise, /conduit replay <aşama> veya /conduit exit kullanın.",
@@ -517,6 +524,7 @@
       "exit": "Moddan çık",
       "replayVerify": "Doğrulamayı yeniden oynat"
     },
-    "submitClarification": "Netleştirmeyi gönder"
+    "submitClarification": "Netleştirmeyi gönder",
+    "recalledDemands": "Geri çağrılan geçmiş gereksinimler"
   }
 }

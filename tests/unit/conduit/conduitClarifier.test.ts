@@ -18,14 +18,43 @@ describe('ConduitClarifier', () => {
     expect(result.questions).toContain('这个统计信息要展示在哪个 Conduit 页面或组件上？');
   });
 
-  it('keeps unsupported article surfaces in clarification instead of finalizing article-detail DSL', () => {
+  it('keeps unsupported home/feed surfaces in clarification instead of finalizing delivery DSL', () => {
     const clarifier = new ConduitClarifier();
 
-    const result = clarifier.analyze(['文章列表展示字数和预计阅读时间']);
+    const result = clarifier.analyze(['首页展示字数和预计阅读时间']);
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
-    expect(result.questions).toContain('P0 仅支持文章详情页交付，请确认是否改为文章详情页。');
+    expect(result.questions).toContain('P0/P1/P2 当前仅支持文章详情页或文章列表卡片交付，请确认目标页面。');
+  });
+
+  it('builds a preview-card DSL for article-list reading-statistics requirements', () => {
+    const clarifier = new ConduitClarifier();
+
+    const result = clarifier.analyze(['show word count and estimated reading time on article preview cards']);
+
+    expect(result.status).toBe('ready');
+    if (result.status !== 'ready') throw new Error('Expected ready result.');
+    expect(result.dsl).toMatchObject({
+      level: 'L1',
+      targetSurface: 'article_list',
+      userGoal: 'Show word count and estimated reading time on Conduit article preview cards.',
+    });
+  });
+
+  it('builds an L2 comments-count DSL for backend article API requirements', () => {
+    const clarifier = new ConduitClarifier();
+
+    const result = clarifier.analyze(['add commentsCount from the backend API to article detail pages']);
+
+    expect(result.status).toBe('ready');
+    if (result.status !== 'ready') throw new Error('Expected ready result.');
+    expect(result.dsl).toMatchObject({
+      level: 'L2',
+      targetSurface: 'article_detail',
+      requiresBackend: true,
+      userGoal: 'Add commentsCount from the backend API to Conduit article detail pages.',
+    });
   });
 
   it('does not treat non-article detail pages as article detail delivery', () => {
@@ -35,7 +64,7 @@ describe('ConduitClarifier', () => {
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
-    expect(result.questions).toContain('P0 仅支持文章详情页交付，请确认是否改为文章详情页。');
+    expect(result.questions).toContain('P0/P1/P2 当前仅支持文章详情页或文章列表卡片交付，请确认目标页面。');
   });
 
   it('respects a later correction away from article detail', () => {
@@ -45,7 +74,7 @@ describe('ConduitClarifier', () => {
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
-    expect(result.questions).toContain('P0 仅支持文章详情页交付，请确认是否改为文章详情页。');
+    expect(result.questions).toContain('P0/P1/P2 当前仅支持文章详情页或文章列表卡片交付，请确认目标页面。');
   });
 
   it('treats the latest requested surface as authoritative when it rejects article detail', () => {
@@ -58,7 +87,7 @@ describe('ConduitClarifier', () => {
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
-    expect(result.questions).toContain('P0 仅支持文章详情页交付，请确认是否改为文章详情页。');
+    expect(result.questions).toContain('P0/P1/P2 当前仅支持文章详情页或文章列表卡片交付，请确认目标页面。');
   });
 
   it('blocks latest corrections that explicitly reject article detail', () => {
@@ -68,7 +97,7 @@ describe('ConduitClarifier', () => {
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
-    expect(result.questions).toContain('P0 仅支持文章详情页交付，请确认是否改为文章详情页。');
+    expect(result.questions).toContain('P0/P1/P2 当前仅支持文章详情页或文章列表卡片交付，请确认目标页面。');
   });
 
   it('allows generic wording corrections after article-detail target is established', () => {
@@ -123,7 +152,7 @@ describe('ConduitClarifier', () => {
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
-    expect(result.questions).toContain('P0 仅支持文章详情页交付，请确认是否改为文章详情页。');
+    expect(result.questions).toContain('P0/P1/P2 当前仅支持文章详情页或文章列表卡片交付，请确认目标页面。');
   });
 
   it('allows a later clarification to replace an unsupported article surface', () => {
@@ -134,6 +163,20 @@ describe('ConduitClarifier', () => {
     expect(result.status).toBe('ready');
     if (result.status !== 'ready') throw new Error('Expected ready result.');
     expect(result.dsl.targetSurface).toBe('article_detail');
+  });
+
+  it('lets the latest clarification switch a ready article-detail request to preview cards', () => {
+    const clarifier = new ConduitClarifier();
+
+    const result = clarifier.analyze([
+      'article detail word count and reading time',
+      'change it to article preview cards',
+    ]);
+
+    expect(result.status).toBe('ready');
+    if (result.status !== 'ready') throw new Error('Expected ready result.');
+    expect(result.dsl.targetSurface).toBe('article_list');
+    expect(result.dsl.userGoal).toBe('Show word count and estimated reading time on Conduit article preview cards.');
   });
 
   it('builds an L1 article reading-statistics DSL when the input is sufficient', () => {

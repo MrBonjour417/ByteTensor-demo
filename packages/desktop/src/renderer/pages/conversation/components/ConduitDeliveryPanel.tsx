@@ -17,6 +17,17 @@ const failedVerificationText = (state: ConduitDeliveryRunState | undefined): str
   return failed?.stderr || failed?.stdout || state?.error;
 };
 
+const isFiniteNumber = (value: number | undefined): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
+
+const formatCostUsd = (value: number): string => {
+  if (!Number.isFinite(value) || value <= 0) return '0';
+  const formatted = value >= 0.01 ? value.toFixed(2) : value.toFixed(6);
+  return formatted.includes('.') ? formatted.replace(/0+$/, '').replace(/\.$/, '') : formatted;
+};
+
+const formatSuccessRate = (successful: number, total: number): string => `${Math.round((successful / total) * 100)}%`;
+
 const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: string }> = ({
   conversationId,
   workspacePath,
@@ -90,7 +101,60 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
   }, [conversationId]);
 
   const runState = state ?? session?.runState;
+  const modelMetrics = runState?.modelMetrics ?? session?.modelMetrics;
+  const verificationResults = runState?.verificationResults;
   const verificationFailure = useMemo(() => failedVerificationText(runState), [runState]);
+  const metricAggregateLabels = useMemo(() => {
+    if (!modelMetrics?.length) return [];
+
+    let totalTokens = 0;
+    let latencyTotalMs = 0;
+    let latencyCount = 0;
+    let estimatedCostUsd = 0;
+    let successfulModelCalls = 0;
+
+    for (const metric of modelMetrics) {
+      totalTokens += metric.totalTokens ?? 0;
+      if (isFiniteNumber(metric.latencyMs)) {
+        latencyTotalMs += metric.latencyMs;
+        latencyCount += 1;
+      }
+      if (isFiniteNumber(metric.estimatedCostUsd)) estimatedCostUsd += metric.estimatedCostUsd;
+      if (metric.status === 'configured') successfulModelCalls += 1;
+    }
+
+    const labels = [
+      t('conversation.conduitDelivery.metricsAggregate.totalTokens', { value: String(totalTokens) }),
+      t('conversation.conduitDelivery.metricsAggregate.estimatedCost', { value: formatCostUsd(estimatedCostUsd) }),
+      t('conversation.conduitDelivery.metricsAggregate.modelSuccessRate', {
+        value: formatSuccessRate(successfulModelCalls, modelMetrics.length),
+      }),
+    ];
+
+    if (latencyCount > 0) {
+      labels.splice(
+        1,
+        0,
+        t('conversation.conduitDelivery.metricsAggregate.averageLatency', {
+          value: String(Math.round(latencyTotalMs / latencyCount)),
+        })
+      );
+    }
+
+    if (verificationResults?.length) {
+      let successfulVerifications = 0;
+      for (const result of verificationResults) {
+        if (result.status === 'passed') successfulVerifications += 1;
+      }
+      labels.push(
+        t('conversation.conduitDelivery.metricsAggregate.verificationSuccessRate', {
+          value: formatSuccessRate(successfulVerifications, verificationResults.length),
+        })
+      );
+    }
+
+    return labels;
+  }, [modelMetrics, t, verificationResults]);
   const syncRequirementFromSession = (nextSession: ConduitSessionState) => {
     const lastInput = nextSession.pmInputs.at(-1);
     if (lastInput) setRequirement(lastInput);
@@ -204,11 +268,18 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
             </Space>
           </div>
         ) : null}
-        {runState?.modelMetrics?.length ? (
+        {modelMetrics?.length ? (
           <div>
             <Typography.Title heading={6}>{t('conversation.conduitDelivery.metrics')}</Typography.Title>
             <Space direction='vertical' size='mini'>
-              {runState.modelMetrics.map((metric) => (
+              {metricAggregateLabels.map((label) => (
+                <Typography.Text key={label} className='block'>
+                  {label}
+                </Typography.Text>
+              ))}
+            </Space>
+            <Space direction='vertical' size='mini'>
+              {modelMetrics.map((metric) => (
                 <div key={`${metric.provider}:${metric.model}:${metric.latencyMs}`}>
                   <Typography.Text className='block'>
                     {metric.provider}/{metric.model}: {metric.totalTokens ?? 0} tokens, {metric.latencyMs}ms
@@ -262,6 +333,18 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
             </Button>
           </Space>
         )}
+        {session?.recalledDemands?.length ? (
+          <div>
+            <Typography.Title heading={6}>{t('conversation.conduitDelivery.recalledDemands')}</Typography.Title>
+            <Space direction='vertical' size='mini'>
+              {session.recalledDemands.map((demand) => (
+                <Typography.Text key={demand.sessionId} className='block'>
+                  {demand.summary} ({Math.round(demand.similarity * 100)}%)
+                </Typography.Text>
+              ))}
+            </Space>
+          </div>
+        ) : null}
         {verificationFailure && (
           <Alert
             type='error'

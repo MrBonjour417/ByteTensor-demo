@@ -17,7 +17,7 @@ import type {
   ConduitSessionStatus,
   ConduitStageReplayRequest,
 } from '@/common/types/conduitDelivery';
-import { ConduitClarifier } from './ConduitClarifier';
+import { ConduitClarificationAgent } from './ConduitClarificationAgent';
 import type { ConduitClarifierResult } from './ConduitClarifier';
 
 type WorkflowLike = {
@@ -25,8 +25,12 @@ type WorkflowLike = {
   replayRun(request: ConduitDeliveryReplayRequest): Promise<ConduitDeliveryRunState>;
 };
 
+type ClarifierResultWithMetrics = ConduitClarifierResult & {
+  modelMetrics?: ConduitSessionState['modelMetrics'];
+};
+
 type ClarifierLike = {
-  analyze(pmInputs: string[]): ConduitClarifierResult;
+  analyze(pmInputs: string[]): ClarifierResultWithMetrics | Promise<ClarifierResultWithMetrics>;
 };
 
 type ConduitSessionServiceOptions = {
@@ -39,6 +43,9 @@ type ConduitSessionServiceOptions = {
 const HELP_TEXT =
   '/conduit, /conduit <requirement>, /conduit run, /conduit status, /conduit revise, /conduit replay <plan|patch|verify|summary>, /conduit exit';
 
+const MIN_RECALL_SIMILARITY = 0.4;
+const DEMAND_TOKEN_STOP_WORDS = new Set(['a', 'an', 'and', 'for', 'in', 'of', 'on', 'the', 'to', 'with']);
+
 export class ConduitSessionService {
   readonly #workflow?: WorkflowLike;
   readonly #clarifier: ClarifierLike;
@@ -48,7 +55,7 @@ export class ConduitSessionService {
 
   constructor(options: ConduitSessionServiceOptions = {}) {
     this.#workflow = options.workflow;
-    this.#clarifier = options.clarifier ?? new ConduitClarifier();
+    this.#clarifier = options.clarifier ?? new ConduitClarificationAgent();
     this.#now = options.now ?? Date.now;
     this.#sessionIdFactory = options.sessionIdFactory ?? (() => `conduit-session-${this.#now().toString(36)}`);
   }
@@ -91,13 +98,13 @@ export class ConduitSessionService {
         };
       }
       if (!this.#acceptsPmInput(existing.status)) return { handled: false, entries: [] };
-      return { handled: true, session: existing, entries: this.#recordPmInput(existing, request.input) };
+      return { handled: true, session: existing, entries: await this.#recordPmInput(existing, request.input) };
     }
 
     if (command.kind === 'enter') {
       const session = this.#ensureActiveSession(request.conversationId);
       const entries = this.#modeEntryIfNeeded(session);
-      if (command.requirement) entries.push(...this.#recordPmInput(session, command.requirement));
+      if (command.requirement) entries.push(...(await this.#recordPmInput(session, command.requirement)));
       return { handled: true, session, entries };
     }
 
@@ -247,16 +254,17 @@ export class ConduitSessionService {
     return session;
   }
 
-  #recordPmInput(session: ConduitSessionState, input: string): ConduitConversationEntry[] {
+  async #recordPmInput(session: ConduitSessionState, input: string): Promise<ConduitConversationEntry[]> {
     const pmInput = input.trim();
     session.pmInputs.push(pmInput);
     const entries = [this.#entry(session, 'user', 'pm_input', pmInput)];
-    const analysis = this.#clarifier.analyze(session.pmInputs);
-
+    const analysis = await this.#clarifier.analyze(session.pmInputs);
+    session.modelMetrics = analysis.modelMetrics ?? session.modelMetrics;
     if (analysis.status === 'needs_clarification') {
       session.status = 'clarifying';
       session.requirementDsl = undefined;
       session.planSummary = undefined;
+      session.recalledDemands = undefined;
       session.clarificationQuestions = analysis.questions;
       entries.push(
         ...analysis.questions.map((question) => this.#entry(session, 'conduit', 'clarification_question', question))
@@ -274,8 +282,19 @@ export class ConduitSessionService {
         ],
         risks: ['Markdown syntax must not inflate the word count.'],
       };
+      session.recalledDemands = this.#recallDemands(session, session.pmInputs.join('\n'));
       session.error = undefined;
       entries.push(this.#entry(session, 'conduit', 'plan_summary', 'Requirement is ready. Confirm with /conduit run.'));
+      entries.push(
+        ...session.recalledDemands.map((demand) =>
+          this.#entry(
+            session,
+            'conduit',
+            'demand_recalled',
+            `Recalled similar demand from ${demand.sessionId}: ${demand.summary}`
+          )
+        )
+      );
     }
 
     session.updatedAt = this.#now();
@@ -285,6 +304,32 @@ export class ConduitSessionService {
   #modeEntryIfNeeded(session: ConduitSessionState): ConduitConversationEntry[] {
     if ((session.entries?.length ?? 0) > 0) return [];
     return [this.#entry(session, 'conduit', 'mode_entered', 'Conduit delivery mode entered.')];
+  }
+
+  #recallDemands(
+    session: ConduitSessionState,
+    requirement: string
+  ): NonNullable<ConduitSessionState['recalledDemands']> {
+    const requirementTokens = tokenizeDemand(requirement);
+    if (requirementTokens.size === 0) return [];
+
+    return Array.from(this.#sessions.values())
+      .filter((candidate) => candidate.sessionId !== session.sessionId && candidate.status === 'succeeded')
+      .map((candidate) => {
+        const candidateRequirement = candidate.runState?.requirement ?? candidate.requirementDsl?.userGoal ?? '';
+        const similarity = demandSimilarity(
+          requirementTokens,
+          tokenizeDemand(candidate.pmInputs.join('\n') || candidateRequirement)
+        );
+        return {
+          sessionId: candidate.sessionId,
+          requirement: candidateRequirement,
+          summary: candidate.runState?.summary?.title ?? candidate.planSummary?.summary ?? candidateRequirement,
+          similarity,
+        };
+      })
+      .filter((demand) => demand.requirement.length > 0 && demand.similarity >= MIN_RECALL_SIMILARITY)
+      .sort((left, right) => right.similarity - left.similarity || left.sessionId.localeCompare(right.sessionId));
   }
 
   #entry(
@@ -326,4 +371,22 @@ export class ConduitSessionService {
   #statusText(session: ConduitSessionState): string {
     return `Conduit session status: ${session.status}`;
   }
+}
+
+function tokenizeDemand(requirement: string): Set<string> {
+  const tokens = new Set<string>();
+  for (const match of requirement.toLowerCase().matchAll(/[\p{L}\p{N}]+/gu)) {
+    const token = match[0];
+    if (token.length > 1 && !DEMAND_TOKEN_STOP_WORDS.has(token)) tokens.add(token);
+  }
+  return tokens;
+}
+
+function demandSimilarity(left: Set<string>, right: Set<string>): number {
+  if (left.size === 0 || right.size === 0) return 0;
+  let overlap = 0;
+  for (const token of left) {
+    if (right.has(token)) overlap += 1;
+  }
+  return overlap / (left.size + right.size - overlap);
 }

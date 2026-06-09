@@ -497,6 +497,13 @@
     "planSummary": "计划摘要",
     "clarificationQuestions": "澄清问题",
     "metrics": "模型指标",
+    "metricsAggregate": {
+      "totalTokens": "总 Token 数：{{value}}",
+      "averageLatency": "平均延迟：{{value}} ms",
+      "estimatedCost": "预估成本：${{value}}",
+      "modelSuccessRate": "模型成功率：{{value}}",
+      "verificationSuccessRate": "验证成功率：{{value}}"
+    },
     "status": "状态",
     "commands": {
       "help": "可使用 /conduit、/conduit <需求>、/conduit run、/conduit status、/conduit revise、/conduit replay <阶段> 或 /conduit exit。",
@@ -515,6 +522,7 @@
       "exit": "退出模式",
       "replayVerify": "重放验证"
     },
-    "submitClarification": "提交澄清"
+    "submitClarification": "提交澄清",
+    "recalledDemands": "召回的历史需求"
   }
 }

@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export { createArticleCommentCountSkill } from './articleCommentCountSkill';
+export { createArticlePreviewReadingStatsSkill } from './articlePreviewReadingStatsSkill';
+export { ConduitClarificationAgent } from './ConduitClarificationAgent';
 export { ConduitClarifier } from './ConduitClarifier';
 export { ConduitEventStore } from './ConduitEventStore';
 export { ConduitRepoService } from './ConduitRepoService';

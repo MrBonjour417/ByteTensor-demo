@@ -8,8 +8,12 @@ import { describe, expect, it, vi } from 'vitest';
 import type { ConduitDeliveryRunState } from '@/common/types/conduitDelivery';
 import { ConduitSessionService } from '@process/services/conduit/ConduitSessionService';
 
-const createRunState = (status: ConduitDeliveryRunState['status'] = 'succeeded'): ConduitDeliveryRunState => ({
-  runId: 'run-1',
+const createRunState = (
+  status: ConduitDeliveryRunState['status'] = 'succeeded',
+  runId = 'run-1',
+  summary?: ConduitDeliveryRunState['summary']
+): ConduitDeliveryRunState => ({
+  runId,
   status,
   requirement: 'Show article word count and estimated reading time on Conduit article detail pages.',
   createdAt: 1,
@@ -19,6 +23,7 @@ const createRunState = (status: ConduitDeliveryRunState['status'] = 'succeeded')
   events: [],
   changedFiles: [],
   verificationResults: [],
+  summary,
 });
 
 describe('ConduitSessionService', () => {
@@ -47,6 +52,33 @@ describe('ConduitSessionService', () => {
     expect(result.session?.status).toBe('clarifying');
     expect(result.entries.map((entry) => entry.kind)).toContain('clarification_question');
     expect(result.entries.map((entry) => entry.content)).toContain('这个统计信息要展示在哪个 Conduit 页面或组件上？');
+  });
+
+  it('uses an asynchronous clarification Agent and stores its model metrics', async () => {
+    const clarifier = {
+      analyze: vi.fn(async () => ({
+        status: 'needs_clarification' as const,
+        questions: ['请确认展示页面。'],
+        modelMetrics: [
+          {
+            provider: 'doubao' as const,
+            status: 'configured' as const,
+            endpointConfigured: true,
+            apiKeyConfigured: true,
+            totalTokens: 42,
+            latencyMs: 15,
+          },
+        ],
+      })),
+    };
+    const service = new ConduitSessionService({ clarifier, now: () => 10, sessionIdFactory: () => 'session-1' });
+
+    const result = await service.handleInput({ conversationId: 'conversation-1', input: '/conduit 模糊需求' });
+
+    expect(clarifier.analyze).toHaveBeenCalledWith(['模糊需求']);
+    expect(result.session?.status).toBe('clarifying');
+    expect(result.session?.modelMetrics?.[0]?.totalTokens).toBe(42);
+    expect(result.entries.map((entry) => entry.content)).toContain('请确认展示页面。');
   });
 
   it('blocks run for incomplete requirements while staying in clarification mode', async () => {
@@ -98,6 +130,85 @@ describe('ConduitSessionService', () => {
     expect(session.status).toBe('succeeded');
     expect(session.activeRunId).toBe('run-1');
     expect(session.runState?.runId).toBe('run-1');
+  });
+
+  it('preserves preview-card requirements through clarification before running', async () => {
+    const workflow = { startRun: vi.fn(async () => createRunState()), replayRun: vi.fn(async () => createRunState()) };
+    const service = new ConduitSessionService({ workflow, now: () => 10, sessionIdFactory: () => 'session-1' });
+    await service.handleInput({
+      conversationId: 'conversation-1',
+      input: '/conduit show word count and estimated reading time on article preview cards',
+      workspacePath: 'D:/conduit',
+    });
+
+    await service.confirmRun({ conversationId: 'conversation-1', sandboxPath: 'D:/conduit' });
+
+    expect(workflow.startRun).toHaveBeenCalledWith({
+      requirement: 'Show word count and estimated reading time on Conduit article preview cards.',
+      sandboxPath: 'D:/conduit',
+      conversationId: 'conversation-1',
+    });
+  });
+
+  it('preserves L2 comment-count requirements through clarification before running', async () => {
+    const workflow = { startRun: vi.fn(async () => createRunState()), replayRun: vi.fn(async () => createRunState()) };
+    const service = new ConduitSessionService({ workflow, now: () => 10, sessionIdFactory: () => 'session-1' });
+    await service.handleInput({
+      conversationId: 'conversation-1',
+      input: '/conduit add commentsCount from the backend API to article detail pages',
+      workspacePath: 'D:/conduit',
+    });
+
+    await service.confirmRun({ conversationId: 'conversation-1', sandboxPath: 'D:/conduit' });
+
+    expect(workflow.startRun).toHaveBeenCalledWith({
+      requirement: 'Add commentsCount from the backend API to Conduit article detail pages.',
+      sandboxPath: 'D:/conduit',
+      conversationId: 'conversation-1',
+    });
+  });
+
+  it('recalls similar completed demand context for a new Conduit requirement', async () => {
+    const workflow = {
+      startRun: vi.fn(async () =>
+        createRunState('succeeded', 'run-history', {
+          title: 'feat: show article reading statistics',
+          body: 'Implemented article word count and estimated reading time on article detail pages.',
+          changedFiles: [],
+          verificationResults: [],
+          manualCommands: [],
+        })
+      ),
+      replayRun: vi.fn(async () => createRunState()),
+    };
+    let nextSessionId = 0;
+    const service = new ConduitSessionService({
+      workflow,
+      now: () => 10,
+      sessionIdFactory: () => `session-${++nextSessionId}`,
+    });
+    await service.handleInput({
+      conversationId: 'conversation-history',
+      input: '/conduit Show article word count and estimated reading time on Conduit article detail pages.',
+      workspacePath: 'D:/conduit',
+    });
+    await service.confirmRun({ conversationId: 'conversation-history', sandboxPath: 'D:/conduit' });
+
+    const result = await service.handleInput({
+      conversationId: 'conversation-new',
+      input: '/conduit Add reading time and word count to the article detail view.',
+      workspacePath: 'D:/conduit',
+    });
+
+    expect(result.session?.recalledDemands).toEqual([
+      {
+        sessionId: 'session-1',
+        requirement: 'Show article word count and estimated reading time on Conduit article detail pages.',
+        summary: 'feat: show article reading statistics',
+        similarity: 0.5,
+      },
+    ]);
+    expect(result.entries.map((entry) => entry.kind)).toContain('demand_recalled');
   });
 
   it('reports status deterministically for an active session', async () => {

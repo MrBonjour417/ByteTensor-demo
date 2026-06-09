@@ -65,10 +65,16 @@ const translations: Record<string, string> = {
   'conversation.conduitDelivery.status': 'Session status',
   'conversation.conduitDelivery.clarificationQuestions': 'Clarification questions',
   'conversation.conduitDelivery.metrics': 'Model metrics',
+  'conversation.conduitDelivery.metricsAggregate.totalTokens': 'Total tokens: {{value}}',
+  'conversation.conduitDelivery.metricsAggregate.averageLatency': 'Average latency: {{value}} ms',
+  'conversation.conduitDelivery.metricsAggregate.estimatedCost': 'Estimated cost: ${{value}}',
+  'conversation.conduitDelivery.metricsAggregate.modelSuccessRate': 'Model success rate: {{value}}',
+  'conversation.conduitDelivery.metricsAggregate.verificationSuccessRate': 'Verification success rate: {{value}}',
   'conversation.conduitDelivery.actions.status': 'Status',
   'conversation.conduitDelivery.actions.revise': 'Revise plan',
   'conversation.conduitDelivery.actions.exit': 'Exit mode',
   'conversation.conduitDelivery.actions.replayVerify': 'Replay verification',
+  'conversation.conduitDelivery.recalledDemands': 'Recalled demands',
   'conversation.conduitDelivery.submitClarification': 'Submit clarification',
 };
 const emitSessionChanged = (session: ConduitSessionState) => {
@@ -110,7 +116,10 @@ const createRunState = (overrides: Partial<ConduitDeliveryRunState> = {}): Condu
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => translations[key] ?? key,
+    t: (key: string, values?: Record<string, string>) => {
+      const template = translations[key] ?? key;
+      return values ? template.replace(/{{(\w+)}}/g, (_, name: string) => values[name] ?? '') : template;
+    },
   }),
 }));
 
@@ -203,7 +212,7 @@ describe('ConduitDeliveryPanel', () => {
     expect(screen.queryByText('frontend/src/helpers/oldReadingStats.js')).not.toBeInTheDocument();
   });
 
-  it('shows session status, clarification questions, and model metrics', async () => {
+  it('shows session status, clarification questions, model metrics, and aggregate cockpit metrics', async () => {
     render(<ConduitDeliveryPanel conversationId='conversation-1' />);
 
     emitSessionChanged(
@@ -214,12 +223,57 @@ describe('ConduitDeliveryPanel', () => {
           modelMetrics: [
             {
               provider: 'doubao',
+              status: 'configured',
               model: 'seed',
+              endpointConfigured: true,
+              apiKeyConfigured: true,
               promptTokens: 10,
               completionTokens: 12,
               totalTokens: 22,
               latencyMs: 35,
+              estimatedCostUsd: 0.000044,
+            },
+            {
+              provider: 'doubao',
+              status: 'failed',
+              model: 'seed-pro',
+              endpointConfigured: true,
+              apiKeyConfigured: true,
+              promptTokens: 20,
+              completionTokens: 20,
+              totalTokens: 40,
+              latencyMs: 65,
+              estimatedCostUsd: 0.00008,
               error: 'DOUBAO_ENDPOINT and DOUBAO_API_KEY must be set in the environment.',
+            },
+          ],
+          verificationResults: [
+            {
+              id: 'test',
+              command: 'npm',
+              args: ['run', 'test'],
+              description: 'tests',
+              status: 'passed',
+              exitCode: 0,
+              stdout: 'passed',
+              stderr: '',
+              startedAt: 1,
+              finishedAt: 2,
+              durationMs: 1,
+            },
+            {
+              id: 'lint',
+              command: 'npm',
+              args: ['run', 'lint'],
+              description: 'lint',
+
+              status: 'failed',
+              exitCode: 1,
+              stdout: '',
+              stderr: 'lint failed',
+              startedAt: 3,
+              finishedAt: 5,
+              durationMs: 2,
             },
           ],
         }),
@@ -231,8 +285,34 @@ describe('ConduitDeliveryPanel', () => {
     expect(screen.getByText('Clarification questions')).toBeInTheDocument();
     expect(screen.getByText('P0 仅支持文章详情页交付，请确认是否改为文章详情页。')).toBeInTheDocument();
     expect(screen.getByText('Model metrics')).toBeInTheDocument();
+    expect(screen.getByText('Total tokens: 62')).toBeInTheDocument();
+    expect(screen.getByText('Average latency: 50 ms')).toBeInTheDocument();
+    expect(screen.getByText('Estimated cost: $0.000124')).toBeInTheDocument();
+    expect(screen.getByText('Model success rate: 50%')).toBeInTheDocument();
+    expect(screen.getByText('Verification success rate: 50%')).toBeInTheDocument();
     expect(screen.getByText('doubao/seed: 22 tokens, 35ms')).toBeInTheDocument();
+    expect(screen.getByText('doubao/seed-pro: 40 tokens, 65ms')).toBeInTheDocument();
     expect(screen.getByText('DOUBAO_ENDPOINT and DOUBAO_API_KEY must be set in the environment.')).toBeInTheDocument();
+  });
+
+  it('shows recalled historical demands for similar requirements', async () => {
+    render(<ConduitDeliveryPanel conversationId='conversation-1' />);
+
+    emitSessionChanged(
+      createSession({
+        recalledDemands: [
+          {
+            sessionId: 'old-session',
+            requirement: 'show article reading stats',
+            summary: 'feat: show article reading statistics',
+            similarity: 0.75,
+          },
+        ],
+      })
+    );
+
+    expect(await screen.findByText('Recalled demands')).toBeInTheDocument();
+    expect(screen.getByText('feat: show article reading statistics (75%)')).toBeInTheDocument();
   });
 
   it('clears cockpit state when the conversation changes', async () => {

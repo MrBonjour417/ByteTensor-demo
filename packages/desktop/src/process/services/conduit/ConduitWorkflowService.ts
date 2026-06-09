@@ -5,7 +5,10 @@
  */
 
 import {
+  CONDUIT_ARTICLE_COMMENT_COUNT_SKILL_ID,
+  CONDUIT_ARTICLE_PREVIEW_READING_STATS_SKILL_ID,
   CONDUIT_DELIVERY_STAGE_ORDER,
+  CONDUIT_READING_STATS_SKILL_ID,
   type ConduitChangedFile,
   type ConduitClarification,
   type ConduitDeliveryEvent,
@@ -20,6 +23,8 @@ import {
   type ConduitPrReadySummary,
   type ConduitVerificationResult,
 } from '@/common/types/conduitDelivery';
+import { createArticleCommentCountSkill } from './articleCommentCountSkill';
+import { createArticlePreviewReadingStatsSkill } from './articlePreviewReadingStatsSkill';
 import { createArticleReadingStatsSkill } from './articleReadingStatsSkill';
 import type { ConduitEventStore } from './ConduitEventStore';
 import { ConduitRepoService } from './ConduitRepoService';
@@ -54,7 +59,13 @@ export class ConduitWorkflowService {
 
   constructor(options: ConduitWorkflowServiceOptions) {
     this.#repoService = options.repoService ?? new ConduitRepoService();
-    this.#registry = options.registry ?? new ConduitSkillRegistry([createArticleReadingStatsSkill()]);
+    this.#registry =
+      options.registry ??
+      new ConduitSkillRegistry([
+        createArticlePreviewReadingStatsSkill(),
+        createArticleCommentCountSkill(),
+        createArticleReadingStatsSkill(),
+      ]);
     this.#verifier = options.verifier ?? new ConduitVerifier();
     this.#modelClient = options.modelClient ?? new DoubaoModelClient();
     this.#eventStore = options.eventStore;
@@ -99,10 +110,9 @@ export class ConduitWorkflowService {
   async replayRun(request: ConduitDeliveryReplayRequest): Promise<ConduitDeliveryRunState> {
     const current = this.#runs.get(request.runId);
     if (!current) throw new Error(`Cannot replay unknown Conduit run: ${request.runId}`);
+    if (request.stage === 'plan') return this.#replayPlan(current);
+    if (request.stage === 'patch') return this.#replayPatch(current);
     if (request.stage === 'verify') return this.#replayVerification(current);
-    if (request.stage === 'plan' || request.stage === 'patch') {
-      return this.#rejectUnsupportedReplayStage(current, request.stage);
-    }
     if (request.stage === 'summary') return this.#replaySummary(current);
     await this.#appendEvent(current, 'intake', 'running', 'Replay requested for stored Conduit run.');
     return this.#executeRun(
@@ -112,15 +122,86 @@ export class ConduitWorkflowService {
     );
   }
 
-  async #replayVerification(state: ConduitDeliveryRunState): Promise<ConduitDeliveryRunState> {
-    if (!state.sandbox?.path) throw new Error('A Conduit sandbox path is required before starting a run.');
-    const skill = state.selectedSkill ?? this.#registry.selectSkill(state.requirement);
-    if (!skill) throw new Error('No Conduit Skill matched the PM requirement.');
-
+  async #replayPlan(state: ConduitDeliveryRunState): Promise<ConduitDeliveryRunState> {
     state.status = 'running';
     state.error = undefined;
-    await this.#appendEvent(state, 'verify', 'running', 'Replay requested from verify stage.');
-    state.verificationResults = await this.#verifier.run(state.sandbox.path, skill.verificationCommands);
+    state.summary = undefined;
+    await this.#appendEvent(state, 'plan', 'running', 'Replay requested from plan stage.');
+
+    let skill: ConduitDeliverySkill;
+    try {
+      skill = this.#selectReplaySkill(state);
+      state.selectedSkill = skill;
+      state.plan = skill.buildPlan();
+      await this.#completeStage(state, 'plan', 'Generated deterministic L1 implementation plan.');
+    } catch (error) {
+      return this.#markReplayFailed(state, 'plan', error);
+    }
+
+    try {
+      state.moduleLocations = this.#buildModuleLocations(skill);
+      await this.#completeStage(state, 'locate', 'Located Conduit frontend article modules.');
+    } catch (error) {
+      return this.#markReplayFailed(state, 'locate', error);
+    }
+
+    return this.#rebuildSummaryFromExistingVerification(
+      state,
+      'Conduit verification results are required before plan replay.'
+    );
+  }
+
+  async #replayPatch(state: ConduitDeliveryRunState): Promise<ConduitDeliveryRunState> {
+    state.status = 'running';
+    state.error = undefined;
+    state.changedFiles = [];
+    state.verificationResults = [];
+    state.summary = undefined;
+    await this.#appendEvent(state, 'patch', 'running', 'Replay requested from patch stage.');
+
+    let skill: ConduitDeliverySkill;
+    try {
+      if (!state.sandbox?.path) throw new Error('A Conduit sandbox path is required before starting a run.');
+      skill = this.#selectReplaySkill(state);
+      await this.#repoService.applyPatches(state.sandbox.path, skill.buildPatches());
+      await this.#completeStage(state, 'patch', 'Applied deterministic Skill patch to the Conduit sandbox.');
+    } catch (error) {
+      return this.#markReplayFailed(state, 'patch', error);
+    }
+
+    try {
+      state.verificationResults = await this.#verifier.run(state.sandbox.path, skill.verificationCommands);
+    } catch (error) {
+      return this.#markReplayFailed(state, 'verify', error);
+    }
+
+    return this.#completeVerificationAndSummary(state);
+  }
+
+  #selectReplaySkill(state: ConduitDeliveryRunState): ConduitDeliverySkill {
+    if (this.#isExecutableSkill(state.selectedSkill)) return state.selectedSkill;
+    const skill = this.#registry.selectSkill(state.requirement);
+    if (!skill) throw new Error('No Conduit Skill matched the PM requirement.');
+    return skill;
+  }
+
+  #isExecutableSkill(skill: ConduitDeliveryRunState['selectedSkill']): skill is ConduitDeliverySkill {
+    return Boolean(
+      skill &&
+      'matches' in skill &&
+      typeof skill.matches === 'function' &&
+      'buildPatches' in skill &&
+      typeof skill.buildPatches === 'function' &&
+      'buildPlan' in skill &&
+      typeof skill.buildPlan === 'function'
+    );
+  }
+
+  async #completeVerificationAndSummary(state: ConduitDeliveryRunState): Promise<ConduitDeliveryRunState> {
+    if (!state.sandbox?.path) {
+      return this.#markReplayFailed(state, 'summarize', 'A Conduit sandbox path is required before starting a run.');
+    }
+
     const verificationPassed = state.verificationResults.every((result) => result.status === 'passed');
     await this.#completeStage(
       state,
@@ -128,46 +209,95 @@ export class ConduitWorkflowService {
       verificationPassed ? 'Conduit verification passed.' : 'Conduit verification failed.',
       verificationPassed ? 'succeeded' : 'failed'
     );
-    state.changedFiles = await this.#repoService.listChangedFiles(state.sandbox.path);
-    state.summary = this.#buildSummary(state.changedFiles, state.verificationResults);
+
+    try {
+      state.changedFiles = await this.#repoService.listChangedFiles(state.sandbox.path);
+      state.summary = this.#buildSummary(state.changedFiles, state.verificationResults, state.selectedSkill);
+    } catch (error) {
+      return this.#markReplayFailed(state, 'summarize', error);
+    }
+
     state.status = verificationPassed ? 'succeeded' : 'failed';
-    if (!verificationPassed) state.error = 'Conduit verification failed.';
+    if (verificationPassed) state.error = undefined;
+    else state.error = 'Conduit verification failed.';
     await this.#completeStage(state, 'summarize', 'Prepared PR-ready handoff summary.');
     state.updatedAt = this.#now();
     return state;
   }
 
-  async #replaySummary(state: ConduitDeliveryRunState): Promise<ConduitDeliveryRunState> {
-    if (!state.sandbox?.path) throw new Error('A Conduit sandbox path is required before starting a run.');
-    state.status = 'running';
-    state.error = undefined;
-    await this.#appendEvent(state, 'summarize', 'running', 'Replay requested from summary stage.');
+  async #rebuildSummaryFromExistingVerification(
+    state: ConduitDeliveryRunState,
+    missingVerificationMessage: string
+  ): Promise<ConduitDeliveryRunState> {
+    state.summary = undefined;
+    if (!state.sandbox?.path) {
+      return this.#markReplayFailed(state, 'summarize', 'A Conduit sandbox path is required before starting a run.');
+    }
     if (state.verificationResults.length === 0) {
       state.status = 'failed';
-      state.error = 'Conduit verification results are required before summary replay.';
+      state.error = missingVerificationMessage;
       state.updatedAt = this.#now();
       await this.#completeStage(state, 'summarize', state.error, 'failed');
       return state;
     }
-    state.changedFiles = await this.#repoService.listChangedFiles(state.sandbox.path);
-    state.summary = this.#buildSummary(state.changedFiles, state.verificationResults);
+
+    try {
+      state.changedFiles = await this.#repoService.listChangedFiles(state.sandbox.path);
+      state.summary = this.#buildSummary(state.changedFiles, state.verificationResults, state.selectedSkill);
+    } catch (error) {
+      return this.#markReplayFailed(state, 'summarize', error);
+    }
+
     const verificationPassed = state.verificationResults.every((result) => result.status === 'passed');
     state.status = verificationPassed ? 'succeeded' : 'failed';
-    if (!verificationPassed) state.error = 'Conduit verification failed.';
+    if (verificationPassed) state.error = undefined;
+    else state.error = 'Conduit verification failed.';
     await this.#completeStage(state, 'summarize', 'Prepared PR-ready handoff summary.');
     state.updatedAt = this.#now();
     return state;
   }
 
-  async #rejectUnsupportedReplayStage(
+  async #markReplayFailed(
     state: ConduitDeliveryRunState,
-    stage: 'plan' | 'patch'
+    stage: ConduitDeliveryStage,
+    error: unknown
   ): Promise<ConduitDeliveryRunState> {
     state.status = 'failed';
-    state.error = `Conduit ${stage} replay is not implemented yet.`;
+    state.error = error instanceof Error ? error.message : String(error);
     state.updatedAt = this.#now();
-    await this.#appendEvent(state, stage, 'failed', state.error);
+    await this.#completeStage(state, stage, state.error, 'failed');
     return state;
+  }
+
+  async #replayVerification(state: ConduitDeliveryRunState): Promise<ConduitDeliveryRunState> {
+    state.status = 'running';
+    state.error = undefined;
+    state.changedFiles = [];
+    state.verificationResults = [];
+    state.summary = undefined;
+    await this.#appendEvent(state, 'verify', 'running', 'Replay requested from verify stage.');
+
+    let skill: ConduitDeliverySkill | NonNullable<ConduitDeliveryRunState['selectedSkill']>;
+    try {
+      if (!state.sandbox?.path) throw new Error('A Conduit sandbox path is required before starting a run.');
+      skill = state.selectedSkill ?? this.#selectReplaySkill(state);
+      state.verificationResults = await this.#verifier.run(state.sandbox.path, skill.verificationCommands);
+    } catch (error) {
+      return this.#markReplayFailed(state, 'verify', error);
+    }
+
+    return this.#completeVerificationAndSummary(state);
+  }
+
+  async #replaySummary(state: ConduitDeliveryRunState): Promise<ConduitDeliveryRunState> {
+    state.status = 'running';
+    state.error = undefined;
+    state.summary = undefined;
+    await this.#appendEvent(state, 'summarize', 'running', 'Replay requested from summary stage.');
+    return this.#rebuildSummaryFromExistingVerification(
+      state,
+      'Conduit verification results are required before summary replay.'
+    );
   }
 
   async #executeRun(
@@ -226,7 +356,7 @@ export class ConduitWorkflowService {
       );
 
       state.changedFiles = await this.#repoService.listChangedFiles(sandbox.path);
-      state.summary = this.#buildSummary(state.changedFiles, state.verificationResults);
+      state.summary = this.#buildSummary(state.changedFiles, state.verificationResults, skill);
       state.status = verificationPassed ? 'succeeded' : 'failed';
       if (!verificationPassed) state.error = 'Conduit verification failed.';
       await this.#completeStage(state, 'summarize', 'Prepared PR-ready handoff summary.');
@@ -296,19 +426,21 @@ export class ConduitWorkflowService {
 
   #buildSummary(
     changedFiles: ConduitChangedFile[],
-    verificationResults: ConduitVerificationResult[]
+    verificationResults: ConduitVerificationResult[],
+    skill?: ConduitDeliveryRunState['selectedSkill']
   ): ConduitPrReadySummary {
     const changedFileList = changedFiles.map((file) => `- ${file.path} (${file.status})`).join('\n');
     const verificationList = verificationResults
       .map((result) => `- ${result.command} ${result.args.join(' ')}: ${result.status} (exit ${result.exitCode})`)
       .join('\n');
+    const descriptor = this.#summaryDescriptor(skill);
+    const gitAddTargets = changedFiles.map((file) => file.path).join(' ');
 
     return {
-      title: 'feat: show article reading statistics',
+      title: descriptor.title,
       body: [
         '## Summary',
-        '- Show word count and estimated reading time on Conduit article detail pages.',
-        '- Add deterministic helper coverage for Markdown body counting.',
+        ...descriptor.summaryBullets,
         '',
         '## Changed Files',
         changedFileList,
@@ -319,11 +451,54 @@ export class ConduitWorkflowService {
       changedFiles,
       verificationResults,
       manualCommands: [
-        'git checkout -b feat/article-reading-stats',
-        'git add frontend/src/helpers/articleReadingStats.js frontend/src/helpers/articleReadingStats.test.js frontend/src/routes/Article/Article.jsx',
-        'git commit -m "feat: show article reading statistics"',
-        'git push -u origin feat/article-reading-stats',
-        'gh pr create --title "feat: show article reading statistics" --body-file PR_BODY.md',
+        `git checkout -b ${descriptor.branch}`,
+        `git add ${gitAddTargets}`,
+        `git commit -m "${descriptor.title}"`,
+        `git push -u origin ${descriptor.branch}`,
+        `gh pr create --title "${descriptor.title}" --body-file PR_BODY.md`,
+      ],
+    };
+  }
+
+  #summaryDescriptor(skill?: ConduitDeliveryRunState['selectedSkill']): {
+    title: string;
+    branch: string;
+    summaryBullets: string[];
+  } {
+    if (skill?.id === CONDUIT_ARTICLE_PREVIEW_READING_STATS_SKILL_ID) {
+      return {
+        title: 'feat: show article preview reading statistics',
+        branch: 'feat/article-preview-reading-stats',
+        summaryBullets: [
+          '- Show word count and estimated reading time on Conduit article preview cards.',
+          '- Preserve existing preview-card metadata, favorite behavior, routing state, tags, loading, and empty states.',
+        ],
+      };
+    }
+    if (skill?.id === CONDUIT_ARTICLE_COMMENT_COUNT_SKILL_ID) {
+      return {
+        title: 'feat: add article comments count',
+        branch: 'feat/article-comments-count',
+        summaryBullets: [
+          '- Add backend commentsCount serialization for Conduit article API responses.',
+          '- Render commentsCount on Conduit article detail pages with backend and frontend coverage.',
+        ],
+      };
+    }
+    if (skill?.id !== CONDUIT_READING_STATS_SKILL_ID) {
+      return {
+        title: 'feat: update conduit delivery workflow',
+        branch: 'feat/conduit-delivery-update',
+        summaryBullets: ['- Apply the selected Conduit delivery Skill and verification handoff.'],
+      };
+    }
+
+    return {
+      title: 'feat: show article reading statistics',
+      branch: 'feat/article-reading-stats',
+      summaryBullets: [
+        '- Show word count and estimated reading time on Conduit article detail pages.',
+        '- Add deterministic helper coverage for Markdown body counting.',
       ],
     };
   }

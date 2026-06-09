@@ -496,6 +496,13 @@
     "planSummary": "Підсумок плану",
     "clarificationQuestions": "Уточнювальні питання",
     "metrics": "Метрики моделі",
+    "metricsAggregate": {
+      "totalTokens": "Усього токенів: {{value}}",
+      "averageLatency": "Середня затримка: {{value}} ms",
+      "estimatedCost": "Орієнтовна вартість: ${{value}}",
+      "modelSuccessRate": "Успішність моделі: {{value}}",
+      "verificationSuccessRate": "Успішність перевірки: {{value}}"
+    },
     "status": "Статус",
     "commands": {
       "help": "Використовуйте /conduit, /conduit <вимога>, /conduit run, /conduit status, /conduit revise, /conduit replay <етап> або /conduit exit.",
@@ -514,6 +521,7 @@
       "exit": "Вийти з режиму",
       "replayVerify": "Повторити перевірку"
     },
-    "submitClarification": "Надіслати уточнення"
+    "submitClarification": "Надіслати уточнення",
+    "recalledDemands": "Знайдені схожі вимоги"
   }
 }

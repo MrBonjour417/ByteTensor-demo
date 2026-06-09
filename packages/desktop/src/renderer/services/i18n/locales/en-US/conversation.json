@@ -497,6 +497,13 @@
     "planSummary": "Plan summary",
     "clarificationQuestions": "Clarification questions",
     "metrics": "Model metrics",
+    "metricsAggregate": {
+      "totalTokens": "Total tokens: {{value}}",
+      "averageLatency": "Average latency: {{value}} ms",
+      "estimatedCost": "Estimated cost: ${{value}}",
+      "modelSuccessRate": "Model success rate: {{value}}",
+      "verificationSuccessRate": "Verification success rate: {{value}}"
+    },
     "status": "Status",
     "commands": {
       "help": "Use /conduit, /conduit <requirement>, /conduit run, /conduit status, /conduit revise, /conduit replay <stage>, or /conduit exit.",
@@ -515,6 +522,7 @@
       "exit": "Exit mode",
       "replayVerify": "Replay verification"
     },
-    "submitClarification": "Submit clarification"
+    "submitClarification": "Submit clarification",
+    "recalledDemands": "Recalled demands"
   }
 }

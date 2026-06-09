@@ -7,6 +7,8 @@
 export const CONDUIT_OFFICIAL_REPOSITORY_URL = 'https://github.com/TonyMckes/conduit-realworld-example-app';
 
 export const CONDUIT_READING_STATS_SKILL_ID = 'conduit.article-reading-stats';
+export const CONDUIT_ARTICLE_PREVIEW_READING_STATS_SKILL_ID = 'conduit.article-preview-reading-stats';
+export const CONDUIT_ARTICLE_COMMENT_COUNT_SKILL_ID = 'conduit.article-comment-count';
 
 export const CONDUIT_DELIVERY_STAGE_ORDER = [
   'intake',
@@ -214,12 +216,20 @@ export type ConduitPlanSummary = {
   risks: string[];
 };
 
+export type ConduitRecalledDemand = {
+  sessionId: string;
+  requirement: string;
+  summary: string;
+  similarity: number;
+};
+
 export type ConduitConversationEntryKind =
   | 'mode_entered'
   | 'pm_input'
   | 'clarification_question'
   | 'requirement_confirmed'
   | 'plan_summary'
+  | 'demand_recalled'
   | 'status'
   | 'error';
 
@@ -245,8 +255,10 @@ export type ConduitSessionState = {
   entries?: ConduitConversationEntry[];
   requirementDsl?: ConduitRequirementDsl;
   planSummary?: ConduitPlanSummary;
+  recalledDemands?: ConduitRecalledDemand[];
   activeRunId?: string;
   runState?: ConduitDeliveryRunState;
+  modelMetrics?: ConduitModelCallMetrics[];
   error?: string;
 };
 
