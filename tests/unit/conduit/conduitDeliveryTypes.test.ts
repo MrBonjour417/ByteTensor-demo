@@ -63,7 +63,10 @@ describe('conduitDelivery shared contract', () => {
         title: 'Article reading statistics',
         userGoal: 'Show article word count and estimated reading time on article detail pages.',
         targetSurface: 'article_detail',
-        acceptanceCriteria: ['Show word count when body exists.', 'Show reading time rounded up to at least one minute.'],
+        acceptanceCriteria: [
+          'Show word count when body exists.',
+          'Show reading time rounded up to at least one minute.',
+        ],
         requiresBackend: false,
         requiresDatabase: false,
         verification: ['Run article reading stats helper test.', 'Run root test command.'],

@@ -56,7 +56,10 @@ const useNanobotSendBoxDraft = getSendBoxDraftHook('nanobot', {
 const EMPTY_AT_PATH: Array<string | FileOrFolderItem> = [];
 const EMPTY_UPLOAD_FILES: string[] = [];
 
-const NanobotSendBox: React.FC<{ conversation_id: string; workspacePath: string }> = ({ conversation_id, workspacePath }) => {
+const NanobotSendBox: React.FC<{ conversation_id: string; workspacePath: string }> = ({
+  conversation_id,
+  workspacePath,
+}) => {
   const { t } = useTranslation();
   const teamPermission = useTeamPermission();
   const { checkAndUpdateTitle } = useAutoTitle();

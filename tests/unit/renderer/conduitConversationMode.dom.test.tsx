@@ -258,7 +258,9 @@ describe('useConduitConversationMode', () => {
 
   it('clears previous conversation session while loading the next one', async () => {
     const pendingSession = Promise.withResolvers<ConduitSessionState | undefined>();
-    ipcMocks.getSessionState.mockResolvedValueOnce(createSession('clarifying')).mockReturnValueOnce(pendingSession.promise);
+    ipcMocks.getSessionState
+      .mockResolvedValueOnce(createSession('clarifying'))
+      .mockReturnValueOnce(pendingSession.promise);
 
     render(<SwitchProbe />);
     await waitFor(() => expect(screen.getByTestId('switch-status')).toHaveTextContent('clarifying'));
@@ -331,7 +333,15 @@ describe('SendBox Conduit interception', () => {
     const onChange = vi.fn();
     const onSend = vi.fn().mockResolvedValue(undefined);
 
-    render(<SendBox value='/btw explain this' onChange={onChange} onSend={onSend} onConduitInput={onConduitInput} enableBtw />);
+    render(
+      <SendBox
+        value='/btw explain this'
+        onChange={onChange}
+        onSend={onSend}
+        onConduitInput={onConduitInput}
+        enableBtw
+      />
+    );
 
     await userEvent.click(screen.getByTestId('sendbox-send-btn'));
 

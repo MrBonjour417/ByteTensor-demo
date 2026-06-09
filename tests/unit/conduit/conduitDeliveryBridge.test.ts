@@ -6,7 +6,11 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { initConduitDeliveryBridge } from '@process/bridge/conduitDeliveryBridge';
-import type { ConduitDeliveryRunState, ConduitSandboxBinding, ConduitSessionState } from '@/common/types/conduitDelivery';
+import type {
+  ConduitDeliveryRunState,
+  ConduitSandboxBinding,
+  ConduitSessionState,
+} from '@/common/types/conduitDelivery';
 
 type PromiseWithResolversValue<T> = {
   promise: Promise<T>;
@@ -217,7 +221,24 @@ describe('conduitDeliveryBridge', () => {
       replayRun: vi.fn(),
       getChangedFiles: () => [],
       getSessionState: () => session,
-      handleSessionInput: async () => ({ handled: true, session: { ...session, runState: { runId: 'run-1', status: 'succeeded', requirement: 'x', createdAt: 1, updatedAt: 1, stages: [], events: [], changedFiles: [], verificationResults: [] } }, entries: [] }),
+      handleSessionInput: async () => ({
+        handled: true,
+        session: {
+          ...session,
+          runState: {
+            runId: 'run-1',
+            status: 'succeeded',
+            requirement: 'x',
+            createdAt: 1,
+            updatedAt: 1,
+            stages: [],
+            events: [],
+            changedFiles: [],
+            verificationResults: [],
+          },
+        },
+        entries: [],
+      }),
       confirmSessionRun: async () => session,
       replaySessionStage: async () => session,
     });
@@ -230,7 +251,9 @@ describe('conduitDeliveryBridge', () => {
     const handler = providerMocks.handleSessionInput.mock.calls.at(-1)?.[0];
     await handler({ conversationId: 'conversation-1', input: '/conduit' });
 
-    expect(providerMocks.sessionChanged).toHaveBeenCalledWith(expect.objectContaining({ sessionId: session.sessionId }));
+    expect(providerMocks.sessionChanged).toHaveBeenCalledWith(
+      expect.objectContaining({ sessionId: session.sessionId })
+    );
     expect(providerMocks.emit).toHaveBeenCalledWith(expect.objectContaining({ runId: 'run-1' }));
   });
 
@@ -333,6 +356,9 @@ describe('conduitDeliveryBridge', () => {
     await handled;
 
     expect(defaultServiceMocks.setDefaultSandboxPath).toHaveBeenCalledWith('D:/old-conduit');
-    expect(defaultServiceMocks.handleInput).toHaveBeenCalledWith({ conversationId: 'conversation-1', input: '/conduit run' });
+    expect(defaultServiceMocks.handleInput).toHaveBeenCalledWith({
+      conversationId: 'conversation-1',
+      input: '/conduit run',
+    });
   });
 });

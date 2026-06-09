@@ -41,10 +41,7 @@ describe('ConduitClarifier', () => {
   it('respects a later correction away from article detail', () => {
     const clarifier = new ConduitClarifier();
 
-    const result = clarifier.analyze([
-      '文章详情页展示字数和预计阅读时间',
-      '改为用户详情页展示字数和预计阅读时间',
-    ]);
+    const result = clarifier.analyze(['文章详情页展示字数和预计阅读时间', '改为用户详情页展示字数和预计阅读时间']);
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
@@ -67,10 +64,7 @@ describe('ConduitClarifier', () => {
   it('blocks latest corrections that explicitly reject article detail', () => {
     const clarifier = new ConduitClarifier();
 
-    const result = clarifier.analyze([
-      '文章详情页展示字数和预计阅读时间',
-      '不是文章详情页，要展示字数和预计阅读时间',
-    ]);
+    const result = clarifier.analyze(['文章详情页展示字数和预计阅读时间', '不是文章详情页，要展示字数和预计阅读时间']);
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');
@@ -80,10 +74,7 @@ describe('ConduitClarifier', () => {
   it('allows generic wording corrections after article-detail target is established', () => {
     const clarifier = new ConduitClarifier();
 
-    const result = clarifier.analyze([
-      '文章详情页展示字数和预计阅读时间',
-      '改成显示在正文下方',
-    ]);
+    const result = clarifier.analyze(['文章详情页展示字数和预计阅读时间', '改成显示在正文下方']);
 
     expect(result.status).toBe('ready');
     if (result.status !== 'ready') throw new Error('Expected ready result.');
@@ -93,10 +84,7 @@ describe('ConduitClarifier', () => {
   it('does not finalize when latest clarification removes word-count output', () => {
     const clarifier = new ConduitClarifier();
 
-    const result = clarifier.analyze([
-      '文章详情页展示字数和预计阅读时间',
-      '不要字数，只保留预计阅读时间',
-    ]);
+    const result = clarifier.analyze(['文章详情页展示字数和预计阅读时间', '不要字数，只保留预计阅读时间']);
 
     expect(result.status).toBe('needs_clarification');
     if (result.status !== 'needs_clarification') throw new Error('Expected clarification result.');

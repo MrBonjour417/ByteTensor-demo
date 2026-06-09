@@ -32,7 +32,6 @@ function isConduitReplayStage(value: string): value is ConduitReplayStage {
   return REPLAY_STAGES.has(value as ConduitReplayStage);
 }
 
-
 export function parseConduitCommand(input: string): ParsedConduitCommand {
   const trimmed = input.trim();
   if (trimmed !== CONDUIT_COMMAND_PREFIX && !trimmed.startsWith(`${CONDUIT_COMMAND_PREFIX} `)) {

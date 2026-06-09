@@ -109,7 +109,11 @@ export function useConduitConversationMode(
       if (currentConversationIdRef.current !== conversationId) {
         return false;
       }
-      if (result.session && currentConversationIdRef.current === conversationId && result.session.conversationId === conversationId) {
+      if (
+        result.session &&
+        currentConversationIdRef.current === conversationId &&
+        result.session.conversationId === conversationId
+      ) {
         sessionMutationGenerationRef.current += 1;
         setSession(result.session);
       }

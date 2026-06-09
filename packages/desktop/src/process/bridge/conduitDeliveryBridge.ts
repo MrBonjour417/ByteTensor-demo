@@ -24,7 +24,12 @@ import type {
 } from '@/common/types/conduitDelivery';
 import { getDataPath } from '@process/utils';
 import path from 'path';
-import { ConduitEventStore, ConduitRepoService, ConduitSessionService, ConduitWorkflowService } from '@process/services/conduit';
+import {
+  ConduitEventStore,
+  ConduitRepoService,
+  ConduitSessionService,
+  ConduitWorkflowService,
+} from '@process/services/conduit';
 
 type ConduitDeliveryBridgeService = {
   getState(runId?: string): ConduitDeliveryRunState | undefined;
@@ -133,7 +138,9 @@ export function initConduitDeliveryBridge(service: ConduitDeliveryBridgeService 
     return state;
   });
   ipcBridge.conduitDelivery.getChangedFiles.provider(async (request) => service.getChangedFiles(request?.runId));
-  ipcBridge.conduitDelivery.getSessionState.provider(async (request) => service.getSessionState(request.conversationId));
+  ipcBridge.conduitDelivery.getSessionState.provider(async (request) =>
+    service.getSessionState(request.conversationId)
+  );
   ipcBridge.conduitDelivery.handleSessionInput.provider(async (request) => {
     const result = await service.handleSessionInput(request);
     if (result.session) ipcBridge.conduitDelivery.sessionChanged.emit(result.session);

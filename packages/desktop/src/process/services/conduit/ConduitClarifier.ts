@@ -10,14 +10,18 @@ export type ConduitClarifierResult =
   | { status: 'needs_clarification'; questions: string[] }
   | { status: 'ready'; dsl: ConduitRequirementDsl };
 
-const ARTICLE_DETAIL_SURFACE_RE = /(?:文章详情页|文章.*详情页|详情页.*文章|article detail page|article detail|article.*detail page|article.*detail)/i;
+const ARTICLE_DETAIL_SURFACE_RE =
+  /(?:文章详情页|文章.*详情页|详情页.*文章|article detail page|article detail|article.*detail page|article.*detail)/i;
 const UNSUPPORTED_ARTICLE_SURFACE_RE = /(?:文章列表|列表页|首页|article list|feed|home)/i;
 const WORD_COUNT_RE = /字数|word count|words?/i;
 const READING_TIME_RE = /阅读时间|预计阅读|reading time|read time/i;
-const LATEST_NON_ARTICLE_DETAIL_SURFACE_RE = /(?:文章列表|列表页|首页|article list|feed|home|用户详情页|user detail|profile page|profile|编辑器页|editor page|editor|用户列表页|user list)/i;
+const LATEST_NON_ARTICLE_DETAIL_SURFACE_RE =
+  /(?:文章列表|列表页|首页|article list|feed|home|用户详情页|user detail|profile page|profile|编辑器页|editor page|editor|用户列表页|user list)/i;
 const REJECTS_ARTICLE_DETAIL_RE = /(?:不要|不是|not).*文章详情页|not.*article detail/i;
-const REJECTS_WORD_COUNT_RE = /(?:不要|不需要|移除|去掉).*?(?:字数|word count)|(?:字数|word count).*?(?:不要|不需要|移除|去掉)|\b(?:not|without|no)\b.*?\bword count\b|\bword count\b.*?\b(?:not|without|no)\b/i;
-const REJECTS_READING_TIME_RE = /(?:不要|不需要|移除|去掉).*?(?:阅读时间|预计阅读|reading time|read time)|(?:阅读时间|预计阅读|reading time|read time).*?(?:不要|不需要|移除|去掉)|\b(?:not|without|no)\b.*?\b(?:reading time|read time)\b|\b(?:reading time|read time)\b.*?\b(?:not|without|no)\b/i;
+const REJECTS_WORD_COUNT_RE =
+  /(?:不要|不需要|移除|去掉).*?(?:字数|word count)|(?:字数|word count).*?(?:不要|不需要|移除|去掉)|\b(?:not|without|no)\b.*?\bword count\b|\bword count\b.*?\b(?:not|without|no)\b/i;
+const REJECTS_READING_TIME_RE =
+  /(?:不要|不需要|移除|去掉).*?(?:阅读时间|预计阅读|reading time|read time)|(?:阅读时间|预计阅读|reading time|read time).*?(?:不要|不需要|移除|去掉)|\b(?:not|without|no)\b.*?\b(?:reading time|read time)\b|\b(?:reading time|read time)\b.*?\b(?:not|without|no)\b/i;
 const ONLY_FEATURE_RE = /\bonly\b|只保留/i;
 
 export class ConduitClarifier {

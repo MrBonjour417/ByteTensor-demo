@@ -61,7 +61,12 @@ export class ConduitSessionService {
     const command = parseConduitCommand(request.input);
     const existing = this.#sessions.get(request.conversationId);
 
-    if (existing?.status === 'running' && command.kind !== 'none' && command.kind !== 'status' && command.kind !== 'help') {
+    if (
+      existing?.status === 'running' &&
+      command.kind !== 'none' &&
+      command.kind !== 'status' &&
+      command.kind !== 'help'
+    ) {
       existing.error = 'Conduit run is already in progress.';
       existing.updatedAt = this.#now();
       return {
@@ -96,7 +101,8 @@ export class ConduitSessionService {
       return { handled: true, session, entries };
     }
 
-    const session = existing && existing.status !== 'exited' ? existing : this.#ensureActiveSession(request.conversationId);
+    const session =
+      existing && existing.status !== 'exited' ? existing : this.#ensureActiveSession(request.conversationId);
     const entries = existing && existing.status !== 'exited' ? [] : this.#modeEntryIfNeeded(session);
 
     if (command.kind === 'status') {
@@ -127,7 +133,10 @@ export class ConduitSessionService {
     }
 
     if (command.kind === 'run') {
-      const runSession = await this.confirmRun({ conversationId: session.conversationId, sandboxPath: request.workspacePath });
+      const runSession = await this.confirmRun({
+        conversationId: session.conversationId,
+        sandboxPath: request.workspacePath,
+      });
       entries.push(this.#entry(runSession, 'conduit', 'status', this.#statusText(runSession)));
       return { handled: true, session: runSession, entries };
     }

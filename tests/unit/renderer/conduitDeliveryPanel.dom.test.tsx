@@ -242,7 +242,9 @@ describe('ConduitDeliveryPanel', () => {
   });
 
   it('keeps the active session visible when only workspace changes', async () => {
-    const { rerender } = render(<ConduitDeliveryPanel conversationId='conversation-1' workspacePath='D:/workspace-a' />);
+    const { rerender } = render(
+      <ConduitDeliveryPanel conversationId='conversation-1' workspacePath='D:/workspace-a' />
+    );
 
     emitSessionChanged(
       createSession({
@@ -268,7 +270,9 @@ describe('ConduitDeliveryPanel', () => {
   });
 
   it('resets sandbox path when switching conversations', async () => {
-    const { rerender } = render(<ConduitDeliveryPanel conversationId='conversation-1' workspacePath='D:/workspace-a' />);
+    const { rerender } = render(
+      <ConduitDeliveryPanel conversationId='conversation-1' workspacePath='D:/workspace-a' />
+    );
     emitSessionChanged(createSession());
 
     expect(await screen.findByDisplayValue('D:/workspace-a')).toBeInTheDocument();
@@ -299,7 +303,9 @@ describe('ConduitDeliveryPanel', () => {
       })
     );
 
-    await waitFor(() => expect(screen.queryByText('frontend/src/helpers/articleReadingStats.js')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByText('frontend/src/helpers/articleReadingStats.js')).not.toBeInTheDocument()
+    );
   });
 
   it('binds a sandbox and confirms the session run from the process cockpit', async () => {
@@ -309,13 +315,17 @@ describe('ConduitDeliveryPanel', () => {
       packageName: 'conduit',
       boundAt: 1,
     });
-    conduitMocks.confirmSessionRun.mockResolvedValue(createSession({ runState: createRunState({ status: 'running' }) }));
+    conduitMocks.confirmSessionRun.mockResolvedValue(
+      createSession({ runState: createRunState({ status: 'running' }) })
+    );
 
     render(<ConduitDeliveryPanel conversationId='conversation-1' workspacePath='D:/conduit' />);
 
     emitSessionChanged(createSession());
 
-    fireEvent.change(await screen.findByPlaceholderText('Path to Conduit sandbox'), { target: { value: 'D:/conduit' } });
+    fireEvent.change(await screen.findByPlaceholderText('Path to Conduit sandbox'), {
+      target: { value: 'D:/conduit' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Bind sandbox' }));
 
     await waitFor(() => expect(conduitMocks.bindSandbox).toHaveBeenCalledWith({ path: 'D:/conduit' }));
