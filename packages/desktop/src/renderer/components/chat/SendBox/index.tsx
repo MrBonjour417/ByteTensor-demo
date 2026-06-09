@@ -156,6 +156,7 @@ const SendBox: React.FC<{
   value?: string;
   onChange?: (value: string) => void;
   onSend: (message: string) => Promise<void>;
+  onConduitInput?: (message: string) => Promise<boolean>;
   onStop?: () => Promise<void>;
   disabled?: boolean;
   loading?: boolean;
@@ -186,6 +187,7 @@ const SendBox: React.FC<{
   onMobilePlusClick?: () => void;
 }> = ({
   onSend,
+  onConduitInput,
   onStop,
   prefix,
   className,
@@ -233,6 +235,7 @@ const SendBox: React.FC<{
   const mobileUserFocusIntentUntilRef = useRef(0);
   const warmedConversationRef = useRef<string | undefined>(undefined);
   const warmupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const conduitInputPendingRef = useRef(false);
   const latestInputRef = useLatestRef(input);
   const setInputRef = useLatestRef(setInput);
   const messageList = useMessageList();
@@ -1167,6 +1170,10 @@ const SendBox: React.FC<{
   );
 
   const sendMessageHandler = () => {
+    void sendMessageHandlerAsync();
+  };
+
+  const sendMessageHandlerAsync = async () => {
     if (isUploading) return;
     // Cancel any pending warmup: once the user actually submits, the
     // forthcoming /messages request will build the agent on its own.
@@ -1180,6 +1187,7 @@ const SendBox: React.FC<{
     if (activeCid) {
       warmedConversationRef.current = activeCid;
     }
+    const submittedInput = latestInputRef.current;
     if (enableBtw && btwQuestion !== null) {
       const normalizedQuestion = btwQuestion.trim();
       if (!normalizedQuestion) {
@@ -1201,6 +1209,22 @@ const SendBox: React.FC<{
       return;
     }
 
+    if (onConduitInput && submittedInput.trim()) {
+      if (conduitInputPendingRef.current) return;
+      conduitInputPendingRef.current = true;
+      try {
+        const handled = await onConduitInput(submittedInput);
+        if (handled) {
+          historyDraftRef.current = null;
+          setHistoryNavigationIndex(null);
+          if (latestInputRef.current === submittedInput) setInputRef.current('');
+          return;
+        }
+      } finally {
+        conduitInputPendingRef.current = false;
+      }
+    }
+
     if (!allowSendWhileLoading && (isLoading || loading)) {
       console.info('[sendbox]', {
         event: 'blocked-while-loading',
@@ -1211,7 +1235,7 @@ const SendBox: React.FC<{
       message.warning(t('messages.conversationInProgress'));
       return;
     }
-    if (!input.trim() && domSnippets.length === 0) {
+    if (!submittedInput.trim() && domSnippets.length === 0) {
       return;
     }
     console.info('[sendbox]', {
@@ -1219,7 +1243,7 @@ const SendBox: React.FC<{
       allowSendWhileLoading,
       isLoading,
       loading,
-      inputLength: input.length,
+      inputLength: submittedInput.length,
       domSnippetCount: domSnippets.length,
     });
     setIsLoading(true);
@@ -1227,7 +1251,7 @@ const SendBox: React.FC<{
     setHistoryNavigationIndex(null);
 
     // 构建消息内容 / Build message content
-    let finalMessage = input;
+    let finalMessage = submittedInput;
 
     // Prepend reply quote as blockquote
     if (replyQuote) {
@@ -1243,12 +1267,12 @@ const SendBox: React.FC<{
       const snippetsHtml = domSnippets
         .map((s) => `\n\n---\nDOM Snippet (${s.tag}):\n\`\`\`html\n${s.html}\n\`\`\``)
         .join('');
-      finalMessage = input + snippetsHtml;
+      finalMessage = submittedInput + snippetsHtml;
     }
 
     // 立即清空输入框，避免异步 onSend 完成后覆盖用户新输入
     // Clear input immediately to prevent async onSend completion from overwriting new user input
-    setInput('');
+    if (latestInputRef.current === submittedInput) setInput('');
     clearDomSnippets();
     setReplyQuote(null);
 
