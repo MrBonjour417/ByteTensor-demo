@@ -514,6 +514,7 @@
       "revise": "계획 수정",
       "exit": "모드 종료",
       "replayVerify": "검증 다시 실행"
-    }
+    },
+    "submitClarification": "확인 내용 제출"
   }
 }

@@ -516,6 +516,7 @@
       "revise": "Planı düzelt",
       "exit": "Moddan çık",
       "replayVerify": "Doğrulamayı yeniden oynat"
-    }
+    },
+    "submitClarification": "Netleştirmeyi gönder"
   }
 }

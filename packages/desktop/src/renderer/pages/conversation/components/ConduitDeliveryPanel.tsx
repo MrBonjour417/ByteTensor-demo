@@ -53,6 +53,7 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
         sessionStatusRef.current = nextSession.status;
         setSession(nextSession);
         setState(nextSession.runState);
+        syncRequirementFromSession(nextSession);
         if (nextSession.status !== 'exited') setOpen(true);
       })
       .catch((error) => {
@@ -70,6 +71,7 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
       sessionStatusRef.current = nextSession.status;
       setSession(nextSession);
       setState(nextSession.runState);
+      syncRequirementFromSession(nextSession);
       if (nextSession.status === 'exited') {
         setOpen(false);
         return;
@@ -89,11 +91,16 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
 
   const runState = state ?? session?.runState;
   const verificationFailure = useMemo(() => failedVerificationText(runState), [runState]);
+  const syncRequirementFromSession = (nextSession: ConduitSessionState) => {
+    const lastInput = nextSession.pmInputs.at(-1);
+    if (lastInput) setRequirement(lastInput);
+  };
 
   const applySession = (nextSession: ConduitSessionState) => {
     sessionStatusRef.current = nextSession.status;
     setSession(nextSession);
     setState(nextSession.runState);
+    syncRequirementFromSession(nextSession);
     if (nextSession.status === 'exited') {
       setOpen(false);
     } else {
@@ -125,6 +132,21 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
         stage: 'verify',
       });
       applySession(nextSession);
+    } finally {
+      setIsCommandRunning(false);
+    }
+  };
+  const submitClarification = async () => {
+    const trimmedRequirement = requirement.trim();
+    if (!conversationId || !trimmedRequirement) return;
+    setIsCommandRunning(true);
+    try {
+      const result = await ipcBridge.conduitDelivery.handleSessionInput.invoke({
+        conversationId,
+        input: trimmedRequirement,
+        workspacePath: sandboxPath.trim() || undefined,
+      });
+      if (result.session) applySession(result.session);
     } finally {
       setIsCommandRunning(false);
     }
@@ -317,6 +339,9 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
             onChange={setRequirement}
           />
         </div>
+        <Button loading={isCommandRunning} onClick={() => void submitClarification()}>
+          {t('conversation.conduitDelivery.submitClarification')}
+        </Button>
         <Button type='primary' loading={isRunning} onClick={startRun}>
           {t('conversation.conduitDelivery.startRun')}
         </Button>

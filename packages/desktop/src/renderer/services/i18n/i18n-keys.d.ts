@@ -424,6 +424,7 @@ export type I18nKey =
   | 'conversation.conduitDelivery.stageTimeline'
   | 'conversation.conduitDelivery.startRun'
   | 'conversation.conduitDelivery.status'
+  | 'conversation.conduitDelivery.submitClarification'
   | 'conversation.conduitDelivery.title'
   | 'conversation.conduitDelivery.verificationFailed'
   | 'conversation.conduitDelivery.verificationResults'

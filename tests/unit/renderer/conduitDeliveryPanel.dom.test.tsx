@@ -69,8 +69,8 @@ const translations: Record<string, string> = {
   'conversation.conduitDelivery.actions.revise': 'Revise plan',
   'conversation.conduitDelivery.actions.exit': 'Exit mode',
   'conversation.conduitDelivery.actions.replayVerify': 'Replay verification',
+  'conversation.conduitDelivery.submitClarification': 'Submit clarification',
 };
-
 const emitSessionChanged = (session: ConduitSessionState) => {
   const handler = conduitMocks.sessionHandlers.at(-1);
   if (!handler) throw new Error('sessionChanged handler was not registered');
@@ -384,6 +384,52 @@ describe('ConduitDeliveryPanel', () => {
       })
     );
     expect(conduitMocks.startRun).not.toHaveBeenCalled();
+  });
+
+  it('submits clarification edits from the cockpit PM input', async () => {
+    conduitMocks.handleSessionInput.mockResolvedValueOnce({
+      handled: true,
+      entries: [],
+      session: createSession({
+        status: 'ready_to_run',
+        pmInputs: ['文章详情页展示字数和预计阅读时间'],
+        requirementDsl: {
+          level: 'L1',
+          title: 'Article reading statistics',
+          userGoal: 'Show article word count and estimated reading time on Conduit article detail pages.',
+          targetSurface: 'article_detail',
+          acceptanceCriteria: ['Show word count when body exists.'],
+          requiresBackend: false,
+          requiresDatabase: false,
+          verification: ['Run helper tests.'],
+        },
+      }),
+    });
+
+    render(<ConduitDeliveryPanel conversationId='conversation-1' workspacePath='D:/conduit' />);
+    emitSessionChanged(
+      createSession({
+        status: 'clarifying',
+        pmInputs: ['展示字数和预计阅读时间'],
+        clarificationQuestions: ['这个统计信息要展示在哪个 Conduit 页面或组件上？'],
+      })
+    );
+
+    expect(await screen.findByDisplayValue('展示字数和预计阅读时间')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByPlaceholderText('Describe the Conduit change'), {
+      target: { value: '文章详情页展示字数和预计阅读时间' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit clarification' }));
+
+    await waitFor(() =>
+      expect(conduitMocks.handleSessionInput).toHaveBeenCalledWith({
+        conversationId: 'conversation-1',
+        input: '文章详情页展示字数和预计阅读时间',
+        workspacePath: 'D:/conduit',
+      })
+    );
+    expect(await screen.findByText('Article reading statistics')).toBeInTheDocument();
   });
 
   it('runs status, revise, exit, and replay actions from the cockpit', async () => {

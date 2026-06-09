@@ -514,6 +514,7 @@
       "revise": "Revise plan",
       "exit": "Exit mode",
       "replayVerify": "Replay verification"
-    }
+    },
+    "submitClarification": "Submit clarification"
   }
 }

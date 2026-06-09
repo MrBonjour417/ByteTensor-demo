@@ -514,6 +514,7 @@
       "revise": "計画を修正",
       "exit": "モード終了",
       "replayVerify": "検証を再実行"
-    }
+    },
+    "submitClarification": "確認内容を送信"
   }
 }
