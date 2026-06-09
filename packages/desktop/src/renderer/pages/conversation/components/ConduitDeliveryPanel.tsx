@@ -29,6 +29,7 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
   const [session, setSession] = useState<ConduitSessionState | undefined>();
   const [isBinding, setIsBinding] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const [isCommandRunning, setIsCommandRunning] = useState(false);
   const sessionStatusRef = useRef<ConduitSessionState['status'] | undefined>(undefined);
   useEffect(() => {
     sessionStatusRef.current = undefined;
@@ -89,6 +90,45 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
   const runState = state ?? session?.runState;
   const verificationFailure = useMemo(() => failedVerificationText(runState), [runState]);
 
+  const applySession = (nextSession: ConduitSessionState) => {
+    sessionStatusRef.current = nextSession.status;
+    setSession(nextSession);
+    setState(nextSession.runState);
+    if (nextSession.status === 'exited') {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  };
+
+  const runSessionCommand = async (command: '/conduit status' | '/conduit revise' | '/conduit exit') => {
+    if (!conversationId) return;
+    setIsCommandRunning(true);
+    try {
+      const result = await ipcBridge.conduitDelivery.handleSessionInput.invoke({
+        conversationId,
+        input: command,
+        workspacePath: sandboxPath.trim() || undefined,
+      });
+      if (result.session) applySession(result.session);
+    } finally {
+      setIsCommandRunning(false);
+    }
+  };
+
+  const replayVerify = async () => {
+    if (!conversationId || !session?.activeRunId) return;
+    setIsCommandRunning(true);
+    try {
+      const nextSession = await ipcBridge.conduitDelivery.replaySessionStage.invoke({
+        conversationId,
+        stage: 'verify',
+      });
+      applySession(nextSession);
+    } finally {
+      setIsCommandRunning(false);
+    }
+  };
   const bindSandbox = async () => {
     if (!sandboxPath.trim()) return;
     setIsBinding(true);
@@ -124,6 +164,39 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
       footer={null}
     >
       <Space direction='vertical' size='medium' className='w-full'>
+        {session && (
+          <div>
+            <Typography.Title heading={6}>{t('conversation.conduitDelivery.status')}</Typography.Title>
+            <Tag color={session.status === 'succeeded' ? 'green' : session.status === 'failed' ? 'red' : 'blue'}>
+              {session.status}
+            </Tag>
+          </div>
+        )}
+        {session?.clarificationQuestions.length ? (
+          <div>
+            <Typography.Title heading={6}>{t('conversation.conduitDelivery.clarificationQuestions')}</Typography.Title>
+            <Space direction='vertical' size='mini'>
+              {session.clarificationQuestions.map((question) => (
+                <Typography.Text key={question}>{question}</Typography.Text>
+              ))}
+            </Space>
+          </div>
+        ) : null}
+        {runState?.modelMetrics?.length ? (
+          <div>
+            <Typography.Title heading={6}>{t('conversation.conduitDelivery.metrics')}</Typography.Title>
+            <Space direction='vertical' size='mini'>
+              {runState.modelMetrics.map((metric) => (
+                <div key={`${metric.provider}:${metric.model}:${metric.latencyMs}`}>
+                  <Typography.Text className='block'>
+                    {metric.provider}/{metric.model}: {metric.totalTokens ?? 0} tokens, {metric.latencyMs}ms
+                  </Typography.Text>
+                  {metric.error && <Typography.Text className='block'>{metric.error}</Typography.Text>}
+                </div>
+              ))}
+            </Space>
+          </div>
+        ) : null}
         {session?.requirementDsl && (
           <div>
             <Typography.Title heading={6}>{t('conversation.conduitDelivery.requirementDsl')}</Typography.Title>
@@ -150,6 +223,22 @@ const ConduitDeliveryPanel: React.FC<{ conversationId?: string; workspacePath?: 
           <Tag color={runState.status === 'succeeded' ? 'green' : runState.status === 'failed' ? 'red' : 'blue'}>
             {runState.status}
           </Tag>
+        )}
+        {session && (
+          <Space wrap>
+            <Button loading={isCommandRunning} onClick={() => void runSessionCommand('/conduit status')}>
+              {t('conversation.conduitDelivery.actions.status')}
+            </Button>
+            <Button loading={isCommandRunning} onClick={() => void runSessionCommand('/conduit revise')}>
+              {t('conversation.conduitDelivery.actions.revise')}
+            </Button>
+            <Button disabled={!session.activeRunId} loading={isCommandRunning} onClick={() => void replayVerify()}>
+              {t('conversation.conduitDelivery.actions.replayVerify')}
+            </Button>
+            <Button status='danger' loading={isCommandRunning} onClick={() => void runSessionCommand('/conduit exit')}>
+              {t('conversation.conduitDelivery.actions.exit')}
+            </Button>
+          </Space>
         )}
         {verificationFailure && (
           <Alert

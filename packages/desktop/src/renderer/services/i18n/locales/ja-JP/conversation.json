@@ -508,6 +508,12 @@
       "missingSandbox": "実行前に公式 Conduit リポジトリを接続またはクローンしてください。",
       "nonOfficialRepository": "選択したリポジトリは公式 Conduit リポジトリまたは検証済み fork ではありません。",
       "verificationFailed": "検証に失敗しました。コマンド出力を確認し、失敗したステージを再実行してください。"
+    },
+    "actions": {
+      "status": "ステータス",
+      "revise": "計画を修正",
+      "exit": "モード終了",
+      "replayVerify": "検証を再実行"
     }
   }
 }

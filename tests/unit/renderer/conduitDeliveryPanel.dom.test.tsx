@@ -16,6 +16,8 @@ const conduitMocks = vi.hoisted(() => ({
   getSessionState: vi.fn(),
   confirmSessionRun: vi.fn(),
   stateHandlers: [] as Array<(state: ConduitDeliveryRunState) => void>,
+  handleSessionInput: vi.fn(),
+  replaySessionStage: vi.fn(),
   sessionHandlers: [] as Array<(session: ConduitSessionState) => void>,
 }));
 
@@ -26,6 +28,8 @@ vi.mock('@/common', () => ({
       startRun: { invoke: conduitMocks.startRun },
       getSessionState: { invoke: conduitMocks.getSessionState },
       confirmSessionRun: { invoke: conduitMocks.confirmSessionRun },
+      handleSessionInput: { invoke: conduitMocks.handleSessionInput },
+      replaySessionStage: { invoke: conduitMocks.replaySessionStage },
       stateChanged: {
         on: vi.fn((handler: (state: ConduitDeliveryRunState) => void) => {
           conduitMocks.stateHandlers.push(handler);
@@ -58,6 +62,13 @@ const translations: Record<string, string> = {
   'conversation.conduitDelivery.prSummary': 'PR summary',
   'conversation.conduitDelivery.requirementDsl': 'Requirement DSL',
   'conversation.conduitDelivery.planSummary': 'Plan summary',
+  'conversation.conduitDelivery.status': 'Session status',
+  'conversation.conduitDelivery.clarificationQuestions': 'Clarification questions',
+  'conversation.conduitDelivery.metrics': 'Model metrics',
+  'conversation.conduitDelivery.actions.status': 'Status',
+  'conversation.conduitDelivery.actions.revise': 'Revise plan',
+  'conversation.conduitDelivery.actions.exit': 'Exit mode',
+  'conversation.conduitDelivery.actions.replayVerify': 'Replay verification',
 };
 
 const emitSessionChanged = (session: ConduitSessionState) => {
@@ -110,6 +121,8 @@ describe('ConduitDeliveryPanel', () => {
     conduitMocks.getSessionState.mockReset();
     conduitMocks.confirmSessionRun.mockReset();
     conduitMocks.getSessionState.mockResolvedValue(undefined);
+    conduitMocks.handleSessionInput.mockReset();
+    conduitMocks.replaySessionStage.mockReset();
     conduitMocks.stateHandlers.length = 0;
     conduitMocks.sessionHandlers.length = 0;
   });
@@ -188,6 +201,38 @@ describe('ConduitDeliveryPanel', () => {
 
     expect(await screen.findByText('frontend/src/helpers/articleReadingStats.js')).toBeInTheDocument();
     expect(screen.queryByText('frontend/src/helpers/oldReadingStats.js')).not.toBeInTheDocument();
+  });
+
+  it('shows session status, clarification questions, and model metrics', async () => {
+    render(<ConduitDeliveryPanel conversationId='conversation-1' />);
+
+    emitSessionChanged(
+      createSession({
+        status: 'clarifying',
+        clarificationQuestions: ['P0 仅支持文章详情页交付，请确认是否改为文章详情页。'],
+        runState: createRunState({
+          modelMetrics: [
+            {
+              provider: 'doubao',
+              model: 'seed',
+              promptTokens: 10,
+              completionTokens: 12,
+              totalTokens: 22,
+              latencyMs: 35,
+              error: 'DOUBAO_ENDPOINT and DOUBAO_API_KEY must be set in the environment.',
+            },
+          ],
+        }),
+      })
+    );
+
+    expect(await screen.findByText('Session status')).toBeInTheDocument();
+    expect(screen.getByText('clarifying')).toBeInTheDocument();
+    expect(screen.getByText('Clarification questions')).toBeInTheDocument();
+    expect(screen.getByText('P0 仅支持文章详情页交付，请确认是否改为文章详情页。')).toBeInTheDocument();
+    expect(screen.getByText('Model metrics')).toBeInTheDocument();
+    expect(screen.getByText('doubao/seed: 22 tokens, 35ms')).toBeInTheDocument();
+    expect(screen.getByText('DOUBAO_ENDPOINT and DOUBAO_API_KEY must be set in the environment.')).toBeInTheDocument();
   });
 
   it('clears cockpit state when the conversation changes', async () => {
@@ -339,6 +384,63 @@ describe('ConduitDeliveryPanel', () => {
       })
     );
     expect(conduitMocks.startRun).not.toHaveBeenCalled();
+  });
+
+  it('runs status, revise, exit, and replay actions from the cockpit', async () => {
+    conduitMocks.handleSessionInput
+      .mockResolvedValueOnce({
+        handled: true,
+        entries: [],
+        session: createSession({ activeRunId: 'run-1', runState: createRunState({ runId: 'run-1' }) }),
+      })
+      .mockResolvedValueOnce({ handled: true, entries: [], session: createSession({ status: 'clarifying' }) })
+      .mockResolvedValueOnce({ handled: true, entries: [], session: createSession({ status: 'exited' }) });
+    conduitMocks.replaySessionStage.mockResolvedValue(
+      createSession({
+        status: 'succeeded',
+        activeRunId: 'run-1',
+        runState: createRunState({ status: 'succeeded' }),
+      })
+    );
+
+    render(<ConduitDeliveryPanel conversationId='conversation-1' workspacePath='D:/conduit' />);
+    emitSessionChanged(createSession({ activeRunId: 'run-1', runState: createRunState({ runId: 'run-1' }) }));
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Status' }));
+    await waitFor(() =>
+      expect(conduitMocks.handleSessionInput).toHaveBeenCalledWith({
+        conversationId: 'conversation-1',
+        input: '/conduit status',
+        workspacePath: 'D:/conduit',
+      })
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Replay verification' }));
+    await waitFor(() =>
+      expect(conduitMocks.replaySessionStage).toHaveBeenCalledWith({
+        conversationId: 'conversation-1',
+        stage: 'verify',
+      })
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Revise plan' }));
+    await waitFor(() =>
+      expect(conduitMocks.handleSessionInput).toHaveBeenCalledWith({
+        conversationId: 'conversation-1',
+        input: '/conduit revise',
+        workspacePath: 'D:/conduit',
+      })
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Exit mode' }));
+    await waitFor(() =>
+      expect(conduitMocks.handleSessionInput).toHaveBeenCalledWith({
+        conversationId: 'conversation-1',
+        input: '/conduit exit',
+        workspacePath: 'D:/conduit',
+      })
+    );
+    await waitFor(() => expect(document.querySelector('.arco-drawer-wrapper-hide')).not.toBeNull());
   });
 
   it('shows verification failure from same-conversation bridge state updates', async () => {

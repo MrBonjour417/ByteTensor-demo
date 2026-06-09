@@ -508,6 +508,12 @@
       "missingSandbox": "Bind or clone the official Conduit repository before running.",
       "nonOfficialRepository": "The selected repository is not the official Conduit repository or a verified fork.",
       "verificationFailed": "Verification failed. Review the command output and replay the failed stage."
+    },
+    "actions": {
+      "status": "Status",
+      "revise": "Revise plan",
+      "exit": "Exit mode",
+      "replayVerify": "Replay verification"
     }
   }
 }

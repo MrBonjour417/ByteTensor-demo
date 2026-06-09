@@ -508,6 +508,12 @@
       "missingSandbox": "运行前请绑定或克隆官方 Conduit 仓库。",
       "nonOfficialRepository": "所选仓库不是官方 Conduit 仓库或已验证的 fork。",
       "verificationFailed": "验证失败。请查看命令输出并重放失败阶段。"
+    },
+    "actions": {
+      "status": "状态",
+      "revise": "修订计划",
+      "exit": "退出模式",
+      "replayVerify": "重放验证"
     }
   }
 }

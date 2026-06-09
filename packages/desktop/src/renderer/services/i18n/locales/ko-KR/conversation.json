@@ -508,6 +508,12 @@
       "missingSandbox": "실행하기 전에 공식 Conduit 저장소를 연결하거나 클론하세요.",
       "nonOfficialRepository": "선택한 저장소가 공식 Conduit 저장소 또는 검증된 fork가 아닙니다.",
       "verificationFailed": "검증에 실패했습니다. 명령 출력을 확인하고 실패한 단계를 다시 실행하세요."
+    },
+    "actions": {
+      "status": "상태",
+      "revise": "계획 수정",
+      "exit": "모드 종료",
+      "replayVerify": "검증 다시 실행"
     }
   }
 }
